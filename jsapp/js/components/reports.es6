@@ -1110,7 +1110,7 @@ class Reports extends React.Component {
     const hasGroupBy = this.state.groupBy.length !== 0;
 
     return (
-      <DocumentTitle title={`${docTitle} | KoboToolbox`}>
+      <DocumentTitle title={`${docTitle} | iMMAP Surveys`}>
         <bem.FormView m={formViewModifiers}>
           <bem.ReportView>
             {this.renderReportButtons()}
@@ -1143,10 +1143,10 @@ class Reports extends React.Component {
                   </bem.FormView__cell>
                 }
 
-                <bem.FormView__cell m='warning'>
+                {/* <bem.FormView__cell m='warning'>
                   <i className='k-icon-alert' />
                   <p>{t('This is an automated report based on raw data submitted to this project. Please conduct proper data cleaning prior to using the graphs and figures used on this page. ')}</p>
-                </bem.FormView__cell>
+                </bem.FormView__cell> */}
 
                 <ReportContents parentState={this.state} reportData={reportData} triggerQuestionSettings={this.triggerQuestionSettings} />
               </bem.ReportView__wrap>

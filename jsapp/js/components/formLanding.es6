@@ -348,6 +348,13 @@ export class FormLanding extends React.Component {
                   </button>
                 </CopyToClipboard>
               }
+              {chosenMethod !== 'android' &&
+                <a className='collect-link mdl-button mdl-button--colored'
+                  target='_blank'
+                  href='https://login.mailchimp.com'>
+                  {t('Share')}
+                </a>
+              }
             </bem.FormView__cell>
           </bem.FormView__cell>
           <bem.FormView__cell m={['padding', 'bordertop', 'collect-meta']}>
@@ -532,7 +539,7 @@ export class FormLanding extends React.Component {
     }
 
     return (
-      <DocumentTitle title={`${docTitle} | KoboToolbox`}>
+      <DocumentTitle title={`${docTitle} | iMMAP Surveys`}>
         <bem.FormView m='form'>
           <bem.FormView__row>
             <bem.FormView__cell m={['columns', 'first']}>
