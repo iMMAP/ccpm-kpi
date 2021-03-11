@@ -118,6 +118,7 @@ class ProjectSettings extends React.Component {
   setInitialStep() {
     switch (this.props.context) {
       case PROJECT_SETTINGS_CONTEXTS.NEW:
+        return this.displayStep(this.STEPS.CHOOSE_TEMPLATE);
       case PROJECT_SETTINGS_CONTEXTS.REPLACE:
         return this.displayStep(this.STEPS.FORM_SOURCE);
       case PROJECT_SETTINGS_CONTEXTS.EXISTING:
