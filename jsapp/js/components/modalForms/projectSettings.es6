@@ -834,12 +834,12 @@ class ProjectSettings extends React.Component {
 
           <bem.FormModal__item>
             <label className='long'>
-              {t('Please specify the country and the sector where this project will be deployed. ')}
+              {t('Please specify the country where this project will be deployed. ')}
               {/*t('This information will be used to help you filter results on the project list page.')*/}
             </label>
           </bem.FormModal__item>
 
-          <bem.FormModal__item m='sector'>
+          {/* <bem.FormModal__item m='sector'>
             <label htmlFor='sector'>
               {t('Sector')}
             </label>
@@ -853,7 +853,7 @@ class ProjectSettings extends React.Component {
               menuPlacement='auto'
               isClearable
             />
-          </bem.FormModal__item>
+          </bem.FormModal__item> */}
 
           <bem.FormModal__item m='country'>
             <label htmlFor='country'>
