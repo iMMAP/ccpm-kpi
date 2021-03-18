@@ -1,3 +1,27 @@
+# Cluster Coordination Performance Monitoring (CCPM)
+
+## About
+
+Please visit [ccpm-install](https://github.com/iMMAP/ccpm-install) for an introduction to the CCPM project.
+
+This repository contains the source code for creating survey forms and reusing assets through a question library.
+
+## Notes
+
+This source code is originally a fork of [`kpi`](https://github.com/kobotoolbox/kpi).
+
+Any references to the following repositories:
+- `kobotoolbox/kpi`
+- `kobotoolbox/kobocat`
+
+Should be replaced by their corresponding ones from iMMAP:
+- `kobotoolbox/kpi` --> `iMMAP/ccpm-kpi`
+- `kobotoolbox/kobocat` --> `iMMAP/ccpm-kobocat`
+
+## Installation
+
+To install CCPM in your local environment, follow the instructions from [ccpm-install](https://github.com/iMMAP/ccpm-install).
+
 # KPI
 
 [![Build Status](https://travis-ci.org/kobotoolbox/kpi.svg?branch=develop)](https://travis-ci.org/kobotoolbox/kpi)

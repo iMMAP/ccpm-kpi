@@ -101,7 +101,7 @@ class App extends React.Component {
     }
 
     return (
-      <DocumentTitle title='KoBoToolbox'>
+      <DocumentTitle title='iMMAP Surveys'>
         <React.Fragment>
           <PermValidator/>
           <IntercomHandler/>

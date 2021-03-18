@@ -536,7 +536,7 @@ export default assign({
             tabIndex='0'
             onClick={this.safeNavigateToList}
           >
-            <i className='k-icon-kobo' />
+            <i className='k-icon-arrow-back' />
           </bem.FormBuilderHeader__cell>
 
           <bem.FormBuilderHeader__cell m={'name'} >
@@ -788,7 +788,7 @@ export default assign({
     var docTitle = this.state.name || t('Untitled');
 
     return (
-      <DocumentTitle title={`${docTitle} | KoboToolbox`}>
+      <DocumentTitle title={`${docTitle} | iMMAP Surveys`}>
         <ui.Panel m={['transparent', 'fixed']}>
           {this.renderAside()}
 

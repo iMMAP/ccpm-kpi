@@ -284,11 +284,11 @@ class MainHeader extends Reflux.Component {
             }
             { this.isFormSingle() && this.state.asset &&
               <bem.FormTitle>
-                { this.state.asset.has_deployment ?
+                {/* { this.state.asset.has_deployment ?
                   <i className='k-icon-deploy' />
                 :
                   <i className='k-icon-drafts' />
-                }
+                } */}
                 <bem.FormTitle__name m={formTitleNameMods}>
                   <input
                     type='text'

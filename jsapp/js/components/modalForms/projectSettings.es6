@@ -118,6 +118,7 @@ class ProjectSettings extends React.Component {
   setInitialStep() {
     switch (this.props.context) {
       case PROJECT_SETTINGS_CONTEXTS.NEW:
+        return this.displayStep(this.STEPS.CHOOSE_TEMPLATE);
       case PROJECT_SETTINGS_CONTEXTS.REPLACE:
         return this.displayStep(this.STEPS.FORM_SOURCE);
       case PROJECT_SETTINGS_CONTEXTS.EXISTING:
@@ -833,12 +834,12 @@ class ProjectSettings extends React.Component {
 
           <bem.FormModal__item>
             <label className='long'>
-              {t('Please specify the country and the sector where this project will be deployed. ')}
+              {t('Please specify the country where this project will be deployed. ')}
               {/*t('This information will be used to help you filter results on the project list page.')*/}
             </label>
           </bem.FormModal__item>
 
-          <bem.FormModal__item m='sector'>
+          {/* <bem.FormModal__item m='sector'>
             <label htmlFor='sector'>
               {t('Sector')}
             </label>
@@ -852,7 +853,7 @@ class ProjectSettings extends React.Component {
               menuPlacement='auto'
               isClearable
             />
-          </bem.FormModal__item>
+          </bem.FormModal__item> */}
 
           <bem.FormModal__item m='country'>
             <label htmlFor='country'>
@@ -870,13 +871,15 @@ class ProjectSettings extends React.Component {
             />
           </bem.FormModal__item>
 
-          <bem.FormModal__item m='metadata-share'>
+          {/* <bem.FormModal__item m='metadata-share'>
             <Checkbox
               checked={this.state['share-metadata']}
               onChange={this.onShareMetadataChange}
               label={t('Help KoboToolbox improve this product by sharing the sector and country where this project will be deployed.') + ' ' + t('All the information is submitted anonymously, and will not include the project name or description listed above.')}
             />
-          </bem.FormModal__item>
+          </bem.FormModal__item> */}
+
+          <bem.FormModal__item m='ccpm-metadata-share' />
 
           {(this.props.context === PROJECT_SETTINGS_CONTEXTS.NEW || this.props.context === PROJECT_SETTINGS_CONTEXTS.REPLACE) &&
             <bem.Modal__footer>

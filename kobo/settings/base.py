@@ -126,7 +126,7 @@ if os.environ.get('DEFAULT_FROM_EMAIL'):
 # `django.conf.settings.THE_SETTING`
 CONSTANCE_CONFIG = {
     'REGISTRATION_OPEN': (
-        True,
+        False,
         'Allow new users to register accounts for themselves',
     ),
     'TERMS_OF_SERVICE_URL': ('', 'URL for terms of service document'),
