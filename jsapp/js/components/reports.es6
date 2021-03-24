@@ -14,13 +14,16 @@ import mixins from '../mixins';
 import DocumentTitle from 'react-document-title';
 import { txtid } from '../../xlform/src/model.utils';
 import alertify from 'alertifyjs';
+import {render} from 'redocx';
 
 import ReportViewItem from './reportViewItem';
+import ReportDocx from './docxReport';
 
 import {
   assign,
-  launchPrinting
+  launchPrinting,
 } from 'utils';
+import { printFile } from '../utils.es6';
 
 function labelVal(label, value) {
   return {label: label, value: (value || label.toLowerCase().replace(/\W+/g, '_'))};
@@ -482,7 +485,7 @@ class ReportContents extends React.Component {
         }
       }
     }
-
+    console.log('report data', reportData);
     return (
       <div>
         {
@@ -714,6 +717,7 @@ class Reports extends React.Component {
     let uid = this.props.params.assetid;
 
     stores.allAssets.whenLoaded(uid, (asset)=>{
+      console.log(asset);
       let rowsByKuid = {};
       let rowsByIdentifier = {};
       let groupBy = '',
@@ -985,6 +989,11 @@ class Reports extends React.Component {
           data-tip={t('Toggle fullscreen')}
         >
           <i className='k-icon-expand' />
+        </bem.Button>
+        <bem.Button m='icon' className='report-button__print'
+                onClick={async ()=>{printFile(await render(<ReportDocx parentState={this.state} reportData={this.state.reportData} triggerQuestionSettings={this.triggerQuestionSettings} />))}}
+                data-tip={t('Print')}>
+          <i className='k-icon-print' />
         </bem.Button>
 
         <bem.Button m='icon' className='report-button__print'

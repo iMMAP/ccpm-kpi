@@ -3,11 +3,14 @@ const path = require('path');
 const webpack = require('webpack');
 const WebpackCommon = require('./webpack.common');
 const BundleTracker = require('webpack-bundle-tracker');
+
 var isPublicDomainDefined = process.env.KOBOFORM_PUBLIC_SUBDOMAIN &&
   process.env.PUBLIC_DOMAIN_NAME;
 var publicDomain = isPublicDomainDefined ? process.env.KOBOFORM_PUBLIC_SUBDOMAIN
   + '.' + process.env.PUBLIC_DOMAIN_NAME : 'localhost';
 var publicPath = 'http://' + publicDomain + ':3000/static/compiled/';
+
+
 
 module.exports = WebpackCommon({
   mode: 'development',
@@ -31,6 +34,10 @@ module.exports = WebpackCommon({
     path: path.resolve(__dirname, '../jsapp/compiled/'),
     publicPath: publicPath,
     filename: '[name]-[hash].js'
+  },
+  node: {
+    child_process: 'empty',
+    fs: 'empty'
   },
   devServer: {
     publicPath: publicPath,

@@ -25,6 +25,7 @@
     "eslint-plugin-react": "^7.20.0",
     "file-loader": "^2.0.0",
     "font-awesome": "^4.7.0",
+    "fs-web": "^1.0.1",
     "immutable": "^3.8.2",
     "jquery": "^3.5.1",
     "jquery-ui": "1.12.1",
@@ -89,5 +90,9 @@
   "author": "alex.dorey@kobotoolbox.org, esmail.fadae@kobotoolbox.org, john.milner@kobotoolbox.org",
   "license": "AGPL-3.0",
   "bugs": "https://github.com/kobotoolbox/kpi/issues",
-  "homepage": "https://github.com/kobotoolbox/kpi"
+  "homepage": "https://github.com/kobotoolbox/kpi",
+  "dependencies": {
+    "downloadjs": "^1.4.7",
+    "redocx": "^1.1.4"
+  }
 }
