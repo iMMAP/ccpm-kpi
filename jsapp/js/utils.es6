@@ -16,10 +16,13 @@ import {Cookies} from 'react-cookie';
 import constants from 'js/constants';
 import downloadjs from 'downloadjs';
 //import { writeFile } from 'fs-web';
+import {saveAs} from 'file-saver';
+import streams from 'memory-streams';
 
 export const LANGUAGE_COOKIE_NAME = 'django_language';
 
 export var assign = require('object-assign');
+var blobStream = require('blob-stream');
 
 alertify.defaults.notifier.delay = 10;
 alertify.defaults.notifier.position = 'bottom-left';
@@ -526,6 +529,9 @@ export function launchPrinting() {
 }
 
 export async function printFile(data) {
-  console.log(data);
- downloadjs(data, 'report.docx', 'docx');
+  console.log(data.toBuffer());
+  const blob = new Blob(data.toBuffer());
+  const newFile = new File(data.toBuffer(), 'newfile.docx');
+  console.log(newFile.text());
+  downloadjs(blob, 'doc.docx', 'docx');
 }

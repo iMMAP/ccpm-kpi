@@ -29,6 +29,8 @@ function labelVal(label, value) {
   return {label: label, value: (value || label.toLowerCase().replace(/\W+/g, '_'))};
 }
 
+console.log('leleel',__dirname);
+
 let reportStyles = [
   labelVal(t('Vertical')),
   labelVal(t('Donut')),
@@ -991,7 +993,7 @@ class Reports extends React.Component {
           <i className='k-icon-expand' />
         </bem.Button>
         <bem.Button m='icon' className='report-button__print'
-                onClick={async ()=>{printFile(await render(<ReportDocx parentState={this.state} reportData={this.state.reportData} triggerQuestionSettings={this.triggerQuestionSettings} />))}}
+                onClick={async ()=>{printFile(await render(<ReportDocx parentState={this.state} reportData={this.state.reportData} triggerQuestionSettings={this.triggerQuestionSettings} />, `${__dirname}/doc.docx`))}}
                 data-tip={t('Print')}>
           <i className='k-icon-print' />
         </bem.Button>

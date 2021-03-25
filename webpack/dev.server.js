@@ -25,6 +25,10 @@ module.exports = WebpackCommon({
       }
     }
   },
+  node: {
+    'fs': 'empty',
+    'child_process': 'empty'
+  },
   entry: {
     app: ['react-hot-loader/patch', './jsapp/js/main.es6'],
     browsertests: path.resolve(__dirname, '../test/index.js')
@@ -34,10 +38,6 @@ module.exports = WebpackCommon({
     path: path.resolve(__dirname, '../jsapp/compiled/'),
     publicPath: publicPath,
     filename: '[name]-[hash].js'
-  },
-  node: {
-    child_process: 'empty',
-    fs: 'empty'
   },
   devServer: {
     publicPath: publicPath,
