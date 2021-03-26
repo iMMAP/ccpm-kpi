@@ -201,7 +201,7 @@ class SearchCollectionList extends Reflux.Component {
       docTitle = t('Library');
     }
     return (
-      <DocumentTitle title={`${docTitle} | iMMAP Surveys`}>
+      <DocumentTitle title={`${docTitle} | Health Cluster`}>
         <Dropzone
           onDrop={this.dropFiles}
           disableClick

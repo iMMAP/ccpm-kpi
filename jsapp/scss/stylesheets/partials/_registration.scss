@@ -109,18 +109,18 @@
   &.registration__action {
     font-size: 16px;
     padding: 10px;
-    color: $kobo-white;
+    color: $kobo-blue;
     text-align: center;
     font-weight: 600;
     background-color: $kobo-lightgray;
-    border-bottom: 2px solid $kobo-midgray;
-    text-shadow: -1px -1px $kobo-midgray;
+    //border-bottom: 2px solid $kobo-green-dark;
+    //text-shadow: -1px -1px $kobo-green-dark;
     clear: both;
 
     &:hover {
-      background-color: $kobo-midgray;
-      border-bottom-color: $kobo-lightgray;
-      text-shadow: -1px -1px $kobo-lightgray;
+      background-color: lighten($kobo-lightgray, 5%);
+      //border-bottom-color: $kobo-blue-dark;
+      //text-shadow: -1px -1px $kobo-blue-dark;
     }
   }
 }
