@@ -3,7 +3,9 @@ import autoBind from 'react-autobind';
 import ReactDOM from 'react-dom';
 import _ from 'underscore';
 import {bem} from '../bem';
-import {Document, Text, Image, render, Table } from 'redocx';
+import {Document, Text, Image, render, Table, Hr } from 'redocx';
+import glamorous from 'glamorous-redocx';
+import {TextRun, Paragraph} from 'docx';
 
 class ReportTable extends React.Component {
   constructor(props) {
@@ -18,7 +20,9 @@ class ReportTable extends React.Component {
 
     let headers = [];
     let data = [];
-/*
+
+    console.log(this.props.type);
+
     let th = [''], rows = [];
     if (this.props.type === 'numerical') {
       th = [t('Mean'), t('Median'), t('Mode'), t('Standard deviation')];
@@ -31,6 +35,11 @@ class ReportTable extends React.Component {
       
       headers = th.map(value => ({
         value,
+        styles: {
+          color: 'white',
+          fill: 'red',
+          size: 15
+        }
       }))
 
       if(this.props.values) {
@@ -49,6 +58,7 @@ class ReportTable extends React.Component {
 
     if(this.props.type === 'regular'){
       th = [t('Value'), t('Frequency'), t('Percentage')];
+      console.log(this.props.rows)
       rows = this.props.rows;
     } else {
       if (this.props.rows.length > 0) {
@@ -71,36 +81,33 @@ class ReportTable extends React.Component {
     }
 
     headers = th.map(value => ({
-      value
+      value,
+      styles: {
+        color: '#ffffff',
+        size: 15,
+        fill: 'green'
+      }
     }));
-
+    console.log(rows);
     rows.forEach(v=>{
-      data.push(v.toString());
+      data.push(v);
     });
-    */
+
+    console.log(data);
+
+    const Table  = glamorous.Table({
+      tableColor: 'green',
+    })
+
     return (
-      <Table headers={headers} data={[]}/>
+      <Table  headers={headers} data={data}/>
     )
   }
 };
 
-class ReportViewItem extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      reportTable: false
-    };
-    this.itemChart = false;
-    autoBind(this);
-  }
-  componentDidMount () {
-    this.prepareTable(this.props.data);
-  }
-  componentWillReceiveProps(nextProps) {
-    this.prepareTable(nextProps.data);
-  }
+const ReportViewItem = (props) => {
 
-  prepareTable(d) {
+  const prepareTable = (d) => {
     var reportTable = [];
     if (d.percentages && d.responses && d.frequencies) {
       reportTable = _.zip(
@@ -115,12 +122,11 @@ class ReportViewItem extends React.Component {
 
     this.setState({reportTable: reportTable});
   }
-  truncateLabel(label, length = 25) {
+  const truncateLabel = (label, length = 25) => {
     return label.length > length ? label.substring(0,length - 3) + '...' : label;
   }
 
-  render () {
-    let p = this.props,
+    let p = props,
       d = p.data,
       r = p.row,
       _type = r.type,
@@ -134,13 +140,48 @@ class ReportViewItem extends React.Component {
       _type = _.keys(_type)[0];
     }
     _type = JSON.stringify(_type);
+
+
+    const element =  {
+        children: [
+          new Paragraph({
+            children: [new TextRun({
+              text: p.label,
+              style: {
+                size: 14,
+                color: '#FF0000',
+                bold: true
+              }
+            })
+          ]
+            
+          }),
+          new Paragraph({
+            children: [
+            new TextRun({
+              text: t('Type: ') + _type + t('. ') + t('#1 out of #2 respondents answered this question. ').replace('#1', d.provided).replace('#2', d.total_count) + t('(# were without data.)').replace('#', d.not_provided),
+              style: {
+                size: 10,
+                color: '#797980',
+              }
+            }),
+          ]
+            
+          })
+        ]
+      }
+
+      console.log(element);
+      return element;
+/*
     return (
       
       <>
-      <Text>{p.label}</Text>
-      <Text>{t('Type: ') + _type + t('. ')}</Text>
-      <Text>{t('#1 out of #2 respondents answered this question. ').replace('#1', d.provided).replace('#2', d.total_count)}</Text>
-      <Text>{t('(# were without data.)').replace('#', d.not_provided)}</Text>
+      <Text style={{color: "red", fontSize: 12}}>{}</Text>
+      <Text style={{color: 'grey', fontSize: 9}}>{t('Type: ') + _type + t('. ')} {t('#1 out of #2 respondents answered this question. ').replace('#1', d.provided).replace('#2', d.total_count)} {t('(# were without data.)').replace('#', d.not_provided)}</Text>
+         
+         
+
           {this.state.reportTable && ! d.values &&
             <ReportTable rows={this.state.reportTable} type='regular'/>
           }
@@ -154,8 +195,8 @@ class ReportViewItem extends React.Component {
             <ReportTable values={d} type='numerical'/>
           }
       </>
-      );
-  }
+      );*/
+  
 };
 
 export default ReportViewItem;

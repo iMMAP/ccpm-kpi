@@ -14,16 +14,19 @@ import mixins from '../mixins';
 import DocumentTitle from 'react-document-title';
 import { txtid } from '../../xlform/src/model.utils';
 import alertify from 'alertifyjs';
-import {render} from 'redocx';
+import { Packer } from "docx";
+import { DocumentCreator } from "./ccpm-docxReport";
+import saveAs from 'save-as';
 
 import ReportViewItem from './reportViewItem';
-import ReportDocx from './docxReport';
 
 import {
   assign,
   launchPrinting,
 } from 'utils';
 import { printFile } from '../utils.es6';
+
+let reportDataGlobal = {};
 
 function labelVal(label, value) {
   return {label: label, value: (value || label.toLowerCase().replace(/\W+/g, '_'))};
@@ -400,6 +403,10 @@ class QuestionGraphSettings extends React.Component {
 class ReportContents extends React.Component {
   constructor(props) {
     super(props);
+    this.state= {
+      reportData: [], 
+      tnslIndex:0
+    }
   }
   shouldComponentUpdate(nextProps, nextState) {
     // to improve UI performance, don't refresh report while a modal window is visible
@@ -411,7 +418,8 @@ class ReportContents extends React.Component {
       return true;
     }
   }
-  render () {
+
+  componentDidMount(){
     var tnslIndex = 0;
     let customReport = this.props.parentState.currentCustomReport,
         defaultRS = this.props.parentState.reportStyles,
@@ -487,9 +495,15 @@ class ReportContents extends React.Component {
         }
       }
     }
-    console.log('report data', reportData);
+
+    this.setState({tnslIndex: tnslIndex, reportData: reportData});
+    this.props.setReadyReportData({tnslIndex,reportData});
+  }
+
+  render () {
+    const {tnslIndex, reportData} = this.state;
     return (
-      <div>
+      <div id='document-report'>
         {
           reportData.map((rowContent, i)=>{
             let label = t('Unlabeled');
@@ -506,6 +520,7 @@ class ReportContents extends React.Component {
                 <bem.ReportView__item key={i}>
                   <ReportViewItem
                       {...rowContent}
+                      id={`${i}-chart`}
                       label={label}
                       triggerQuestionSettings={this.props.triggerQuestionSettings} />
                 </bem.ReportView__item>
@@ -698,7 +713,8 @@ class Reports extends React.Component {
       showCustomReportModal: false,
       currentCustomReport: false,
       currentQuestionGraph: false,
-      groupBy: ''
+      groupBy: '',
+      readyReport: []
     };
     autoBind(this);
   }
@@ -993,7 +1009,16 @@ class Reports extends React.Component {
           <i className='k-icon-expand' />
         </bem.Button>
         <bem.Button m='icon' className='report-button__print'
-                onClick={async ()=>{printFile(await render(<ReportDocx parentState={this.state} reportData={this.state.reportData} triggerQuestionSettings={this.triggerQuestionSettings} />, `${__dirname}/doc.docx`))}}
+                onClick={async ()=>{
+                  const documentCreator = new DocumentCreator();
+                  const doc = documentCreator.create(this.state.readyReport);
+              
+                  Packer.toBlob(doc).then(blob => {
+                    console.log(blob);
+                    saveAs(blob, "example.docx");
+                    console.log("Document created successfully");
+                  });
+                }}
                 data-tip={t('Print')}>
           <i className='k-icon-print' />
         </bem.Button>
@@ -1159,7 +1184,7 @@ class Reports extends React.Component {
                   <p>{t('This is an automated report based on raw data submitted to this project. Please conduct proper data cleaning prior to using the graphs and figures used on this page. ')}</p>
                 </bem.FormView__cell> */}
 
-                <ReportContents parentState={this.state} reportData={reportData} triggerQuestionSettings={this.triggerQuestionSettings} />
+                <ReportContents parentState={this.state} setReadyReportData={(reportData)=>{this.setState({readyReport: reportData})}} reportData={reportData} triggerQuestionSettings={this.triggerQuestionSettings} />
               </bem.ReportView__wrap>
             }
 

@@ -15,9 +15,8 @@ import {Cookies} from 'react-cookie';
 // imporitng whole constants, as we override ROOT_URL in tests
 import constants from 'js/constants';
 import downloadjs from 'downloadjs';
-//import { writeFile } from 'fs-web';
-import {saveAs} from 'file-saver';
-import streams from 'memory-streams';
+import htmlToDocx from 'html-docx-js';
+import saveAs from 'save-as';
 
 export const LANGUAGE_COOKIE_NAME = 'django_language';
 
@@ -528,10 +527,8 @@ export function launchPrinting() {
   window.print();
 }
 
-export async function printFile(data) {
-  console.log(data.toBuffer());
-  const blob = new Blob(data.toBuffer());
-  const newFile = new File(data.toBuffer(), 'newfile.docx');
-  console.log(newFile.text());
-  downloadjs(blob, 'doc.docx', 'docx');
+export async function printFile(stream) {
+  const t = new Blob([new Uint8Array(stream.toBuffer(), 0, stream.toBuffer().length)]);
+  console.log(stream.toBuffer());
+  saveAs(t, 'doc.docx');
 }
