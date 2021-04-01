@@ -76,8 +76,6 @@ var commonOptions = {
       js: path.join(__dirname, '../jsapp/js'),
       utils: path.join(__dirname, '../jsapp/js/utils'),
       test: path.join(__dirname, '../test'),
-      webworkify: 'webworkify-webpack',
-      'redocx': path.resolve('./node_modules/redocx/lib/index.js')
     }
   },
   plugins: [
@@ -87,7 +85,7 @@ var commonOptions = {
       output: path.join(__dirname, '../jsapp/compiled/extracted-strings.json'),
     }),
     new webpack.ProvidePlugin({
-      '$': 'jquery',
+      '$': 'jquery'
     })
   ]
 };

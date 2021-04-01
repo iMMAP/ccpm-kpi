@@ -18,7 +18,6 @@ import constants from 'js/constants';
 export const LANGUAGE_COOKIE_NAME = 'django_language';
 
 export var assign = require('object-assign');
-var blobStream = require('blob-stream');
 
 alertify.defaults.notifier.delay = 10;
 alertify.defaults.notifier.position = 'bottom-left';
