@@ -49,10 +49,6 @@ var commonOptions = {
         use: ['style-loader', 'css-loader', postCssLoader]
       },
       {
-        test: /redocx.+\.js$/,
-        loader: 'transform-loader/cacheable?brfs'
-      },
-      {
         test: /\.scss$/,
         use: ['style-loader', 'css-loader', postCssLoader, 'sass-loader']
       },

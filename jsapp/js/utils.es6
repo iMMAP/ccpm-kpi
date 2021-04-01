@@ -14,9 +14,6 @@ import alertify from 'alertifyjs';
 import {Cookies} from 'react-cookie';
 // imporitng whole constants, as we override ROOT_URL in tests
 import constants from 'js/constants';
-import downloadjs from 'downloadjs';
-import htmlToDocx from 'html-docx-js';
-import saveAs from 'save-as';
 
 export const LANGUAGE_COOKIE_NAME = 'django_language';
 
@@ -525,10 +522,4 @@ export function renderCheckbox(id, label, isImportant) {
 
 export function launchPrinting() {
   window.print();
-}
-
-export async function printFile(stream) {
-  const t = new Blob([new Uint8Array(stream.toBuffer(), 0, stream.toBuffer().length)]);
-  console.log(stream.toBuffer());
-  saveAs(t, 'doc.docx');
 }

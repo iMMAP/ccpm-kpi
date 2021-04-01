@@ -24,15 +24,11 @@ import {
   assign,
   launchPrinting,
 } from 'utils';
-import { printFile } from '../utils.es6';
-
-let reportDataGlobal = {};
 
 function labelVal(label, value) {
   return {label: label, value: (value || label.toLowerCase().replace(/\W+/g, '_'))};
 }
 
-console.log('leleel',__dirname);
 
 let reportStyles = [
   labelVal(t('Vertical')),
@@ -407,6 +403,7 @@ class ReportContents extends React.Component {
       reportData: [], 
       tnslIndex:0
     }
+    this.setReportData = this.setReportData.bind(this);
   }
   shouldComponentUpdate(nextProps, nextState) {
     // to improve UI performance, don't refresh report while a modal window is visible
@@ -419,7 +416,9 @@ class ReportContents extends React.Component {
     }
   }
 
-  componentDidMount(){
+  componentWillUpdate(nextProps, nextState) {
+
+    let reportData = nextProps.reportData;
     var tnslIndex = 0;
     let customReport = this.props.parentState.currentCustomReport,
         defaultRS = this.props.parentState.reportStyles,
@@ -437,7 +436,86 @@ class ReportContents extends React.Component {
     if (asset.content.translations && !asset.content.translations[tnslIndex])
       tnslIndex = 0;
 
-    var reportData = this.props.reportData;
+    for (var i = reportData.length - 1; i > -1; i--) {
+      let _qn = reportData[i].name,
+          _type = reportData[i].row.type || null;
+
+      var _defSpec = undefined;
+
+      if (customReport) {
+        if (customReport.specified && customReport.specified[_qn])
+          _defSpec = customReport.specified[_qn];
+      } else {
+        _defSpec = defaultRS.specified[_qn];
+      }
+
+      if (_defSpec && Object.keys(_defSpec).length) {
+        reportData[i].style = _defSpec;
+      } else {
+        if (customReport && customReport.reportStyle) {
+          reportData[i].style = customReport.reportStyle;
+        } else {
+          reportData[i].style = defaultRS.default;
+        }
+      }
+
+      if ((_type === 'select_one' || _type === 'select_multiple') && asset.content.choices) {
+        let question = asset.content.survey.find(z => z.name === _qn || z.$autoname === _qn);
+        let resps = reportData[i].data.responses;
+        let choice;
+        if (resps) {
+          reportData[i].data.responseLabels = [];
+          for (var j = resps.length - 1; j >= 0; j--) {
+            choice = asset.content.choices.find(o => question && o.list_name === question.select_from_list_name && (o.name === resps[j] || o.$autoname == resps[j]));
+            if (choice && choice.label && choice.label[tnslIndex])
+              reportData[i].data.responseLabels.unshift(choice.label[tnslIndex]);
+            else
+              reportData[i].data.responseLabels.unshift(resps[j]);
+          }
+        } else {
+          const vals = reportData[i].data.values;
+          if (vals && vals[0] && vals[0][1] && vals[0][1].responses) {
+            var respValues = vals[0][1].responses;
+            reportData[i].data.responseLabels = [];
+            let qGB = asset.content.survey.find(z => z.name === groupBy || z.$autoname === groupBy);
+            respValues.forEach(function(r, ind){
+              choice = asset.content.choices.find(o => qGB && o.list_name === qGB.select_from_list_name && (o.name === r || o.$autoname == r));
+              reportData[i].data.responseLabels[ind] = (choice && choice.label && choice.label[tnslIndex]) ? choice.label[tnslIndex] : r;
+            });
+
+            // TODO: use a better way to store translated labels per row
+            for (var vD = vals.length - 1; vD >= 0; vD--) {
+              choice = asset.content.choices.find(o => question && o.list_name === question.select_from_list_name && (o.name === vals[vD][0] || o.$autoname == vals[vD][0]));
+              vals[vD][2] = (choice && choice.label && choice.label[tnslIndex]) ? choice.label[tnslIndex] : vals[vD][0];
+            }
+          }
+        }
+      }
+    }
+
+    if (JSON.stringify(reportData) !== JSON.stringify(nextState.reportData)) {
+     this.setState({reportData, tnslIndex});
+    this.props.setReadyReportData({tnslIndex,reportData});
+    }
+  }
+  
+  setReportData(reportData){
+    var tnslIndex = 0;
+    let customReport = this.props.parentState.currentCustomReport,
+        defaultRS = this.props.parentState.reportStyles,
+        asset = this.props.parentState.asset,
+        groupBy = this.props.parentState.groupBy;
+
+    if (customReport) {
+      if (customReport.reportStyle && customReport.reportStyle.translationIndex)
+        tnslIndex = parseInt(customReport.reportStyle.translationIndex);
+    } else {
+      tnslIndex = defaultRS.default.translationIndex || 0;
+    }
+
+    // reset to first language if trnslt index cannot be found
+    if (asset.content.translations && !asset.content.translations[tnslIndex])
+      tnslIndex = 0;
 
     for (var i = reportData.length - 1; i > -1; i--) {
       let _qn = reportData[i].name,
@@ -498,6 +576,10 @@ class ReportContents extends React.Component {
 
     this.setState({tnslIndex: tnslIndex, reportData: reportData});
     this.props.setReadyReportData({tnslIndex,reportData});
+  }
+
+  componentDidMount(){
+    this.setReportData(this.props.reportData);
   }
 
   render () {
@@ -735,7 +817,6 @@ class Reports extends React.Component {
     let uid = this.props.params.assetid;
 
     stores.allAssets.whenLoaded(uid, (asset)=>{
-      console.log(asset);
       let rowsByKuid = {};
       let rowsByIdentifier = {};
       let groupBy = '',
@@ -949,6 +1030,16 @@ class Reports extends React.Component {
   toggleFullscreen () {
     this.setState({isFullscreen: !this.state.isFullscreen});
   }
+
+  exportToDocx () {
+    const documentCreator = new DocumentCreator();
+    const doc = documentCreator.create(this.state.readyReport);
+
+    Packer.toBlob(doc).then(blob => {
+      saveAs(blob, "report.docx");
+    });
+}
+
   renderReportButtons () {
     var customReports = this.state.reportCustom || {};
     var customReportsList = [];
@@ -1009,18 +1100,9 @@ class Reports extends React.Component {
           <i className='k-icon-expand' />
         </bem.Button>
         <bem.Button m='icon' className='report-button__print'
-                onClick={async ()=>{
-                  const documentCreator = new DocumentCreator();
-                  const doc = documentCreator.create(this.state.readyReport);
-              
-                  Packer.toBlob(doc).then(blob => {
-                    console.log(blob);
-                    saveAs(blob, "example.docx");
-                    console.log("Document created successfully");
-                  });
-                }}
-                data-tip={t('Print')}>
-          <i className='k-icon-print' />
+                onClick={this.exportToDocx}
+                data-tip={t('Export to Docx')}>
+          <i className='k-icon-report-template' />
         </bem.Button>
 
         <bem.Button m='icon' className='report-button__print'
