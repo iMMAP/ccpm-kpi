@@ -22,13 +22,12 @@ import ReportViewItem from './reportViewItem';
 
 import {
   assign,
-  launchPrinting,
+  launchPrinting
 } from 'utils';
 
 function labelVal(label, value) {
   return {label: label, value: (value || label.toLowerCase().replace(/\W+/g, '_'))};
 }
-
 
 let reportStyles = [
   labelVal(t('Vertical')),
@@ -1101,7 +1100,7 @@ class Reports extends React.Component {
         </bem.Button>
         <bem.Button m='icon' className='report-button__print'
                 onClick={this.exportToDocx}
-                data-tip={t('Export to Docx')}>
+                data-tip={t('Export to Document')}>
           <i className='k-icon-report-template' />
         </bem.Button>
 

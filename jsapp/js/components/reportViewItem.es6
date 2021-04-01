@@ -172,7 +172,7 @@ class ReportViewItem extends React.Component {
     var barPercentage = 0.5;
     var showLegend = false;
 
-    // TODO: set as default ghttps://github.com/kaleguy/docx2jsonlobally in a higher level (PM)
+    // TODO: set as default globally in a higher level (PM)
     var colors = this.buildChartColors();
 
     var baseColor = colors[0];
@@ -215,13 +215,13 @@ class ReportViewItem extends React.Component {
         var choiceLabel = val[2] || val[0];
         item.label = _this.truncateLabel(choiceLabel, 20);
         let itemPerc = [];
-        // TODO: Make the backend behave consisthttps://github.com/kaleguy/docx2jsonently?
+        // TODO: Make the backend behave consistently?
         // https://github.com/kobotoolbox/kpi/issues/2562
         if (Array.isArray(val[1].percentage)) {
           itemPerc = val[1].percentage;
         }
         if (Array.isArray(val[1].percentages)) {
-          itemPerc = val[1].percentages; //https://github.com/kaleguy/docx2jsonhttps://github.com/kaleguy/docx2json
+          itemPerc = val[1].percentages;
         }
 
         item.data = itemPerc;

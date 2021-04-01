@@ -45,7 +45,6 @@ var commonOptions = {
       },
       {
         test: /\.css$/,
-
         use: ['style-loader', 'css-loader', postCssLoader]
       },
       {
