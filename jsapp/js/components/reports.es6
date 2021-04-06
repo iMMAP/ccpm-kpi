@@ -1110,7 +1110,7 @@ class Reports extends React.Component {
     const hasGroupBy = this.state.groupBy.length !== 0;
 
     return (
-      <DocumentTitle title={`${docTitle} | iMMAP Surveys`}>
+      <DocumentTitle title={`${docTitle} | Health Cluster`}>
         <bem.FormView m={formViewModifiers}>
           <bem.ReportView>
             {this.renderReportButtons()}

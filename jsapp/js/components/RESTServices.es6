@@ -22,7 +22,7 @@ export default class RESTServices extends React.Component {
     );
 
     return (
-      <DocumentTitle title={`${docTitle} | iMMAP Surveys`}>
+      <DocumentTitle title={`${docTitle} | Health Cluster`}>
         <React.Fragment>
           {!hasAccess &&
             <ui.AccessDeniedMessage/>
