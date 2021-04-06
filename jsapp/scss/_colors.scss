@@ -14,32 +14,32 @@
 
 /* 
   CCPM: To facilitate product upgrades, we keep the references to the default color 
-  variables, but change their color values to match with iMMAP's branding. 
+  variables, but change their color values to match with Health Cluster's branding. 
 */
 
-$kobo-black: hsl(230, 12%, 20%); // base text color
-$kobo-darkgray: hsl(225, 2%, 44%);
-$kobo-midgray: hsl(206, 3%, 50%); // mostly used for darker borders
-$kobo-lightgray: hsl(206, 4%, 66%); // mostly used for lighter borders
+$kobo-black: 	hsl(60, 4%, 11%); // base text color
+$kobo-darkgray: hsl(60, 4%, 11%);
+$kobo-midgray: hsl(60, 4%, 11%); // mostly used for darker borders
+$kobo-lightgray: hsl(0, 0%, 85%); // mostly used for lighter borders
 $kobo-whitegray: hsl(230, 12%, 95%);
 $kobo-white: hsl(0, 0%, 100%);
 
 /*
   Group 2: Accent colors
 */
-$kobo-blue: hsl(358, 70%, 44%);
-$kobo-blue-dark: hsl(2, 64%, 39%);
-$kobo-blue-light: hsl(1, 36%, 55%);
-$kobo-teal: hsl(358, 70%, 44%);
+$kobo-blue: hsl(198, 100%, 45%);
+$kobo-blue-dark: hsl(198, 100%, 45%);
+$kobo-blue-light: hsl(201, 71%, 70%);
+$kobo-teal: hsl(198, 100%, 45%);
 // positive colors
-$kobo-green: hsl(115, 41%, 31%);
-$kobo-green-dark: hsl(169, 80%, 25%);
-$kobo-green-light: hsl(170, 63%, 43%);
+$kobo-green: hsl(198, 100%, 45%);
+$kobo-green-dark: hsl(198, 100%, 45%);
+$kobo-green-light: hsl(201, 71%, 70%);
 // error/negative colors
-$kobo-red: hsl(205, 100%, 30%);
-$kobo-red-dark: hsl(216, 59%, 24%);
-$kobo-red-light: hsl(205, 60%, 48%);
+$kobo-red: hsl(34, 90%, 51%);
+$kobo-red-dark: hsl(34, 90%, 51%);
+$kobo-red-light: hsl(34, 90%, 51%);
 // warning colors
-$kobo-orange: hsl(16, 83%, 50%);
-$kobo-orange-dark: hsl(16, 23%, 23%);
-$kobo-orange-light: hsl(357, 19%, 79%);
+$kobo-orange:	hsl(0, 0%, 85%);
+$kobo-orange-dark: hsl(0, 0%, 85%);
+$kobo-orange-light: hsl(60, 4%, 11%);
