@@ -9,19 +9,25 @@ const ReportTable = (props) => {
   let th =[];
   let rows = [];
 
+  const formatNumber = (x) => {
+    if (isNaN(x))
+      return x;
+    return x.toFixed(2);
+  }
+
   if (props.type === 'numerical') {
     headers = [t('Mean'), t('Median'), t('Mode'), t('Standard deviation')];
     if (props.rows)
       headers.unshift('');
     if (props.values){
       var v = props.values;
-      headers = [this.formatNumber(v.mean) || t('N/A'),this.formatNumber(v.median) || t('N/A'),this.formatNumber(v.mode) || t('N/A'),
-                 this.formatNumber(v.stdev) || t('N/A')];
+      headers = [formatNumber(v.mean) || t('N/A'),formatNumber(v.median) || t('N/A'),formatNumber(v.mode) || t('N/A'),
+                 formatNumber(v.stdev) || t('N/A')];
     }
     if(props.rows){
       props.rows.map((r)=>{
-        return [r[0],this.formatNumber(r[1].mean) || t('N/A'),this.formatNumber(r[1].median) || t('N/A'),this.formatNumber(r[1].mode) || t('N/A'),
-                this.formatNumber(r[1].stdev) || t('N/A')]
+        return [r[0],formatNumber(r[1].mean) || t('N/A'),formatNumber(r[1].median) || t('N/A'),formatNumber(r[1].mode) || t('N/A'),
+                formatNumber(r[1].stdev) || t('N/A')]
       })
     }
 
