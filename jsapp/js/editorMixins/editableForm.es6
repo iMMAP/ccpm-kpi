@@ -788,7 +788,7 @@ export default assign({
     var docTitle = this.state.name || t('Untitled');
 
     return (
-      <DocumentTitle title={`${docTitle} | iMMAP Surveys`}>
+      <DocumentTitle title={`${docTitle} | Health Cluster`}>
         <ui.Panel m={['transparent', 'fixed']}>
           {this.renderAside()}
 

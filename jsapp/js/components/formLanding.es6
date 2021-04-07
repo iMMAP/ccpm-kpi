@@ -539,7 +539,7 @@ export class FormLanding extends React.Component {
     }
 
     return (
-      <DocumentTitle title={`${docTitle} | iMMAP Surveys`}>
+      <DocumentTitle title={`${docTitle} | Health Cluster`}>
         <bem.FormView m='form'>
           <bem.FormView__row>
             <bem.FormView__cell m={['columns', 'first']}>

@@ -101,7 +101,7 @@ class App extends React.Component {
     }
 
     return (
-      <DocumentTitle title='iMMAP Surveys'>
+      <DocumentTitle title='Health Cluster'>
         <React.Fragment>
           <PermValidator/>
           <IntercomHandler/>
