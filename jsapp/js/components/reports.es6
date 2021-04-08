@@ -1098,16 +1098,17 @@ class Reports extends React.Component {
         >
           <i className='k-icon-expand' />
         </bem.Button>
-        <bem.Button m='icon' className='report-button__print'
-                onClick={this.exportToDocx}
-                data-tip={t('Export to Document')}>
-          <i className='k-icon-report-template' />
-        </bem.Button>
 
         <bem.Button m='icon' className='report-button__print'
                 onClick={launchPrinting}
                 data-tip={t('Print')}>
           <i className='k-icon-print' />
+        </bem.Button>
+
+        <bem.Button m='icon' className='report-button__print'
+                onClick={this.exportToDocx}
+                data-tip={t('Export to Document')}>
+          <i className='k-icon-download' />
         </bem.Button>
 
         {this.userCan('change_asset', this.state.asset) &&
