@@ -1033,7 +1033,6 @@ class Reports extends React.Component {
   exportToDocx () {
     const documentCreator = new DocumentCreator();
     const doc = documentCreator.create(this.state.readyReport);
-    console.log(this.state);
     Packer.toBlob(doc).then(blob => {
       saveAs(blob, `${this.state.asset.name}.docx`);
     });
