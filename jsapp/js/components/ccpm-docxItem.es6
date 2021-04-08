@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'underscore';
-import {TextRun, Paragraph, ImageRun, SectionType, HorizontalPositionAlign, Table, TableRow, TableCell, WidthType, ShadingType} from 'docx';
+import {TextRun, Paragraph, ImageRun, SectionType, HorizontalPositionAlign, Table, TableRow, TableCell, WidthType, ShadingType, convertInchesToTwip,} from 'docx';
 
 const ReportTable = (props) => {
 
@@ -58,6 +58,7 @@ const ReportTable = (props) => {
   
   return new Table({
     columnWidths:columWidth.map(w => 9000/columWidth.length),
+    width:{size: 100, type:WidthType.PERCENTAGE},
     margins:{
       top: 10,
       bottom: 150,
@@ -72,10 +73,12 @@ const ReportTable = (props) => {
           val: ShadingType.SOLID,
         },
         children: [new Paragraph(`${tt}`)],
+        columnSpan: 3
       }))
     }),...data.map(t=>new TableRow({
       children: t.map(tt => new TableCell({
         children: [new Paragraph(`${tt}`)],
+        columnSpan: 3
       }))
     }))]
   })
