@@ -21,27 +21,19 @@ const ReportTable = (props) => {
       headers.unshift('');
     if (props.values){
       var v = props.values;
-      headers = [formatNumber(v.mean) || t('N/A'),formatNumber(v.median) || t('N/A'),formatNumber(v.mode) || t('N/A'),
-                 formatNumber(v.stdev) || t('N/A')];
+      data.push([formatNumber(v.mean) || t('N/A'),formatNumber(v.median) || t('N/A'),formatNumber(v.mode) || t('N/A'),
+                 formatNumber(v.stdev) || t('N/A')]);
     }
     if(props.rows){
-      props.rows.map((r)=>{
+     data = props.rows.map((r)=>{
         return [r[0],formatNumber(r[1].mean) || t('N/A'),formatNumber(r[1].median) || t('N/A'),formatNumber(r[1].mode) || t('N/A'),
                 formatNumber(r[1].stdev) || t('N/A')]
       })
     }
-
-    return new Table({
-      rows: data.map(t=>new TableRow({
-        children: t.map(tt => new TableCell({
-          children: [new Paragraph(tt)],
-        }))
-      }))
-    })
   }
-  if (props.type === 'regular') {
-    th = [t('Value'), t('Frequency'), t('Percentage')];
-    rows = props.rows;
+  else if (props.type === 'regular') {
+    headers = [t('Value'), t('Frequency'), t('Percentage')];
+    data = props.rows;
   } else {
     // prepare table data for disaggregated rows
     if (props.rows.length > 0) {
@@ -57,11 +49,10 @@ const ReportTable = (props) => {
         rowitem = rowitem.concat(row[1].percentages);
         rows.push(rowitem);
       });
+      headers = th;
+      data = rows;
     }
   }
-
-  headers = th;
-  data = rows;
 
   const columWidth = new Array(headers.length);
   
