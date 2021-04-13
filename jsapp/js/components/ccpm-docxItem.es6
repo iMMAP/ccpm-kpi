@@ -143,12 +143,12 @@ const ReportViewItem = (props) => {
             },
             children: [new TextRun({
               text: p.label,
-              color: '#009fe4',
+              color: '#00a1e6',
               size: 24,
               bold:true,
               style: {
                 size: 24,
-                color: '#009fe4',
+                color: '#00a1e6',
                 bold: true
               }
             })
