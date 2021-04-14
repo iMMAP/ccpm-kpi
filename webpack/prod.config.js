@@ -21,6 +21,9 @@ module.exports = WebpackCommon({
     app: './jsapp/js/main.es6',
     browsertests: path.resolve(__dirname, '../test/index.js')
   },
+  node: {
+    fs: "empty",
+  },
   output: {
     path: path.resolve(__dirname, '../jsapp/compiled/'),
     publicPath: publicPath,

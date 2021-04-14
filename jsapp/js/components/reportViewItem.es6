@@ -349,7 +349,7 @@ class ReportViewItem extends React.Component {
     }
     _type = JSON.stringify(_type);
     return (
-      <div>
+      <div id={p.label}>
         <bem.ReportView__itemHeading>
           <h2>
             {p.label}
@@ -386,7 +386,7 @@ class ReportViewItem extends React.Component {
           {d.show_graph &&
             <bem.ReportView__chart
                 style={{width: this.props.style.graphWidth + 'px'}}>
-              <canvas ref='canvas' />
+              <canvas ref='canvas' id={p.id} />
             </bem.ReportView__chart>
           }
           {this.state.reportTable && ! d.values &&
