@@ -44,7 +44,7 @@ const dataset = {
     },
     preparedness: {
         code: 'P_PR',
-        name: 'Preparedness',
+        name: 'Preparedness for Recurrent Disasters',
         comments: ['P_PR02', 'P_PR03'],
         preparednessPlan: {code: '01', starting: 1, end: 5, name: 'Preparedness Plans', noteName: 'Coordinator Notes',notes: [{code: 'C_PR02', name: 'Is preparedness for recurrent disasters relevant for this cluster?'},{code: 'C_PR01', name: 'Notes on Preparedness for Recurrent Disasters'}]},
     },
