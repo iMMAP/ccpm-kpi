@@ -22,10 +22,10 @@ const dataset = {
         name: 'Planning and Strategy Development',
         code: 'P_PS',
         comments: ['P_PS03', 'P_PS04'],
-        strategicPlan: {code: '01b', starting: 1, end: 4, name: 'Strategic Plan', noteName: 'Coordinator Notes',notes: [{code: 'C_PS01', name: 'Coordinator Note: Has the cluster developed a strategic plan?'}]},
-        technicalStandard: {code: '02', starting: 1, end: 2, name: 'Technical Standards and guidelines',noteName: 'Coordinator Notes',notes: [{code: 'C_PS02', name: 'Have technical standards and guidelines been agreed? '}]},
+        strategicPlan: {code: '01b', starting: 1, end: 4, name: 'Strategic Plan', noteName: 'Coordinator Note',notes: [{code: 'C_PS01', name: 'Has the cluster developed a strategic plan?'}]},
+        technicalStandard: {code: '02', starting: 1, end: 2, name: 'Technical standards and guidelines',noteName: 'Coordinator Note',notes: [{code: 'C_PS02', name: 'Have technical standards and guidelines been agreed?'}]},
         prioritizationProposal: {code: '02', starting: 3, end: 5, name: 'Prioritization of proposals'},
-        updateFundingStatus: {code: '02', starting: 6, end: 6, name: 'Updates on funding status against needs', noteName: 'Coordinator Notes',notes: [{code: 'C_PS04', name: 'How often does the cluster report on funding status against needs?'}, {code: 'C_PS05', name: 'Coordinator Notes on Planning and Strategy Development'}]}
+        updateFundingStatus: {code: '02', starting: 6, end: 6, name: 'Updates on funding status against needs', noteName: 'Coordinator Notes',notes: [{code: 'C_PS04', name: 'How often does the cluster report on funding status against needs?'}, {code: 'C_PS05', name: 'Planning and Strategy Development'}]}
     },
     advocacy: {
         code: 'P_AD',
