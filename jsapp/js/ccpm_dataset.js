@@ -19,7 +19,7 @@ const dataset = {
         supportDecisionMaking: {code: '05', starting: 1, end: 2, name: 'Support for Decision Making', noteName: 'Notes on Informing Strategic Decisions',notes: [{code: 'C_IS04', name: ''}]},
     },
     planningStrategyDevelopment: {
-        name: 'Planning Strategy Development',
+        name: 'Planning and Strategy Development',
         code: 'P_PS',
         comments: ['P_PS03', 'P_PS04'],
         strategicPlan: {code: '01b', starting: 1, end: 4, name: 'Strategic Plan', noteName: 'Coordinator Notes',notes: [{code: 'C_PS01', name: 'Coordinator Note: Has the cluster developed a strategic plan?'}]},
