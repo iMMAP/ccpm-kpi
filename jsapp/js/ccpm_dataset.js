@@ -13,7 +13,7 @@ const dataset = {
         code: 'P_IS',
         comments: ['P_SS06', 'P_SS07'],
         assesments: {code: '01', starting: 1, end: 7, name: 'Assessments', noteName: '',notes: [{code: 'C_IS01', name: 'Have Assessments, Tools and Guidance been agreed?'},{code: 'C_IS02', name: 'Have there been any coordinated assessments (that include a focus on health) over the last year?'}]},
-        situationAnalyses: {code: '02', name: 'Situation Analyses', noteName: '',notes: [{code: 'C_IS03', name: 'Has the cluster done any situation analysis over the last year'}]},
+        situationAnalyses: {code: '02', name: 'Situation Analyses', noteName: '',notes: [{code: 'C_IS03', name: 'Has the cluster done any situation analysis over the last year?'}]},
         analysisTopicCovered: {code: '03', starting: 1, end: 5, name: 'Analysis Topic Covered'},
         crossCuttingIssues: {code: '04', starting: 1, end: 9, name : 'Cross Cutting Issues'},
         supportDecisionMaking: {code: '05', starting: 1, end: 2, name: 'Support for Decifion Making', noteName: 'Notes on Informing Strategic Decisions',notes: [{code: 'C_IS04', name: ''}]},
