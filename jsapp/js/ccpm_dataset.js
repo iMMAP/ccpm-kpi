@@ -16,7 +16,7 @@ const dataset = {
         situationAnalyses: {code: '02', name: 'Situation Analyses', noteName: '',notes: [{code: 'C_IS03', name: 'Has the cluster done any situation analysis over the last year?'}]},
         analysisTopicCovered: {code: '03', starting: 1, end: 5, name: 'Analysis Topics Covered'},
         crossCuttingIssues: {code: '04', starting: 1, end: 9, name : 'Cross-Cutting Issues'},
-        supportDecisionMaking: {code: '05', starting: 1, end: 2, name: 'Support for Decifion Making', noteName: 'Notes on Informing Strategic Decisions',notes: [{code: 'C_IS04', name: ''}]},
+        supportDecisionMaking: {code: '05', starting: 1, end: 2, name: 'Support for Decision Making', noteName: 'Notes on Informing Strategic Decisions',notes: [{code: 'C_IS04', name: ''}]},
     },
     planningStrategyDevelopment: {
         name: 'Planning Strategy Development',
