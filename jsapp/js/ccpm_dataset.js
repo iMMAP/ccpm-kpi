@@ -50,7 +50,7 @@ const dataset = {
     },
     aap: {
         code: 'P_AA',
-        name: 'AAP',
+        name: 'Accountability to Affected Populations',
         comments: ['P_AA02', 'P_AA03'],
         mechanismForConsulting: {code: '01', starting: 1, end: 2, name: 'Mechanisms for consulting and involving affected populations in decision making', noteName: 'Coordinator Notes',notes: [{code: 'C_AA01', name: 'Has the cluster agreed on mechanisms for consulting and involving affected populations in decision making?'}]},
         mechanismToReceive: {code: '01', starting: 3, end: 4, name: 'Mechanisms to receive, investigate and act on complaints by affected people', noteName: 'Coordinator Notes',notes: [{code: 'C_AA02', name: 'Coordinator Notes on AAP'}]}
