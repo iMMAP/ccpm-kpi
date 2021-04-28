@@ -36,7 +36,7 @@ const dataset = {
     },
     monitoringReporting: {
         code: 'P_MR',
-        name: 'Monitoring Reporting',
+        name: 'Monitoring and Reporting',
         comments: ['P_MR02', 'P_MR03'],
         clusterBulletins: {code: '01', starting: 1, end: 2, name: 'Cluster Bulletins'},
         programMonitoring: {code: '01', starting: 3, end: 4, name: 'Programme Monitoring and Reporting Formats', noteName: 'Coordinator Notes',notes: [{code: 'C_MR01', name: 'Have programme monitoring and reporting formats been agreed by the cluster?'}]},
