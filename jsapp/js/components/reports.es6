@@ -778,7 +778,7 @@ class CCPM_ReportContents extends React.Component {
             </table>
           </div>
        </div>
-       <h1 className="title"> Overall Active Partners Response Rate by type</h1>
+       <h1 className="title">Overall Active Partners Response Rate by type</h1>
       <div>
         <div style={{ textAlign: 'center', display: 'inline-block'}}>
         <div style={{margin: 0, padding: 0}} ref='totalResponseChartByType' id='totalResponseChartByType' />
