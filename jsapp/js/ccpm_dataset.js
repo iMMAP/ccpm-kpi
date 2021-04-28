@@ -1,6 +1,6 @@
 const dataset = {
     supportServiceDelivery: {
-        name: 'Support Service Delivery',
+        name: 'Support to Service Delivery',
         code: 'P_SS',
         comments: ['P_SS05', 'P_SS06'],
         meeting: {code : '01a', starting: 1, end: 6, name: 'Meeting', noteName: 'Notes from the coordinator', notes: [{code: 'C_SD01', name: 'Meeting Frequency'}, {code: 'C_SD02', name: 'Notes on Meetings'}]},
