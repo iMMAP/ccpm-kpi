@@ -6,7 +6,7 @@ const dataset = {
         meeting: {code : '01a', starting: 1, end: 6, name: 'Meetings', noteName: 'Notes from the Coordinator', notes: [{code: 'C_SD01', name: 'Meeting Frequency'}, {code: 'C_SD02', name: 'Notes on Meetings'}]},
         clusterStrategicDecisions : {code : '02', starting: 1, end: 3, name: 'Cluster Strategic Decisions',noteName: 'Notes on Strategic Decisions', notes: [{code: 'C_SD03', name: ''}]},
         clusterMapping: {code: '03', starting: 1, end: 5, name: 'Cluster Mapping', noteName: 'Notes on Mapping', notes: [{code: 'C_SD04', name: ''}]},
-        identificationNeeds: {code: '04', starting: 1, end: 3, name: 'Identification Needs', noteName: 'Notes on identification of Neefs, Gaps and Priorities', notes: [{code: 'C_SD05', name: ''}] },
+        identificationNeeds: {code: '04', starting: 1, end: 3, name: 'Identification of Needs, Gaps and Response Priorities', noteName: 'Notes on identification of Needs, Gaps and Priorities', notes: [{code: 'C_SD05', name: ''}] },
     },
     informingStrategicDecisions: {
         name: 'Informing Strategic Decisions',
