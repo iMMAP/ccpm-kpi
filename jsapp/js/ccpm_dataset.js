@@ -91,7 +91,7 @@ export const ccpm_getAverageInBoolQuestion = (question) => {
     return question;
 }
 
-// Get average in a subgroup
+// Get average in a subgroup (Check wheither que question contains numeric response or boolean and return the result)
 
 export const ccpm_getAverageInSubGroup = (data) =>{
     if(data.length === 0 || !data[0]) return 0;

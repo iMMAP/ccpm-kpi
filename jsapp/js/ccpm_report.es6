@@ -2,11 +2,18 @@ import dataset, {ccpm_getQuestionInRange, ccpm_getAverageInSubGroup, ccpm_getAve
 
 
 // Get label based on the average 
-const ccpm_getStatusLabel = (average) => {
+export const ccpm_getStatusLabel = (average) => {
     if(average < 1.25) return 'Weak';
     if(average < 2.5) return 'Unsatisfactory';
     if(average < 3.75) return 'Satisfactory';
     if(average > 3.75) return 'Good'; 
+}
+
+export const ccpm_getStatusColor = (status) => {
+    if(status === 'Weak') return '#FD625E';
+    if(status === 'Unsatisfactory') return '#F9A75D';
+    if(status === 'Satisfactory') return '#F5D43E';
+    if(status === 'Good') return '#00B8AA';
 }
 
 const ccpm_getAverageInquestion = (data) => {
@@ -55,6 +62,7 @@ const ccpm_getData = (data) => {
         Object.keys(dataset[group]).forEach(subGroup => {
             if(subGroup !== 'code' || subGroup !== 'name'){
             newReport[subGroup] = {};
+            // Find all the question of a report subgroup, calculate the average and pupulate the charts
             newReport[subGroup].questions = data.filter(e => ccpm_getQuestionInRange(group, subGroup).includes(e.name)).map(q => {
                 q.average = ccpm_getAverageInquestion(q);
                 q.averageLabel = ccpm_getStatusLabel(q.average);
