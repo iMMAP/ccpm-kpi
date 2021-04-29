@@ -17,13 +17,8 @@ import alertify from 'alertifyjs';
 import { Packer } from "docx";
 import { DocumentCreator } from "./ccpm-docxReport";
 import saveAs from 'save-as';
-import ccpmReport, {getChartData} from '../ccpm_report';
-import dataset, {ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion} from '../ccpm_dataset';
-import ReactDOM from 'react-dom';
-import d3Waffle, {slugify} from '../d3Waffle';
-import * as d3 from 'd3';
+import ccpmReport from '../ccpm_report';
 import CCPM_ReportContents from './ccpm-report-content';
-
 
 import ReportViewItem from './reportViewItem';
 
