@@ -121,7 +121,6 @@ const ReportViewItem = (props) => {
       image = canv.toDataURL();
     } 
 
-
     const element =  {
         properties: {
           type: SectionType.CONTINUOUS,
@@ -139,7 +138,6 @@ const ReportViewItem = (props) => {
                 space: 10,
                 value: 'single'
               },
-
             },
             children: [new TextRun({
               text: p.label,
@@ -169,15 +167,15 @@ const ReportViewItem = (props) => {
               }
             },
             children: [
-            new TextRun({
-              text: t('Type: ') + _type + t('. ') + t('#1 out of #2 respondents answered this question. ').replace('#1', d.provided).replace('#2', d.total_count) + t('(# were without data.)').replace('#', d.not_provided),
-              size: 20,
-              color: '#797980',
-              style: {
+              new TextRun({
+                text: t('Type: ') + _type + t('. ') + t('#1 out of #2 respondents answered this question. ').replace('#1', d.provided).replace('#2', d.total_count) + t('(# were without data.)').replace('#', d.not_provided),
                 size: 20,
                 color: '#797980',
-              }
-            }),
+                style: {
+                  size: 20,
+                  color: '#797980',
+                }
+              }), 
           ]
             
           })
@@ -195,7 +193,7 @@ const ReportViewItem = (props) => {
           width: 600,
           height: 250
         },
-      })]}))
+      })]}));
 
       const table  =  prepareTable(props.data);
       let reportElement = null;

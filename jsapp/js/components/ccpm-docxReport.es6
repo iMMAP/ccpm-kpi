@@ -28,5 +28,4 @@ export class DocumentCreator {
 
     return document;
   }
-
 }

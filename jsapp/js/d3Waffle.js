@@ -262,3 +262,4 @@ function d3waffle(legend) {
   }
 
   export default d3waffle;
+  

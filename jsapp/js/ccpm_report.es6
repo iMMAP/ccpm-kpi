@@ -1,5 +1,7 @@
 import dataset, {ccpm_getQuestionInRange, ccpm_getAverageInSubGroup, ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion} from './ccpm_dataset';
 
+
+// Get label based on the average 
 const ccpm_getStatusLabel = (average) => {
     if(average < 1.25) return 'Weak';
     if(average < 2.5) return 'Unsatisfactory';

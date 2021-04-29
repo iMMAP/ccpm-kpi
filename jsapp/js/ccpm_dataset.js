@@ -57,6 +57,8 @@ const dataset = {
     }
 }
 
+// Get Questions code list in a subgroup
+
 export const ccpm_getQuestionInRange = (groupIdentifier, subgroupIdentifier) => {
     const group = dataset[groupIdentifier];
     const subgroup = group[subgroupIdentifier]
@@ -70,12 +72,16 @@ export const ccpm_getQuestionInRange = (groupIdentifier, subgroupIdentifier) => 
     return questions;
 }
 
+// Get the average of responses in a question
+
 export const ccpm_getAverageInQuestion = (question) => {
     if(question){
     const data  = question.data.responses.reduce((a,b) => Number.parseInt(a.toString().replace(/\D/g,''), 10)+Number.parseInt(b.toString().replace(/\D/g,''), 10), 0);
     return data/(question.data.responses.length > 0 ?question.data.responses.length : 1);
     } return 0;
 }
+
+// Get the average in a boolean question (Number of YES)
 
 export const ccpm_getAverageInBoolQuestion = (question) => {
     if(question){
@@ -84,6 +90,8 @@ export const ccpm_getAverageInBoolQuestion = (question) => {
     } 
     return question;
 }
+
+// Get average in a subgroup
 
 export const ccpm_getAverageInSubGroup = (data) =>{
     if(data.length === 0 || !data[0]) return 0;
