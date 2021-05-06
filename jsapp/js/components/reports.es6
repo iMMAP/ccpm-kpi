@@ -19,7 +19,6 @@ import DocumentCreator  from "./ccpm-new-docx-report";
 import saveAs from 'save-as';
 import ccpmReport from '../ccpm_report';
 import CCPM_ReportContents from './ccpm-report-content';
-import worker from './worker';
 
 import ReportViewItem from './reportViewItem';
 
