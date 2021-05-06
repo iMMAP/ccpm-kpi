@@ -1042,7 +1042,7 @@ class Reports extends React.Component {
   }
 
   exportToDocx (data) {
-    setTimeout(function(i) {
+    setTimeout((i) => {
       const documentCreator = new DocumentCreator();
       const newReport = documentCreator.create(data);
       newReport.then(doc => {
@@ -1050,7 +1050,7 @@ class Reports extends React.Component {
           saveAs(blob, `${this.state.asset.name}.docx`);
         });
       });
-    }(i), 0)
+    }, 0)
 }
 
   renderReportButtons () {

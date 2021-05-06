@@ -254,80 +254,80 @@ const renderComment = (questionCode, questionName, parentState) => {
           ]
             
           }));
-              const tableData = parentState.ccpmReport[subGroup].questions.map((question,index) => {
-                return [
-                  new Paragraph({
-                    spacing: {
-                      before: 100,
-                      after: 400,
-                    },
-                    children: [
-                      new TextRun({
-                        text: question.row.label[0],
-                        size: 20,
-                        color: '#808080',
-                        bold: true,
-                        style: {
-                          size: 20,
-                          color: '#808080',
-                        }
-                      }), 
-                  ] 
-                  }),
-                  new Paragraph({
-                    spacing: {
-                      before: 100,
-                      after: 400,
-                    },
-                    children: [
-                      new TextRun({
-                        text: question.averageLabel,
-                        size: 20,
-                        color: ccpm_getStatusColor(question.averageLabel),
-                        bold: true,
-                        style: {
-                          size: 20,
-                          color: ccpm_getStatusColor(question.averageLabel),
-                        }
-                      }), 
-                  ] 
-                  })
-                ]    
+          const tableData = parentState.ccpmReport[subGroup].questions.map((question,index) => {
+            return [
+              new Paragraph({
+                spacing: {
+                  before: 100,
+                  after: 400,
+                },
+                children: [
+                  new TextRun({
+                    text: question.row.label[0],
+                    size: 20,
+                    color: '#808080',
+                    bold: true,
+                    style: {
+                      size: 20,
+                      color: '#808080',
+                    }
+                  }), 
+              ] 
+              }),
+              new Paragraph({
+                spacing: {
+                  before: 100,
+                  after: 400,
+                },
+                children: [
+                  new TextRun({
+                    text: question.averageLabel,
+                    size: 20,
+                    color: ccpm_getStatusColor(question.averageLabel),
+                    bold: true,
+                    style: {
+                      size: 20,
+                      color: ccpm_getStatusColor(question.averageLabel),
+                    }
+                  }), 
+              ] 
               })
-              const table = getTable2(tableData, 2, true, 20);
-              if(table) dataToShow.push(table)
-              if(dataset[group][subGroup].notes && (parentState.ccpmReport[subGroup].questions.length -1 === index)){
-                dataset[group][subGroup].notes.forEach((question, index2) =>{
-                  dataToShow.push(new Paragraph({
-                    spacing: {
-                      before: 0,
-                      after: 50,
-                    },
-                    border: {
-                      top: {
-                        color: '#797980',
-                        size: 2,
-                        space: 10,
-                        value: 'single'
-                      },
-                    },
-                    children: [new TextRun({
-                      text: dataset[group][subGroup].noteName,
-                      color: '#000000',
-                      size: 24,
-                      bold:true,
-                      style: {
-                        size: 24,
-                        color: '#000000',
-                        bold: true
-                      }
-                    })
-                  ]  
-                  }));
-                  const commentTable = renderComment(question.code, question.name);
-                  if(commentTable)dataToShow.push(commentTable);
+            ]    
+          })
+          const table = getTable2(tableData, 2, true, 20);
+          if(table) dataToShow.push(table)
+          if(dataset[group][subGroup].notes){
+            dataset[group][subGroup].notes.forEach((question, index2) =>{
+              dataToShow.push(new Paragraph({
+                spacing: {
+                  before: 0,
+                  after: 50,
+                },
+                border: {
+                  top: {
+                    color: '#797980',
+                    size: 2,
+                    space: 10,
+                    value: 'single'
+                  },
+                },
+                children: [new TextRun({
+                  text: dataset[group][subGroup].noteName,
+                  color: '#000000',
+                  size: 24,
+                  bold:true,
+                  style: {
+                    size: 24,
+                    color: '#000000',
+                    bold: true
+                  }
                 })
-              }  
+              ]  
+              }));
+              const commentTable = renderComment(question.code, question.name,parentState);
+              if(commentTable)dataToShow.push(commentTable);
+            })
+          }  
                
         });
   });
