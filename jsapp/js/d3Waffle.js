@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 
-function d3waffle(legend) {
+function d3waffle(id,legend) {
     var margin = {top: 10, right: 10, bottom: 10, left: 10},
         icon = "&#9632;",
         scale = 1,
@@ -10,6 +10,7 @@ function d3waffle(legend) {
         appearancetimes = function(d, i){ return 500; },
         height = 200,
         isLegend = legend,
+        svgId = id,
         magic_padding = 5;
        
     function chart(selection) {
@@ -45,14 +46,14 @@ function d3waffle(legend) {
           detaildata[i].row = griddata[i][1];
         })
   
-        /*console.log("detail data length: ", detaildata.length)*/
-        
         var gridSize = ((height - margin.top - margin.bottom) / rows)
   
         /* setting the container */
         var svg = selection.append("svg")
               .attr("width",  "100%")
               .attr("height", height + "px")
+              .attr("id", `id${svgId}`)
+              .attr("class",'svgImage')
               .append("g")
               .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
               .style("cursor", "default");
@@ -262,4 +263,3 @@ function d3waffle(legend) {
   }
 
   export default d3waffle;
-  

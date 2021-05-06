@@ -25,9 +25,11 @@ const ccpm_getAverageInquestion = (data) => {
 
 const ccpm_getSumOfQuestions = (questions, data) => {
     const result  = data.filter(e => questions.includes(e.name));
-    return result.reduce((a,b) =>{ 
+    const sum =  result.reduce((a,b) =>{ 
         if(!a.data) return b.data.mean;
         return a.data.mean+b.data.mean}, 0);
+    if(isNaN(sum)) return 0;
+    return sum;
 }
 
 const ccpm_getNumberOfParnerResponseByType = (questionList, data) => {
@@ -97,9 +99,9 @@ const ccpm_getData = (data) => {
     const typeOfSurvey = data.find(e => e.name === 'type_of_survey');
     const numberOfPartner = typeOfSurvey.data.frequencies[1];
 
-    const finalData =  {report : newReport, chartData, totalReponses: {numberOfPartner, sum: ccpm_getSumOfQuestions(totalResponseQuestions, data)}, 
+    const finalData =  {report : newReport, chartData, totalReponses: {numberOfPartner : isNaN(numberOfPartner) ? 0 : numberOfPartner, sum: ccpm_getSumOfQuestions(totalResponseQuestions, data)}, 
         totalResponseDisagregatedByPartner: ccpm_getNumberOfParnerResponseByType(totalResponseQuestions, data),
-        totalEffectiveResponse : {numberOfPartner, sum : ccpm_getSumOfQuestions(totalEffectiveResponseQuestions, data)},
+        totalEffectiveResponse : {numberOfPartner : isNaN(numberOfPartner) ? 0 : numberOfPartner, sum : ccpm_getSumOfQuestions(totalEffectiveResponseQuestions, data)},
         totalEffectiveResponseDisagregatedByPartner : ccpm_getNumberOfParnerResponseByType(totalEffectiveResponseQuestions, data),
         questionResponseGroup: questionResponseGroup
         }

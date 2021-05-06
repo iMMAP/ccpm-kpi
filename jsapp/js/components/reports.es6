@@ -15,10 +15,11 @@ import DocumentTitle from 'react-document-title';
 import { txtid } from '../../xlform/src/model.utils';
 import alertify from 'alertifyjs';
 import { Packer } from "docx";
-import { DocumentCreator } from "./ccpm-docxReport";
+import DocumentCreator  from "./ccpm-new-docx-report";
 import saveAs from 'save-as';
 import ccpmReport from '../ccpm_report';
 import CCPM_ReportContents from './ccpm-report-content';
+import worker from './worker';
 
 import ReportViewItem from './reportViewItem';
 
@@ -1041,12 +1042,16 @@ class Reports extends React.Component {
     this.setState({isFullscreen: !this.state.isFullscreen});
   }
 
-  exportToDocx () {
-    const documentCreator = new DocumentCreator();
-    const doc = documentCreator.create(this.state.readyReport);
-    Packer.toBlob(doc).then(blob => {
-      saveAs(blob, `${this.state.asset.name}.docx`);
-    });
+  exportToDocx (data) {
+    setTimeout(function(i) {
+      const documentCreator = new DocumentCreator();
+      const newReport = documentCreator.create(data);
+      newReport.then(doc => {
+        Packer.toBlob(doc).then(blob => {
+          saveAs(blob, `${this.state.asset.name}.docx`);
+        });
+      });
+    }(i), 0)
 }
 
   renderReportButtons () {
@@ -1131,6 +1136,37 @@ class Reports extends React.Component {
       </bem.FormView__reportButtons>
     );
   }
+
+  renderCCPMReportButtons () {
+    var _this = this;
+
+    return (
+      <bem.FormView__reportButtons>
+
+
+        <bem.Button
+          m='icon' className='report-button__expand right-tooltip'
+          onClick={this.toggleFullscreen}
+          data-tip={t('Toggle fullscreen')}
+        >
+          <i className='k-icon-expand' />
+        </bem.Button>
+
+        <bem.Button m='icon' className='report-button__print'
+                onClick={launchPrinting}
+                data-tip={t('Print')}>
+          <i className='k-icon-print' />
+        </bem.Button>
+
+        <bem.Button m='icon' className='report-button__print'
+                onClick={e => {this.exportToDocx(this.state)}}
+                data-tip={t('Export to Document')}>
+          <i className='k-icon-download' />
+        </bem.Button>
+      </bem.FormView__reportButtons>
+    );
+  }
+
   renderCustomReportModal () {
     return (
       <bem.GraphSettings>
@@ -1241,7 +1277,7 @@ class Reports extends React.Component {
       <DocumentTitle title={`${docTitle} | Health Cluster`}>
         <bem.FormView m={formViewModifiers}>
           <bem.ReportView>
-            {/*this.renderReportButtons()*/}
+            {this.renderCCPMReportButtons()}
 
             {!hasAnyProvidedData &&
               <bem.ReportView__wrap>
@@ -1276,7 +1312,7 @@ class Reports extends React.Component {
                   <p>{t('This is an automated report based on raw data submitted to this project. Please conduct proper data cleaning prior to using the graphs and figures used on this page. ')}</p>
                 </bem.FormView__cell> */}
 
-                <CCPM_ReportContents parentState={this.state} setReadyReportData={(reportData)=>{this.setState({readyReport: reportData})}} reportData={reportData} triggerQuestionSettings={this.triggerQuestionSettings} />
+                <CCPM_ReportContents parentState={this.state}  exportToDocx={this.exportToDocx} setReadyReportData={(reportData)=>{this.setState({readyReport: reportData})}} reportData={reportData} triggerQuestionSettings={this.triggerQuestionSettings} />
               </bem.ReportView__wrap>
             }
 

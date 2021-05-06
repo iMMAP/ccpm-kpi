@@ -3,14 +3,16 @@ import dataset, {ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion} from 
 import ReactDOM from 'react-dom';
 import d3Waffle, {slugify} from '../d3Waffle';
 import * as d3 from 'd3';
-
+import Canvg from 'canvg';
+import htmlToImage from 'html2canvas'
 
 export default class CCPM_ReportContents extends React.Component {
     constructor(props) {
       super(props);
       this.state= {
         reportData: [], 
-        tnslIndex:0
+        tnslIndex:0,
+        images: {}
       }
       this.setReportData = this.setReportData.bind(this);
       this.getGroupStatus = this.getGroupStatus.bind(this);
@@ -25,7 +27,7 @@ export default class CCPM_ReportContents extends React.Component {
           || nextProps.parentState.showCustomReportModal
           || nextProps.parentState.currentQuestionGraph) {
         return false;
-      } else {
+      } else if(JSON.stringify(this.props.parentState) !== JSON.stringify(nextProps.parentState) || JSON.stringify(this.state.reportData) !== JSON.stringify(nextState.reportData)) {
         return true;
       }
     }
@@ -257,6 +259,8 @@ export default class CCPM_ReportContents extends React.Component {
     }
   
     getChart(name, total = 1, sum = 0, height, colorRange = ['#097ca8', '#dedede']) {
+      if(isNaN(total) || total === 0 ) total = 1;
+      if(isNaN(sum)) sum = 0;
       let coveredValue = sum / total;
       coveredValue = coveredValue * 100;
   
@@ -268,18 +272,17 @@ export default class CCPM_ReportContents extends React.Component {
       var domain = data.map(function(d){ return slugify(d.name); })
       var palette = d3.scale.ordinal().domain(domain).range(colorRange); 
   
-      let chart = d3Waffle().rows(5);
+      let chart = d3Waffle(`${name}svg`).rows(5);
       chart.colorscale(palette);
       chart = chart.height(height || 120);
       
   
       if(document.getElementById(name)){
-        d3.select(`#${name}`)
+        const el = d3.select(`#${name}`)
           .datum(data)
           .call(chart);
       }
-  
-    }
+  }
   
     getByTypeChart(){
       const globalQuestion = this.props.parentState.reportData.find(e => e.name === 'P_GI03');
@@ -287,7 +290,7 @@ export default class CCPM_ReportContents extends React.Component {
         return {value:(v / globalQuestion.data.provided)*100, name: globalQuestion.data.responses[index]}
       });
   
-      let chart = d3Waffle(true).rows(5);
+      let chart = d3Waffle(`bytypesvg`,true).rows(5);
       chart = chart.height(150);
   
       if(document.getElementById('totalResponseChartByType')){
@@ -356,9 +359,10 @@ export default class CCPM_ReportContents extends React.Component {
   
     render () {
       const {parentState} = this.props;
+      const {totalReponses: {numberOfPartner}} = parentState;
+      this.props.parentState.totalReponses.numberOfPartner
       return (
         <div id='document-report' >
-  
           <h1 className="bigTitle">Overall Response Rate</h1>
           <h1 className="title"> Overall Active Partners Response Rate</h1>
           <div>
@@ -368,7 +372,7 @@ export default class CCPM_ReportContents extends React.Component {
                 <tbody>
                     <tr>
                       <td className='report_tr_left_with_border'>Total</td>
-                      <td className='report_tr_right_with_border' >{Math.floor((this.props.parentState.totalReponses.sum / this.props.parentState.totalReponses.numberOfPartner) * 100)}%</td>
+                      <td className='report_tr_right_with_border' >{Math.floor((this.props.parentState.totalReponses.sum / (numberOfPartner  === 0 ? 1 : numberOfPartner) * 100))}%</td>
                     </tr>
                     <tr>
                         <td className='report_tr_left_with_border'>Tot. Number of Partners</td>
@@ -382,16 +386,18 @@ export default class CCPM_ReportContents extends React.Component {
               </table>
             </div>
          </div>
+         <canvas id="testCanvas" />
          <h1 className="title"> Overall Active Partners Response Rate by type</h1>
         <div>
           <div style={{ textAlign: 'center', display: 'inline-block'}}>
+          
           <div style={{margin: 0, padding: 0}} ref='totalResponseChartByType' id='totalResponseChartByType' />
           </div>
         </div>
         {
           parentState.totalResponseDisagregatedByPartner.map((v,i) => <>
           <div style={{width: '50%',display: 'inline-block'}}>
-            <h1 className="subtitle" style={{marginLeft: '10px'}}> {v.row.label[0]}  ({Math.floor((v.data.mean || 0 /v.questionsDisagregatedByPartner || 1) * 100)}) %</h1>
+            <h1 className="subtitle" style={{marginLeft: '10px'}}> {v.row.label[0]}  ({ isNaN(v.questionsDisagregatedByPartner) || v.questionsDisagregatedByPartner === 0 ? '' : Math.floor((v.data.mean || 0 /(isNaN(v.questionsDisagregatedByPartner)) ? 1 : v.questionsDisagregatedByPartner) * 100)}) %</h1>
             <div ref={`chart-${i}`} id={`chart-${i}`} />
           </div>
           </>
@@ -406,7 +412,7 @@ export default class CCPM_ReportContents extends React.Component {
                 <tbody>
                 <tr>
                     <td className='report_tr_left_with_border'>Total</td>
-                    <td className='report_tr_right_with_border' >{Math.floor((this.props.parentState.totalEffectiveResponse.sum / this.props.parentState.totalEffectiveResponse.numberOfPartner) * 100)}%</td>
+                    <td className='report_tr_right_with_border' >{Math.floor((this.props.parentState.totalEffectiveResponse.sum / (numberOfPartner  === 0 ? 1 : numberOfPartner)) * 100)}%</td>
                 </tr>
                 <tr>
                     <td className='report_tr_left_with_border'>Tot. Number of Partners</td>
@@ -421,7 +427,7 @@ export default class CCPM_ReportContents extends React.Component {
         {
           parentState.totalEffectiveResponseDisagregatedByPartner.map((v,i) => <>
             <div style={{width: '50%', display: 'inline-block'}}>
-              <h1 className="title" style={{marginLeft: '10px'}}> {v.row.label[0]}</h1>
+              <h1 className="subtitle" style={{marginLeft: '10px'}}> {v.row.label[0]}</h1>
               <div ref={`chart2-${i}`} id={`chart2-${i}`} />
             </div>
           </>
@@ -489,7 +495,7 @@ export default class CCPM_ReportContents extends React.Component {
               if(element !== 'code' && element !== 'name'){
                 return <>
                 <h1 className="title" style={{marginLeft: '10px'}}> {dataset[element].name}</h1>
-                <canvas ref={`canvas${element}`} id={element} />
+                <canvas ref={`canvas${element}`} id={`${element}canv`} />
                 {this.renderComment(dataset[element].comments[0], 'Comments on Suggested Improvements')}
                 {this.renderComment(dataset[element].comments[1], 'Comments on Success Stories')}
                 </>
