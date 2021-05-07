@@ -1,4 +1,4 @@
-import dataset, {ccpm_getQuestionInRange, ccpm_getAverageInSubGroup, ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion} from './ccpm_dataset';
+import dataset, {ccpm_getQuestionInRange, ccpm_getAverageInSubGroup, ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion} from './ccpmDataset';
 
 
 // Get label based on the average 

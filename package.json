@@ -93,6 +93,7 @@
   "dependencies": {
     "d3": "^3.5.16",
     "docx": "^6.0.2",
+    "html-to-image": "^1.6.1",
     "save-as": "^0.1.8"
   }
 }

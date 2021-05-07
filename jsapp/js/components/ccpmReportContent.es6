@@ -1,10 +1,8 @@
 import React from 'react';
-import dataset, {ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion} from '../ccpm_dataset';
+import dataset, {ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion} from '../ccpmDataset';
 import ReactDOM from 'react-dom';
 import d3Waffle, {slugify} from '../d3Waffle';
 import * as d3 from 'd3';
-import Canvg from 'canvg';
-import htmlToImage from 'html2canvas'
 
 export default class CCPM_ReportContents extends React.Component {
     constructor(props) {

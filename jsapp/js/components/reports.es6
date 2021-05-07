@@ -15,10 +15,10 @@ import DocumentTitle from 'react-document-title';
 import { txtid } from '../../xlform/src/model.utils';
 import alertify from 'alertifyjs';
 import { Packer } from "docx";
-import DocumentCreator  from "./ccpm-new-docx-report";
+import DocumentCreator  from "./ccpmDocxReport201130";
 import saveAs from 'save-as';
-import ccpmReport from '../ccpm_report';
-import CCPM_ReportContents from './ccpm-report-content';
+import ccpmReport from '../ccpmReport';
+import CCPM_ReportContents from './ccpmReportContent';
 
 import ReportViewItem from './reportViewItem';
 

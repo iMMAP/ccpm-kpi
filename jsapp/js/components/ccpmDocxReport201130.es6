@@ -1,7 +1,7 @@
 import {Document} from "docx";
-import dataset from '../ccpm_dataset';
-import {ccpm_getStatusLabel, ccpm_getStatusColor} from '../ccpm_report';
-import {toCanvas, toPng} from 'html-to-image';
+import dataset from '../ccpmDataset';
+import {ccpm_getStatusLabel, ccpm_getStatusColor} from '../ccpmReport';
+import {toPng} from 'html-to-image';
 import {TextRun, Paragraph, ImageRun, SectionType, Table, TableRow, TableCell, WidthType} from 'docx';
 
 const getTable2 = (data, length, border = false, marginBottom = 150) => {

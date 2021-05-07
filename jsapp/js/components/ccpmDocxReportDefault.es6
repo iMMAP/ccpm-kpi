@@ -3,7 +3,7 @@ import {
 } from "docx";
 import { isArray, isString } from "underscore";
 
-import ReportViewItem from './ccpm-docxItem';
+import ReportViewItem from './ccpmDocxItem';
 
 export class DocumentCreator {
   create(data){

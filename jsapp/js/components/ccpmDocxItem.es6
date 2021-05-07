@@ -118,7 +118,7 @@ const ReportViewItem = (props) => {
     let image = '';
     const canv = window.document.getElementById(p.id);
     if(canv){
-      image = canv.toDataURL();
+      image = canv.toDataRL();
     } 
 
     const element =  {
@@ -129,7 +129,7 @@ const ReportViewItem = (props) => {
           new Paragraph({
             spacing: {
               before: 0,
-              after: 50
+              after: 50,
             },
             border: {
               top: {
