@@ -289,7 +289,7 @@ export default class CCPM_ReportContents extends React.Component {
       });
   
       let chart = d3Waffle(`bytypesvg`,true).rows(5);
-      chart = chart.height(150);
+      chart = chart.height(120);
   
       if(document.getElementById('totalResponseChartByType')){
       d3.select('#totalResponseChartByType')
@@ -331,7 +331,7 @@ export default class CCPM_ReportContents extends React.Component {
       if(data.row.type === 'select_one') {
         return <table style={{ width: '100%',marginLeft: '40px', borderCollapse: 'collapse'}}>
                   <tbody>
-                    <tr><td style={{fontSize: '15px', color: 'black', fontWeight: 'bold', marginTop: '10px', paddingBottom: '10px'}}>{questionName}</td></tr>
+                    {questionName && <tr><td style={{fontSize: '14px', color: 'black', fontWeight: 'bold', marginTop: '10px',paddingTop: '5px', paddingBottom: '10px'}}>{questionName}</td></tr>}
                     {data.data.responses.map((response, index) => {
                       return  <tr>
                                   <td className='report_tr_left_with_border'>{response}</td>
@@ -344,7 +344,7 @@ export default class CCPM_ReportContents extends React.Component {
       if(data.row.type === 'text') {
         return <table style={{ width: '100%', marginLeft: '40px', borderCollapse: 'collapse'}}>
                   <tbody>
-                    <tr><td style={{fontSize: '15px', color: 'black', fontWeight: 'bold', paddingTop: '10px', paddingBottom: '10px'}}>{questionName}</td></tr>
+                   {questionName && <tr><td style={{fontSize: '14px', color: 'black', fontWeight: 'bold', paddingTop: '10px', paddingBottom: '10px'}}>{questionName}</td></tr>}
                       {data.data.responses.map(response => {
                         return  <tr>
                                     <td className="bordered-td">{response}</td>
@@ -353,6 +353,12 @@ export default class CCPM_ReportContents extends React.Component {
                   </tbody>
                 </table>
       }
+    }
+
+    calculatePercentage(sum, total) {
+      if(total === 0 || isNaN(total)) total = 1;
+      if(isNaN(sum)) sum = 0;
+      return (sum / total) * 100;
     }
   
     render () {
@@ -370,7 +376,7 @@ export default class CCPM_ReportContents extends React.Component {
                 <tbody>
                     <tr>
                       <td className='report_tr_left_with_border'>Total</td>
-                      <td className='report_tr_right_with_border' >{Math.floor((this.props.parentState.totalReponses.sum / (numberOfPartner  === 0 ? 1 : numberOfPartner) * 100))}%</td>
+                      <td className='report_tr_right_with_border' >{Math.floor(this.calculatePercentage(this.props.parentState.totalReponses.sum, numberOfPartner))}%</td>
                     </tr>
                     <tr>
                         <td className='report_tr_left_with_border'>Tot. Number of Partners</td>
@@ -384,7 +390,6 @@ export default class CCPM_ReportContents extends React.Component {
               </table>
             </div>
          </div>
-         <canvas id="testCanvas" />
          <h1 className="title"> Overall Active Partners Response Rate by type</h1>
         <div>
           <div style={{ textAlign: 'center', display: 'inline-block'}}>
@@ -395,7 +400,7 @@ export default class CCPM_ReportContents extends React.Component {
         {
           parentState.totalResponseDisagregatedByPartner.map((v,i) => <>
           <div style={{width: '50%',display: 'inline-block'}}>
-            <h1 className="subtitle" style={{marginLeft: '10px'}}> {v.row.label[0]}  ({ isNaN(v.questionsDisagregatedByPartner) || v.questionsDisagregatedByPartner === 0 ? '' : Math.floor((v.data.mean || 0 /(isNaN(v.questionsDisagregatedByPartner)) ? 1 : v.questionsDisagregatedByPartner) * 100)}) %</h1>
+            <h1 className="subtitle" style={{marginLeft: '10px'}}> {v.row.label[0]} ({Math.floor(this.calculatePercentage(v.data.mean,v.questionsDisagregatedByPartner))}) %</h1>
             <div ref={`chart-${i}`} id={`chart-${i}`} />
           </div>
           </>
@@ -425,13 +430,13 @@ export default class CCPM_ReportContents extends React.Component {
         {
           parentState.totalEffectiveResponseDisagregatedByPartner.map((v,i) => <>
             <div style={{width: '50%', display: 'inline-block'}}>
-              <h1 className="subtitle" style={{marginLeft: '10px'}}> {v.row.label[0]}</h1>
+              <h1 className="subtitle" style={{marginLeft: '10px'}}> {v.row.label[0]} ({Math.floor(this.calculatePercentage(v.data.mean,v.questionsDisagregatedByPartner))}) %</h1>
               <div ref={`chart2-${i}`} id={`chart2-${i}`} />
             </div>
           </>
           )
         }
-  
+          <h1 className="bigTitle">Overall Performance</h1>
   
           {Object.keys(dataset).map(group => {
           return (
@@ -467,14 +472,14 @@ export default class CCPM_ReportContents extends React.Component {
                  {
                     parentState.ccpmReport[subGroup].questions.map((question,index) => {
                       return <>
-                      <tr key={question.row.label[0]}>
+                    <tr key={question.row.label[0]}>
                        <td className='report_tr_left'>{question.row.label[0]}</td>
                        <td className='report_tr_right' style={{ color: this.getStatusColor(question.averageLabel)}}>{question.averageLabel}</td>
                     </tr>
                     <tr style={{width: '100%', paddingLeft: '40px'}}>
                      {(dataset[group][subGroup].notes && (parentState.ccpmReport[subGroup].questions.length -1 === index)) && dataset[group][subGroup].notes.map((question, index2) => {
                        return <>
-                       {index2 === 0 && <h2 className="comment-title">{dataset[group][subGroup].noteName}</h2>}
+                       {(index2 === 0 && dataset[group][subGroup].noteName) && <h2 className="comment-title">{dataset[group][subGroup].noteName}</h2>}
                        {this.renderComment(question.code, question.name)}
                        </>
                      })}
@@ -487,7 +492,7 @@ export default class CCPM_ReportContents extends React.Component {
              </>
            })}
          </>)})}
-  
+         <h1 className="bigTitle">Question by Question Breakdows of Results</h1>
            {
              Object.keys(dataset).map(element => {
               if(element !== 'code' && element !== 'name'){
@@ -500,6 +505,9 @@ export default class CCPM_ReportContents extends React.Component {
               }
            })
           }
+        <h1 className="bigTitle">Final Comments</h1>
+            {this.renderComment('P_OI01', 'Partners')}
+            {this.renderComment('C_OI01', 'Coordinator')}
         </div>
       );
     }

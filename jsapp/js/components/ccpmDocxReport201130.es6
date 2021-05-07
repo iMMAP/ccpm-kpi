@@ -4,7 +4,7 @@ import {ccpm_getStatusLabel, ccpm_getStatusColor} from '../ccpmReport';
 import {toPng} from 'html-to-image';
 import {TextRun, Paragraph, ImageRun, SectionType, Table, TableRow, TableCell, WidthType} from 'docx';
 
-const getTable2 = (data, length, border = false, marginBottom = 150) => {
+const getTable2 = (data, length, border = false, marginBottom = 150, leftMargin = 40) => {
   if (!data) return;
   const columWidth = new Array(length);
   return new Table({
@@ -13,7 +13,7 @@ const getTable2 = (data, length, border = false, marginBottom = 150) => {
       margins:{
         top: 10,
         bottom: marginBottom,
-        left: 40,
+        left: leftMargin,
         right: 40
       },
       borders: border,
@@ -67,7 +67,7 @@ const renderComment = (questionCode, questionName, parentState) => {
             }),
             ];
         })
-        return getTable2(rows, 2, questionName, 20);
+        return getTable2(rows, 2, questionName, 20, 100);
     } 
     if(data.row.type === 'text') {
         const rows  = data.data.responses.map((response) => {
@@ -91,7 +91,7 @@ const renderComment = (questionCode, questionName, parentState) => {
               }),
             ];
         })
-        return getTable2(rows, 1, questionName, 20);
+        return getTable2(rows, 1, questionName, 20, 100);
     }
   }
 
@@ -298,6 +298,8 @@ const renderComment = (questionCode, questionName, parentState) => {
           if(table) dataToShow.push(table)
           if(dataset[group][subGroup].notes){
             dataset[group][subGroup].notes.forEach((question, index2) =>{
+              const commentTable = renderComment(question.code, question.name,parentState);
+              if(commentTable){
               dataToShow.push(new Paragraph({
                 spacing: {
                   before: 0,
@@ -324,8 +326,8 @@ const renderComment = (questionCode, questionName, parentState) => {
                 })
               ]  
               }));
-              const commentTable = renderComment(question.code, question.name,parentState);
-              if(commentTable)dataToShow.push(commentTable);
+              dataToShow.push(commentTable);
+              }
             })
           }  
                
@@ -357,7 +359,7 @@ const renderComment = (questionCode, questionName, parentState) => {
           
           children: [
             new TextRun({
-              text: `${v.row.label[0]} (${Math.floor((v.data.mean || 0 /v.questionsDisagregatedByPartner || 1) * 100)}) %` ,
+              text: `${v.row.label[0]}  (${isNaN(v.questionsDisagregatedByPartner) || v.questionsDisagregatedByPartner === 0 ? '' : Math.floor((v.data.mean || 0 /(isNaN(v.questionsDisagregatedByPartner)) ? 1 : v.questionsDisagregatedByPartner) * 100)}) %` ,
               size: 20,
               bold: true,
               color: '#797980',
@@ -383,7 +385,7 @@ const renderComment = (questionCode, questionName, parentState) => {
           },
           children: [
             new TextRun({
-              text: `${data[i+1].row.label[0]} (${Math.floor((data[i+1].data.mean || 0 /data[i+1].questionsDisagregatedByPartner || 1) * 100)}) %` ,
+              text: `${data[i+1].row.label[0]}  (${isNaN(data[i+1].questionsDisagregatedByPartner) || data[i+1].questionsDisagregatedByPartner === 0 ? '' : Math.floor((data[i+1].data.mean || 0 /(isNaN(data[i+1].questionsDisagregatedByPartner)) ? 1 : data[i+1].questionsDisagregatedByPartner) * 100)}) %`,
               size: 20,
               color: '#797980',
               bold: true,
@@ -436,7 +438,7 @@ const renderComment = (questionCode, questionName, parentState) => {
             },
             children: [
               new TextRun({
-                text: `${v.row.label[0]} (${Math.floor((v.data.mean || 0 /v.questionsDisagregatedByPartner || 1) * 100)}) %` ,
+                text: `${v.row.label[0]}  (${isNaN(v.questionsDisagregatedByPartner) || v.questionsDisagregatedByPartner === 0 ? '' : Math.floor((v.data.mean || 0 /(isNaN(v.questionsDisagregatedByPartner)) ? 1 : v.questionsDisagregatedByPartner) * 100)}) %` ,
                 size: 20,
                 color: '#797980',
                 style: {
@@ -523,7 +525,7 @@ const renderComment = (questionCode, questionName, parentState) => {
             after: 400,
           },
           border: {
-            bottom: {
+            left: {
               color: '#797980',
               size: 6,
               space: 10,
@@ -534,11 +536,12 @@ const renderComment = (questionCode, questionName, parentState) => {
             new TextRun({
               text: "Comment on Suggested Improvements",
               size: 22,
-              color: '#797980',
+              color: '#000000',
               style: {
                 size: 22,
                 color: '#797980',
-              }
+              },
+              
             }), 
         ]
           
@@ -552,7 +555,7 @@ const renderComment = (questionCode, questionName, parentState) => {
             after: 400,
           },
           border: {
-            bottom: {
+            left: {
               color: '#797980',
               size: 6,
               space: 10,
@@ -701,7 +704,7 @@ export default class CCPM_ReportContents {
                   children: [new ImageRun({
                   data:  Uint8Array.from(atob((v.find(img => img.id === 'idbytypesvg')).image.replace('data:image/png;base64,', '')),c=>c.charCodeAt(0)),
                   transformation: {
-                    width: 800,
+                    width: 600,
                     height: 150
                   },
                 })]}),
