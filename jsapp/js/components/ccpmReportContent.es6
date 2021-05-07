@@ -312,16 +312,16 @@ export default class CCPM_ReportContents extends React.Component {
         }}
       })
   
-      this.getChart('totalResponseChart', this.props.parentState.totalReponses.numberOfPartner, this.props.parentState.totalReponses.sum);
-      this.getChart('totalEffectiveResponseChart', this.props.parentState.totalEffectiveResponse.numberOfPartner, this.props.parentState.totalEffectiveResponse.sum);
+      this.getChart('totalResponseChart', this.props.parentState.totalReponses.sum, this.props.parentState.totalReponses.numberOfPartner);
+      this.getChart('totalEffectiveResponseChart', this.props.parentState.totalEffectiveResponse.sum, this.props.parentState.totalEffectiveResponse.numberOfPartner);
   
       this.getByTypeChart();
   
       this.props.parentState.totalResponseDisagregatedByPartner.forEach((v,i) => {
-        this.getChart(`chart-${i}`, v.questionsDisagregatedByPartner, v.data.mean, 100);
+        this.getChart(`chart-${i}`, v.data.mean, v.questionsDisagregatedByPartner,100);
       })
       this.props.parentState.totalEffectiveResponseDisagregatedByPartner.forEach((v,i) => {
-        this.getChart(`chart2-${i}`, v.questionsDisagregatedByPartner, v.data.mean,100);
+        this.getChart(`chart2-${i}`, v.data.mean,v.questionsDisagregatedByPartner,100);
       })
     }
   
@@ -376,7 +376,7 @@ export default class CCPM_ReportContents extends React.Component {
                 <tbody>
                     <tr>
                       <td className='report_tr_left_with_border'>Total</td>
-                      <td className='report_tr_right_with_border' >{Math.floor(this.calculatePercentage(this.props.parentState.totalReponses.sum, numberOfPartner))}%</td>
+                      <td className='report_tr_right_with_border' >{Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalReponses.sum))}%</td>
                     </tr>
                     <tr>
                         <td className='report_tr_left_with_border'>Tot. Number of Partners</td>
@@ -400,7 +400,7 @@ export default class CCPM_ReportContents extends React.Component {
         {
           parentState.totalResponseDisagregatedByPartner.map((v,i) => <>
           <div style={{width: '50%',display: 'inline-block'}}>
-            <h1 className="subtitle" style={{marginLeft: '10px'}}> {v.row.label[0]} ({Math.floor(this.calculatePercentage(v.data.mean,v.questionsDisagregatedByPartner))}) %</h1>
+            <h1 className="subtitle" style={{marginLeft: '10px'}}> {v.row.label[0]} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}) %</h1>
             <div ref={`chart-${i}`} id={`chart-${i}`} />
           </div>
           </>
@@ -415,7 +415,7 @@ export default class CCPM_ReportContents extends React.Component {
                 <tbody>
                 <tr>
                     <td className='report_tr_left_with_border'>Total</td>
-                    <td className='report_tr_right_with_border' >{Math.floor((this.props.parentState.totalEffectiveResponse.sum / (numberOfPartner  === 0 ? 1 : numberOfPartner)) * 100)}%</td>
+                    <td className='report_tr_right_with_border' >{Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalEffectiveResponse.sum))}%</td>
                 </tr>
                 <tr>
                     <td className='report_tr_left_with_border'>Tot. Number of Partners</td>
@@ -430,7 +430,7 @@ export default class CCPM_ReportContents extends React.Component {
         {
           parentState.totalEffectiveResponseDisagregatedByPartner.map((v,i) => <>
             <div style={{width: '50%', display: 'inline-block'}}>
-              <h1 className="subtitle" style={{marginLeft: '10px'}}> {v.row.label[0]} ({Math.floor(this.calculatePercentage(v.data.mean,v.questionsDisagregatedByPartner))}) %</h1>
+              <h1 className="subtitle" style={{marginLeft: '10px'}}> {v.row.label[0]} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}) %</h1>
               <div ref={`chart2-${i}`} id={`chart2-${i}`} />
             </div>
           </>
