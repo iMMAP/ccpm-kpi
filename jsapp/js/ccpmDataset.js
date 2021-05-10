@@ -5,7 +5,7 @@ const dataset = {
         comments: ['P_SS05', 'P_SS06'],
         meeting: {code : '01a', starting: 1, end: 6, name: 'Meetings', noteName: 'Notes from the Coordinator', notes: [{code: 'C_SD01', name: 'Meeting Frequency'}, {code: 'C_SD02', name: 'Notes on Meetings'}]},
         clusterStrategicDecisions : {code : '02', starting: 1, end: 3, name: 'Cluster Strategic Decisions',noteName: 'Notes on Strategic Decisions', notes: [{code: 'C_SD03', name: ''}]},
-        clusterMapping: {code: '03', starting: 1, end: 5, name: 'Cluster Mapping', noteName: 'Notes on Mapping', notes: [{code: 'C_SD04', name: ''}]},
+        clusterMapping: {code: '03', starting: 1, end: 5, name: 'Cluster Mapping', noteName: 'Notes on Cluster Mapping', notes: [{code: 'C_SD04', name: ''}]},
         identificationNeeds: {code: '04', starting: 1, end: 3, name: 'Identification of Needs, Gaps and Response Priorities', noteName: 'Notes on identification of Needs, Gaps and Priorities', notes: [{code: 'C_SD05', name: ''}] },
     },
     informingStrategicDecisions: {
@@ -22,17 +22,17 @@ const dataset = {
         name: 'Planning and Strategy Development',
         code: 'P_PS',
         comments: ['P_PS03', 'P_PS04'],
-        strategicPlan: {code: '01b', starting: 1, end: 4, name: 'Strategic Plan', noteName: 'Coordinator Note',notes: [{code: 'C_PS01', name: 'Has the cluster developed a strategic plan?'}]},
-        technicalStandard: {code: '02', starting: 1, end: 2, name: 'Technical standards and guidelines',noteName: 'Coordinator Note',notes: [{code: 'C_PS02', name: 'Have technical standards and guidelines been agreed?'}]},
+        strategicPlan: {code: '01b', starting: 1, end: 4, name: 'Strategic Plan', noteName: 'Coordinator Notes',notes: [{code: 'C_PS01', name: 'Has the cluster developed a strategic plan?'}]},
+        technicalStandard: {code: '02', starting: 1, end: 2, name: 'Technical standards and guidelines',noteName: 'Coordinator Notes',notes: [{code: 'C_PS02', name: 'Have technical standards and guidelines been agreed?'}]},
         prioritizationProposal: {code: '02', starting: 3, end: 5, name: 'Prioritization of proposals'},
-        updateFundingStatus: {code: '02', starting: 6, end: 6, name: 'Updates on funding status against needs', noteName: 'Coordinator Notes',notes: [{code: 'C_PS04', name: 'How often does the cluster report on funding status against needs?'}, {code: 'C_PS05', name: 'Planning and Strategy Development'}]}
+        updateFundingStatus: {code: '02', starting: 6, end: 6, name: 'Updates on funding status against needs', noteName: 'Coordinator Notes',notes: [{code: 'C_PS04', name: 'How often does the cluster report on funding status against needs?'}, {code: 'C_PS05', name: 'Notes on Planning and Strategy Development'}]}
     },
     advocacy: {
         code: 'P_AD',
         name: 'Advocacy',
         comments: ['P_AD02', 'P_AD03'],
         identificationAdvocacy: {code: '01', starting: 1, end: 1, name: 'Identification of advocacy issues'},
-        discussionAdvocacyIssue: {code: '01', starting: 2, end: 5, name: 'Discussion on advocacy issues', noteName: '',notes: [{code: 'C_AD01', name: 'Coordinator Notes on Advocacy'}]}
+        discussionAdvocacyIssue: {code: '01', starting: 2, end: 5, name: 'Discussion on advocacy issues', noteName: 'Coordinator Notes',notes: [{code: 'C_AD01', name: ''}]}
     },
     monitoringReporting: {
         code: 'P_MR',
@@ -40,7 +40,7 @@ const dataset = {
         comments: ['P_MR02', 'P_MR03'],
         clusterBulletins: {code: '01', starting: 1, end: 2, name: 'Cluster Bulletins'},
         programMonitoring: {code: '01', starting: 3, end: 4, name: 'Programme Monitoring and Reporting Formats', noteName: 'Coordinator Notes',notes: [{code: 'C_MR01', name: 'Have programme monitoring and reporting formats been agreed by the cluster?'}]},
-        considerationDiverseNeed: {code: '01', starting: 5, end: 5, name: 'Consideration of the diverse needs of women, girls, boys and men in response monitoring', noteName: 'Coordinator Notes on Monitoring and Reporting',notes: [{code: 'C_MR02', name: ''}]}
+        considerationDiverseNeed: {code: '01', starting: 5, end: 5, name: 'Consideration of the diverse needs of women, girls, boys and men in response monitoring', noteName: 'Coordinator Notes',notes: [{code: 'C_MR02', name: ''}]}
     },
     preparedness: {
         code: 'P_PR',
@@ -53,7 +53,7 @@ const dataset = {
         name: 'Accountability to Affected Populations',
         comments: ['P_AA02', 'P_AA03'],
         mechanismForConsulting: {code: '01', starting: 1, end: 2, name: 'Mechanisms for consulting and involving affected populations in decision making', noteName: 'Coordinator Notes',notes: [{code: 'C_AA01', name: 'Has the cluster agreed on mechanisms for consulting and involving affected populations in decision making?'}]},
-        mechanismToReceive: {code: '01', starting: 3, end: 4, name: 'Mechanisms to receive, investigate and act on complaints by affected people', noteName: 'Coordinator Notes',notes: [{code: 'C_AA02', name: 'Has the cluster agreed on mechanisms for receiving, investigating and acting on complaints from affected people?'}, {code: 'C_AA03', name: 'Notes on AAP'}]}
+        mechanismToReceive: {code: '01', starting: 3, end: 4, name: 'Mechanisms to receive, investigate and act on complaints by affected people', noteName: 'Coordinator Notes',notes: [{code: 'C_AA02', name: 'Has the cluster agreed on mechanisms for receiving, investigating and acting on complaints from affected people?'}, {code: 'C_AA03', name: 'Notes on Accountability to Affected Populations'}]}
     }
 }
 
