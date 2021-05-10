@@ -418,7 +418,7 @@ export default class CCPM_ReportContents extends React.Component {
                     <td className='report_tr_right_with_border' >{Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalEffectiveResponse.sum))}%</td>
                 </tr>
                 <tr>
-                    <td className='report_tr_left_with_border'>Tot. Number of Partners</td>
+                    <td className='report_tr_left_with_border'>Total Number of Partners</td>
                     <td className='report_tr_right_with_border' >{this.props.parentState.totalEffectiveResponse.numberOfPartner}</td>
                 </tr>
                 <tr>
