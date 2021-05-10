@@ -457,7 +457,7 @@ export default class CCPM_ReportContents extends React.Component {
             </table>
           </>)})}
   
-          <h1 className="bigTitle"> Score Breakdown</h1>
+          <h1 className="bigTitle">Score Breakdown</h1>
   
           {Object.keys(dataset).map(group => {
           return (
