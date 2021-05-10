@@ -750,7 +750,7 @@ export default class CCPM_ReportContents {
                   },
                   children: [
                     new TextRun({
-                      text: 'Total Effective Response',
+                      text: 'Total Responses',
                       size: 20,
                       color: '#797980',
                       style: {
