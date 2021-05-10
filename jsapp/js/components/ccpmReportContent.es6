@@ -492,7 +492,7 @@ export default class CCPM_ReportContents extends React.Component {
              </>
            })}
          </>)})}
-         <h1 className="bigTitle">Question by Question Breakdows of Results</h1>
+         <h1 className="bigTitle">Question by Question Breakdown of Results</h1>
            {
              Object.keys(dataset).map(element => {
               if(element !== 'code' && element !== 'name'){
