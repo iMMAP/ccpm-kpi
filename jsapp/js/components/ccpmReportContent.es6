@@ -390,7 +390,7 @@ export default class CCPM_ReportContents extends React.Component {
               </table>
             </div>
          </div>
-         <h1 className="title"> Overall Active Partners Response Rate by type</h1>
+         <h1 className="title">Responses by Type</h1>
         <div>
           <div style={{ textAlign: 'center', display: 'inline-block'}}>
           
