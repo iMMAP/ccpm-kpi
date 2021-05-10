@@ -647,7 +647,7 @@ export default class CCPM_ReportContents {
                   },
                   children: [
                     new TextRun({
-                      text: 'Overall Active Partners Response Rate',
+                      text: 'Total Responses',
                       size: 20,
                       color: '#797980',
                       style: {
