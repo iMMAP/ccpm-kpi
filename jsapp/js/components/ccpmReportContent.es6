@@ -409,7 +409,7 @@ export default class CCPM_ReportContents extends React.Component {
   
          <h1 className="bigTitle">Effective Response Rate</h1>
   
-        <h1 className="title">Total Effective Response</h1>
+        <h1 className="title">Total Responses</h1>
         <div ref='totalEffectiveResponseChart' style={{margin: 0, padding: 0, width: '60%', display:'inline-block'}}  id='totalEffectiveResponseChart' />      
         <table style={{width: '39%', borderCollapse: 'collapse',display: 'inline-block'}}>
                 <tbody>
