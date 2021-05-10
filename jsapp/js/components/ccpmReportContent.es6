@@ -422,7 +422,7 @@ export default class CCPM_ReportContents extends React.Component {
                     <td className='report_tr_right_with_border' >{this.props.parentState.totalEffectiveResponse.numberOfPartner}</td>
                 </tr>
                 <tr>
-                    <td className='report_tr_left_with_border'>Tot. Partners Responding</td>
+                    <td className='report_tr_left_with_border'>Number Partners Responding</td>
                     <td className='report_tr_right_with_border' >{this.props.parentState.totalEffectiveResponse.sum}</td>
                 </tr>
                 </tbody>
