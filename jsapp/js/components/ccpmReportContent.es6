@@ -1,8 +1,7 @@
 import React from 'react';
 import dataset, {ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion} from '../ccpmDataset';
 import ReactDOM from 'react-dom';
-import d3Waffle, {slugify} from '../d3Waffle';
-import * as d3 from 'd3';
+import { ResponsiveWaffleCanvas } from '@nivo/waffle'
 
 export default class CCPM_ReportContents extends React.Component {
     constructor(props) {
@@ -256,48 +255,6 @@ export default class CCPM_ReportContents extends React.Component {
       return opts;
     }
   
-    getChart(name, total = 1, sum = 0, height, colorRange = ['#097ca8', '#dedede']) {
-      if(isNaN(total) || total === 0 ) total = 1;
-      if(isNaN(sum)) sum = 0;
-      let coveredValue = sum / total;
-      coveredValue = coveredValue * 100;
-  
-      var data = [
-        { "name": `${Math.floor(coveredValue)}%`, "value": coveredValue > 100 ? 100 : coveredValue},
-        { "name": `${Math.floor(coveredValue > 100 ? 0 : 100-coveredValue)}%`, "value": coveredValue > 100 ? 0 : 100-coveredValue},
-      ];
-  
-      var domain = data.map(function(d){ return slugify(d.name); })
-      var palette = d3.scale.ordinal().domain(domain).range(colorRange); 
-  
-      let chart = d3Waffle(`${name}svg`).rows(5);
-      chart.colorscale(palette);
-      chart = chart.height(height || 120);
-      
-  
-      if(document.getElementById(name)){
-        const el = d3.select(`#${name}`)
-          .datum(data)
-          .call(chart);
-      }
-  }
-  
-    getByTypeChart(){
-      const globalQuestion = this.props.parentState.reportData.find(e => e.name === 'P_GI03');
-      const data = globalQuestion.data.frequencies.map((v, index)=>{
-        return {value:(v / globalQuestion.data.provided)*100, name: globalQuestion.data.responses[index]}
-      });
-  
-      let chart = d3Waffle(`bytypesvg`,true).rows(5);
-      chart = chart.height(120);
-  
-      if(document.getElementById('totalResponseChartByType')){
-      d3.select('#totalResponseChartByType')
-        .datum(data)
-        .call(chart);
-      }
-    }
-  
     loadChart() {
       Object.keys(dataset).forEach(element => {
         if(element !== 'code'){
@@ -310,18 +267,6 @@ export default class CCPM_ReportContents extends React.Component {
         } else {
           this[`itemChart-${element}`] = new Chart(canvas, opts);
         }}
-      })
-  
-      this.getChart('totalResponseChart', this.props.parentState.totalReponses.sum, this.props.parentState.totalReponses.numberOfPartner);
-      this.getChart('totalEffectiveResponseChart', this.props.parentState.totalEffectiveResponse.sum, this.props.parentState.totalEffectiveResponse.numberOfPartner);
-  
-      this.getByTypeChart();
-  
-      this.props.parentState.totalResponseDisagregatedByPartner.forEach((v,i) => {
-        this.getChart(`chart-${i}`, v.data.mean, v.questionsDisagregatedByPartner,100);
-      })
-      this.props.parentState.totalEffectiveResponseDisagregatedByPartner.forEach((v,i) => {
-        this.getChart(`chart2-${i}`, v.data.mean,v.questionsDisagregatedByPartner,100);
       })
     }
   
@@ -355,7 +300,7 @@ export default class CCPM_ReportContents extends React.Component {
       }
     }
 
-    calculatePercentage(sum, total) {
+    calculatePercentage(total, sum) {
       if(total === 0 || isNaN(total)) total = 1;
       if(isNaN(sum)) sum = 0;
       return (sum / total) * 100;
@@ -370,20 +315,48 @@ export default class CCPM_ReportContents extends React.Component {
           <h1 className="bigTitle">Overall Response Rate</h1>
           <h1 className="title"> Overall Active Partners Response Rate</h1>
           <div>
-            <div>
-              <div style={{margin: 0, padding: 0, width: '60%', display:'inline-block'}} ref='totalResponseChart' id='totalResponseChart' />
-              <table style={{width: '39%', borderCollapse: 'collapse',display: 'inline-block'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', width: '100%'}}>
+              <div style={{height: '150px', width: "60%"}}>
+              <div style={{ height: '100%', width: '100%', display:'inline-block'}} ref='totalResponseChart' id='totalResponseChart' >
+              <ResponsiveWaffleCanvas
+                  data={[
+                    {
+                      "id": "totalReponse",
+                      "label": "Total",
+                      "value": Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalReponses.sum)) > 100 ? 100 : Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalReponses.sum)),
+                      "color": "#097ca8"
+                    },
+                    {
+                      "id": "noResponse",
+                      "label": "",
+                      "value": Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalReponses.sum)) > 100 ? 0 : 100 - Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalReponses.sum)),
+                      "color": "#dedede"
+                    }
+                  ]}
+                  pixelRatio={1}
+                  total={100}
+                  rows={5}
+                  columns={20}
+                  fillDirection="left"
+                  padding={2}
+                  margin={{ top: 0, right: 10, bottom: 0, left: 5 }}
+                  colors={["#097ca8", "#dedede"]}
+                  borderColor={{ from: 'color', modifiers: [ [ 'darker', 0.3 ] ] }}
+                  />
+              </div>
+              </div>
+              <table style={{width: '30%', borderCollapse: 'collapse'}}>
                 <tbody>
                     <tr>
                       <td className='report_tr_left_with_border'>Total</td>
                       <td className='report_tr_right_with_border' >{Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalReponses.sum))}%</td>
                     </tr>
                     <tr>
-                        <td className='report_tr_left_with_border'>Tot. Number of Partners</td>
+                        <td className='report_tr_left_with_border'>Tot. Partners Responding</td>
                         <td className='report_tr_right_with_border' >{this.props.parentState.totalReponses.numberOfPartner}</td>
                     </tr>
                     <tr>
-                        <td className='report_tr_left_with_border'>Tot. Partners Responding</td>
+                        <td className='report_tr_left_with_border'>Tot. Number of Partners</td>
                         <td className='report_tr_right_with_border' >{this.props.parentState.totalReponses.sum}</td>
                     </tr>
                 </tbody>
@@ -391,17 +364,38 @@ export default class CCPM_ReportContents extends React.Component {
             </div>
          </div>
          <h1 className="title"> Overall Active Partners Response Rate by type</h1>
-        <div>
-          <div style={{ textAlign: 'center', display: 'inline-block'}}>
-          
-          <div style={{margin: 0, padding: 0}} ref='totalResponseChartByType' id='totalResponseChartByType' />
-          </div>
-        </div>
         {
+          
           parentState.totalResponseDisagregatedByPartner.map((v,i) => <>
-          <div style={{width: '50%',display: 'inline-block'}}>
+          <div style={{width: '50%',display: 'inline-block', height: '150px'}}>
             <h1 className="subtitle" style={{marginLeft: '10px'}}> {v.row.label[0]} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}) %</h1>
-            <div ref={`chart-${i}`} id={`chart-${i}`} />
+            <div ref={`chart-${i}`} id={`chart-${i}`} style={{height: "80%"}}>
+            <ResponsiveWaffleCanvas
+                  data={[
+                    {
+                      "id": "totalReponse",
+                      "label": "Total",
+                      "value": Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)) > 100 ? 100 : Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)),
+                      "color": "#097ca8"
+                    },
+                    {
+                      "id": "noResponse",
+                      "label": "",
+                      "value": Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)) > 100 ? 0 : 100 - Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)),
+                      "color": "#dedede"
+                    },
+                  ]}
+                  pixelRatio={1}
+                  total={100}
+                  rows={5}
+                  fillDirection="left"
+                  columns={20}
+                  padding={2}
+                  margin={{ top: 0, right: 0, bottom: 10, left: 0 }}
+                  colors={["#097ca8", "#dedede"]}
+                  borderColor={{ from: 'color', modifiers: [ [ 'darker', 0.3 ] ] }}
+                  />
+              </div>
           </div>
           </>
           )
@@ -410,29 +404,83 @@ export default class CCPM_ReportContents extends React.Component {
          <h1 className="bigTitle">Effective Response Rate</h1>
   
         <h1 className="title">Total Effective Response</h1>
-        <div ref='totalEffectiveResponseChart' style={{margin: 0, padding: 0, width: '60%', display:'inline-block'}}  id='totalEffectiveResponseChart' />      
-        <table style={{width: '39%', borderCollapse: 'collapse',display: 'inline-block'}}>
+        <div style={{display: 'flex', justifyContent: 'space-between'}}>
+          <div ref='totalEffectiveResponseChart' style={{margin: 0, padding: 0, width: '60%', height: '150px'}}  id='totalEffectiveResponseChart' >
+            <ResponsiveWaffleCanvas
+                      data={[
+                        {
+                          "id": "totalReponse",
+                          "label": "Total",
+                          "value": Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalEffectiveResponse.sum)) > 100 ? 100 : Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalEffectiveResponse.sum)),
+                          "color": "#097ca8"
+                        },
+                        {
+                          "id": "noResponse",
+                          "label": "",
+                          "value": Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalEffectiveResponse.sum)) > 100 ? 0 : 100 - Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalEffectiveResponse.sum)),
+                          "color": "#dedede"
+                        },
+                      ]}
+                      pixelRatio={1}
+                      total={100}
+                      rows={5}
+                      columns={20}
+                      padding={2}
+                      margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+                      colors={["#097ca8", "#dedede"]}
+                      borderColor={{ from: 'color', modifiers: [ [ 'darker', 0.3 ] ] }}
+                      />
+          </div>      
+          <table style={{width: '30%', borderCollapse: 'collapse'}}>
                 <tbody>
                 <tr>
                     <td className='report_tr_left_with_border'>Total</td>
                     <td className='report_tr_right_with_border' >{Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalEffectiveResponse.sum))}%</td>
                 </tr>
                 <tr>
-                    <td className='report_tr_left_with_border'>Tot. Number of Partners</td>
+                    <td className='report_tr_left_with_border'>Tot. Partners Responding</td>
                     <td className='report_tr_right_with_border' >{this.props.parentState.totalEffectiveResponse.numberOfPartner}</td>
                 </tr>
                 <tr>
-                    <td className='report_tr_left_with_border'>Tot. Partners Responding</td>
+                    <td className='report_tr_left_with_border'>Tot. Number of Partners</td>
                     <td className='report_tr_right_with_border' >{this.props.parentState.totalEffectiveResponse.sum}</td>
                 </tr>
                 </tbody>
           </table>
+        </div>
+        <h1 className="title"> Effective Partners Response Rate by type</h1>
         {
           parentState.totalEffectiveResponseDisagregatedByPartner.map((v,i) => <>
-            <div style={{width: '50%', display: 'inline-block'}}>
+            <div style={{width: '50%', display: 'inline-block',height: '150px'}}>
               <h1 className="subtitle" style={{marginLeft: '10px'}}> {v.row.label[0]} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}) %</h1>
-              <div ref={`chart2-${i}`} id={`chart2-${i}`} />
-            </div>
+              <div ref={`chart2-${i}`} id={`chart2-${i}`} style={{height: "80%"}}>
+            <ResponsiveWaffleCanvas
+                  data={[
+                    {
+                      "id": "totalReponse",
+                      "label": "Total",
+                      "value": Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)) > 100 ? 100 : Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)),
+                      "color": "#097ca8"
+                    },
+                    {
+                      "id": "noResponse",
+                      "label": "",
+                      "value": Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)) > 100 ? 0 : 100 - Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)),
+                      "color": "#dedede"
+                    },
+                  ]}
+                  pixelRatio={1}
+                  total={100}
+                  rows={5}
+                  fillDirection="left"
+                  columns={20}
+                  padding={2}
+                  margin={{ top: 0, right: 10, bottom: 10, left: -5 }}
+                  colors={["#097ca8", "#dedede"]}
+                  borderColor={{ from: 'color', modifiers: [ [ 'darker', 0.3 ] ] }}
+                  />
+              </div>
+          </div>
           </>
           )
         }

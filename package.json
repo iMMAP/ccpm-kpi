@@ -91,9 +91,9 @@
   "bugs": "https://github.com/kobotoolbox/kpi/issues",
   "homepage": "https://github.com/kobotoolbox/kpi",
   "dependencies": {
-    "d3": "^3.5.16",
+    "@nivo/core": "^0.69.0",
+    "@nivo/waffle": "^0.69.0",
     "docx": "^6.0.2",
-    "html-to-image": "^1.6.1",
     "save-as": "^0.1.8"
   }
 }

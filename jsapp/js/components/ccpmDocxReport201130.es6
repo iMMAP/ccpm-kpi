@@ -1,7 +1,6 @@
 import {Document} from "docx";
 import dataset from '../ccpmDataset';
 import {ccpm_getStatusLabel, ccpm_getStatusColor} from '../ccpmReport';
-import {toPng} from 'html-to-image';
 import {TextRun, Paragraph, ImageRun, SectionType, Table, TableRow, TableCell, WidthType} from 'docx';
 
 const getTable2 = (data, length, border = false, marginBottom = 150, leftMargin = 40) => {
@@ -11,7 +10,7 @@ const getTable2 = (data, length, border = false, marginBottom = 150, leftMargin 
       columnWidths: columWidth.map(w => 9000/columWidth.length),
       width:{size: 100, type:WidthType.PERCENTAGE},
       margins:{
-        top: 10,
+        top: 150,
         bottom: marginBottom,
         left: leftMargin,
         right: 40
@@ -24,6 +23,122 @@ const getTable2 = (data, length, border = false, marginBottom = 150, leftMargin 
         }))
       }))]
     })
+}
+
+const getBigTitle = (title) => {
+  return  new Paragraph({
+    spacing: {
+      before: 0,
+      after: 50,
+    },
+    border: {
+      top: {
+        color: '#097ca8',
+        size: 15,
+        space: 10,
+        value: 'single'
+      },
+    },
+    children: [new TextRun({
+      text: title,
+      color: '#000000',
+      size: 28,
+      bold:true,
+      style: {
+        size: 28,
+        color: '#000000',
+        bold: true
+      }
+    })
+  ] 
+  })
+}
+
+const getTitle = (text) => {
+  return new Paragraph({
+    spacing: {
+      before: 0,
+      after: 50,
+    },
+    children: [new TextRun({
+      text,
+      color: '#4e4e4e',
+      size: 26,
+      bold:true,
+      style: {
+        size: 26,
+        color: '#4e4e4e',
+        bold: true
+      }
+    })
+  ]
+    
+  })
+}
+
+const getSubTitle = (text) => {
+  return new Paragraph({
+    spacing: {
+      before: 100,
+      after: 100,
+    },
+    
+    children: [
+      new TextRun({
+        text: text,
+        size: 22,
+        color: '#000000',
+        bold: true,
+        style: {
+          size: 22,
+          color: '#000000',
+        }
+      }), 
+  ] 
+  })
+}
+
+const getTableContent = (text) => {
+  return new Paragraph({
+    spacing: {
+      before: 100,
+      after: 100,
+    },
+    
+    children: [
+      new TextRun({
+        text: text,
+        size: 22,
+        color: '#4e4e4e',
+        bold: false,
+        style: {
+          size: 22,
+          color: '#4e4e4e',
+        }
+      }), 
+  ] 
+  })
+}
+
+const getNoteTitle = (text) => {
+  return new Paragraph({
+    spacing: {
+      before: 0,
+      after: 50,
+    },
+    children: [new TextRun({
+      text,
+      color: '#000000',
+      size: 21,
+      bold:true,
+      style: {
+        size: 21,
+        color: '#000000',
+        bold: true
+      }
+    })
+  ]  
+  })
 }
 
 const renderComment = (questionCode, questionName, parentState) => {
@@ -39,11 +154,11 @@ const renderComment = (questionCode, questionName, parentState) => {
               children: [
                 new TextRun({
                   text: response,
-                  size: 20,
-                  color: '#808080',
+                  size: 19,
+                  color: '#000000',
                   style: {
-                    size: 20,
-                    color: '#808080',
+                    size: 19,
+                    color: '#000000',
                   }
                 }), 
             ] 
@@ -56,11 +171,11 @@ const renderComment = (questionCode, questionName, parentState) => {
               children: [
                 new TextRun({
                   text:`${data.data.percentages[index]} %`,
-                  size: 20,
-                  color: '#808080',
+                  size: 19,
+                  color: '#000000',
                   style: {
-                    size: 20,
-                    color: '#808080',
+                    size: 19,
+                    color: '#000000',
                   }
                 }), 
             ] 
@@ -99,53 +214,11 @@ const renderComment = (questionCode, questionName, parentState) => {
     const dataToShow = [];
     Object.keys(dataset).forEach(group => {
 
-      dataToShow.push(new Paragraph({
-          spacing: {
-            before: 0,
-            after: 50,
-          },
-          border: {
-            top: {
-              color: '#797980',
-              size: 2,
-              space: 10,
-              value: 'single'
-            },
-          },
-          children: [new TextRun({
-            text: dataset[group].name,
-            color: '#000000',
-            size: 24,
-            bold:true,
-            style: {
-              size: 24,
-              color: '#000000',
-              bold: true
-            }
-          })
-        ]
-          
-        }));
+      dataToShow.push(getTitle(dataset[group].name));
 
       const tableData = Object.keys(dataset[group]).filter(sg => sg !== 'code' && sg !== 'name' && sg !== 'comments').map(subGroup => {
         return [
-          new Paragraph({
-            spacing: {
-              before: 100,
-              after: 400,
-            },
-            children: [
-              new TextRun({
-                text: dataset[group][subGroup].name,
-                size: 20,
-                color: '#808080',
-                style: {
-                  size: 20,
-                  color: '#808080',
-                }
-              }), 
-          ] 
-          }),
+          getTableContent(dataset[group][subGroup].name),
           new Paragraph({
             spacing: {
               before: 100,
@@ -169,111 +242,15 @@ const renderComment = (questionCode, questionName, parentState) => {
       const table = getTable2(tableData, 2, true, 20);
       if(table) dataToShow.push(table);
 }   );
-     dataToShow.push(new Paragraph({
-        spacing: {
-          before: 0,
-          after: 50,
-        },
-        border: {
-          top: {
-            color: '#797980',
-            size: 2,
-            space: 10,
-            value: 'single'
-          },
-        },
-        children: [new TextRun({
-          text: 'Score Breakdown',
-          color: '#000000',
-          size: 24,
-          bold:true,
-          style: {
-            size: 24,
-            color: '#000000',
-            bold: true
-          }
-        })
-      ]
-        
-      }));
+     dataToShow.push(getBigTitle("Score Breakdown"));
     Object.keys(dataset).forEach(group => {
-
-        dataToShow.push(new Paragraph({
-            spacing: {
-              before: 0,
-              after: 50,
-            },
-            border: {
-              top: {
-                color: '#797980',
-                size: 2,
-                space: 10,
-                value: 'single'
-              },
-            },
-            children: [new TextRun({
-              text: dataset[group].name,
-              color: '#000000',
-              size: 24,
-              bold:true,
-              style: {
-                size: 24,
-                color: '#000000',
-                bold: true
-              }
-            })
-          ]
-            
-          }));
+        dataToShow.push(dataset[group].name);
         Object.keys(dataset[group]).filter(sg => sg !== 'code' && sg !== 'name' && sg !== 'comments').forEach(subGroup => {
             
-          dataToShow.push(new Paragraph({
-            spacing: {
-              before: 0,
-              after: 50,
-            },
-            border: {
-              top: {
-                color: '#797980',
-                size: 2,
-                space: 10,
-                value: 'single'
-              },
-            },
-            children: [new TextRun({
-              text: dataset[group][subGroup]['name'],
-              color: '#000000',
-              size: 24,
-              bold:true,
-              style: {
-                size: 24,
-                color: '#000000',
-                bold: true
-              }
-            })
-          ]
-            
-          }));
+          dataToShow.push(getTitle(dataset[group][subGroup]['name']));
           const tableData = parentState.ccpmReport[subGroup].questions.map((question,index) => {
             return [
-              new Paragraph({
-                spacing: {
-                  before: 100,
-                  after: 400,
-                },
-                children: [
-                  new TextRun({
-                    text: question.row.label[0],
-                    size: 20,
-                    color: '#808080',
-                    bold: true,
-                    style: {
-                      size: 20,
-                      color: '#808080',
-                    }
-                  }), 
-              ] 
-              }),
+              getTableContent(question.row.label[0]),
               new Paragraph({
                 spacing: {
                   before: 100,
@@ -300,32 +277,7 @@ const renderComment = (questionCode, questionName, parentState) => {
             dataset[group][subGroup].notes.forEach((question, index2) =>{
               const commentTable = renderComment(question.code, question.name,parentState);
               if(commentTable){
-              dataToShow.push(new Paragraph({
-                spacing: {
-                  before: 0,
-                  after: 50,
-                },
-                border: {
-                  top: {
-                    color: '#797980',
-                    size: 2,
-                    space: 10,
-                    value: 'single'
-                  },
-                },
-                children: [new TextRun({
-                  text: dataset[group][subGroup].noteName,
-                  color: '#000000',
-                  size: 24,
-                  bold:true,
-                  style: {
-                    size: 24,
-                    color: '#000000',
-                    bold: true
-                  }
-                })
-              ]  
-              }));
+              dataToShow.push(getNoteTitle(dataset[group][subGroup].noteName));
               dataToShow.push(commentTable);
               }
             })
@@ -340,62 +292,10 @@ const renderComment = (questionCode, questionName, parentState) => {
     const table = [];
     data.forEach((v,i) =>
     {
-
       if(i%2 === 0){
         if(data[i+1]){
-        table.push([new Paragraph({
-          spacing: {
-            before: 100,
-            after: 400,
-          },
-          border: {
-            bottom: {
-              color: '#797980',
-              size: 6,
-              space: 10,
-              value: 'single'
-            }
-          },
-          
-          children: [
-            new TextRun({
-              text: `${v.row.label[0]}  (${isNaN(v.questionsDisagregatedByPartner) || v.questionsDisagregatedByPartner === 0 ? '' : Math.floor((v.data.mean || 0 /(isNaN(v.questionsDisagregatedByPartner)) ? 1 : v.questionsDisagregatedByPartner) * 100)}) %` ,
-              size: 20,
-              bold: true,
-              color: '#797980',
-              style: {
-                size: 20,
-                color: '#797980',
-              }
-            }), 
-        ] 
-        }),
-        new Paragraph({
-          spacing: {
-            before: 100,
-            after: 400,
-          },
-          border: {
-            bottom: {
-              color: '#797980',
-              size: 6,
-              space: 10,
-              value: 'single'
-            }
-          },
-          children: [
-            new TextRun({
-              text: `${data[i+1].row.label[0]}  (${isNaN(data[i+1].questionsDisagregatedByPartner) || data[i+1].questionsDisagregatedByPartner === 0 ? '' : Math.floor((data[i+1].data.mean || 0 /(isNaN(data[i+1].questionsDisagregatedByPartner)) ? 1 : data[i+1].questionsDisagregatedByPartner) * 100)}) %`,
-              size: 20,
-              color: '#797980',
-              bold: true,
-              style: {
-                size: 20,
-                color: '#797980',
-              }
-            }), 
-        ] 
-        })
+        table.push([getSubTitle(`${v.row.label[0]}  (${isNaN(v.questionsDisagregatedByPartner) || v.questionsDisagregatedByPartner === 0 ? '' : Math.floor((v.data.mean || 0 /(isNaN(v.questionsDisagregatedByPartner)) ? 1 : v.questionsDisagregatedByPartner) * 100)}) %`),
+        getSubTitle(`${data[i+1].row.label[0]}  (${isNaN(data[i+1].questionsDisagregatedByPartner) || data[i+1].questionsDisagregatedByPartner === 0 ? '' : Math.floor((data[i+1].data.mean || 0 /(isNaN(data[i+1].questionsDisagregatedByPartner)) ? 1 : data[i+1].questionsDisagregatedByPartner) * 100)}) %`)
       ]);
       table.push([new Paragraph({
             spacing: {
@@ -403,7 +303,7 @@ const renderComment = (questionCode, questionName, parentState) => {
               after: 200,
             },
             children: [new ImageRun({
-            data:  Uint8Array.from(atob((imageData.find(img => img.id === `idchart${chartNumber}-${i}svg`)).image.replace('data:image/png;base64,', '')),c=>c.charCodeAt(0)),
+            data:  Uint8Array.from(atob((document.getElementById(`chart${chartNumber}-${i}`).querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')),c=>c.charCodeAt(0)),
             transformation: {
               width: 340,
               height: 100
@@ -415,7 +315,7 @@ const renderComment = (questionCode, questionName, parentState) => {
             after: 200,
           },
           children: [new ImageRun({
-          data:  Uint8Array.from(atob((imageData.find(img => img.id === `idchart${chartNumber}-${i+1}svg`)).image.replace('data:image/png;base64,', '')),c=>c.charCodeAt(0)),
+          data:  Uint8Array.from(atob((document.getElementById(`chart${chartNumber}-${i+1}`).querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')),c=>c.charCodeAt(0)),
           transformation: {
             width: 340,
             height: 100
@@ -423,31 +323,8 @@ const renderComment = (questionCode, questionName, parentState) => {
         })]})
        ])
       } else {
-          table.push([new Paragraph({
-            spacing: {
-              before: 100,
-              after: 400,
-            },
-            border: {
-              bottom: {
-                color: '#797980',
-                size: 6,
-                space: 10,
-                value: 'single'
-              }
-            },
-            children: [
-              new TextRun({
-                text: `${v.row.label[0]}  (${isNaN(v.questionsDisagregatedByPartner) || v.questionsDisagregatedByPartner === 0 ? '' : Math.floor((v.data.mean || 0 /(isNaN(v.questionsDisagregatedByPartner)) ? 1 : v.questionsDisagregatedByPartner) * 100)}) %` ,
-                size: 20,
-                color: '#797980',
-                style: {
-                  size: 20,
-                  color: '#797980',
-                }
-              }), 
-          ] 
-          }),
+          table.push([
+            getSubTitle(`${v.row.label[0]}  (${isNaN(v.questionsDisagregatedByPartner) || v.questionsDisagregatedByPartner === 0 ? '' : Math.floor((v.data.mean || 0 /(isNaN(v.questionsDisagregatedByPartner)) ? 1 : v.questionsDisagregatedByPartner) * 100)}) %`)
         ]);
         table.push([new Paragraph({
             spacing: {
@@ -455,7 +332,7 @@ const renderComment = (questionCode, questionName, parentState) => {
               after: 200,
             },
             children: [new ImageRun({
-                  data:  Uint8Array.from(atob((imageData.find(img => img.id === `idchart${chartNumber}-${i}svg`)).image.replace('data:image/png;base64,', '')),c=>c.charCodeAt(0)),
+                  data: Uint8Array.from(atob((document.getElementById(`chart${chartNumber}-${i}`).querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')),c=>c.charCodeAt(0)),
                   transformation: {
                     width: 250,
                     height: 80
@@ -474,33 +351,7 @@ const renderComment = (questionCode, questionName, parentState) => {
       const data = [];
       Object.keys(dataset).forEach(element => {
        if(element !== 'code' && element !== 'name'){
-        data.push(new Paragraph({
-          spacing: {
-            before: 100,
-            after: 400,
-          },
-          border: {
-            bottom: {
-              color: '#797980',
-              size: 6,
-              space: 10,
-              value: 'single'
-            }
-          },
-          children: [
-            new TextRun({
-              text: dataset[element].name,
-              size: 22,
-              color: '#797980',
-              style: {
-                size: 22,
-                color: '#797980',
-              }
-            }), 
-        ]
-          
-        }));
-        
+        data.push(getTitle(dataset[element].name));
         let image = '';
         const canv = window.document.getElementById(`${element}canv`);
         if(canv){
@@ -519,62 +370,11 @@ const renderComment = (questionCode, questionName, parentState) => {
           })]}),)
         }
 
-        data.push(new Paragraph({
-          spacing: {
-            before: 100,
-            after: 400,
-          },
-          border: {
-            left: {
-              color: '#797980',
-              size: 6,
-              space: 10,
-              value: 'single'
-            }
-          },
-          children: [
-            new TextRun({
-              text: "Comment on Suggested Improvements",
-              size: 22,
-              color: '#000000',
-              style: {
-                size: 22,
-                color: '#797980',
-              },
-              
-            }), 
-        ]
-          
-        }));
+        data.push(getNoteTitle("Comment on Suggested Improvements"));
 
         data.push(renderComment(dataset[element].comments[0], 'Comments on Suggested Improvements', parentState));
 
-        data.push(new Paragraph({
-          spacing: {
-            before: 100,
-            after: 400,
-          },
-          border: {
-            left: {
-              color: '#797980',
-              size: 6,
-              space: 10,
-              value: 'single'
-            }
-          },
-          children: [
-            new TextRun({
-              text: "Comments on Success Stories",
-              size: 22,
-              color: '#000000',
-              style: {
-                size: 22,
-                color: '#797980',
-              }
-            }), 
-        ]
-          
-        }));
+        data.push(getNoteTitle("Comments on Success Stories"));
         data.push(renderComment(dataset[element].comments[1], 'Comments on Success Stories', parentState))
        }
     })
@@ -583,21 +383,7 @@ const renderComment = (questionCode, questionName, parentState) => {
 
 export default class CCPM_ReportContents {
     create(parentState){
-      const images = document.getElementsByClassName('svgImage');
-      const imageData = {};
-      for(let i = 0;i<images.length;i++){
-        if(!imageData[images.item(i).id]) imageData[images.item(i).id] = images.item(i);
-      }
-
-      return Promise.all(Object.keys(imageData).map( (v,i)=>{
-        if(imageData[v]){
-          return toPng(imageData[v]).then(result => {
-            return Promise.resolve({image: result, id: v});
-          }).catch(err => {
-            return ''
-          })
-        } 
-      })).then(v => {
+    
         return new Promise((resolve)=>{
           const  sections = [
             {
@@ -605,176 +391,38 @@ export default class CCPM_ReportContents {
                 type: SectionType.CONTINUOUS,
               },
               children: [
-                new Paragraph({
-                  spacing: {
-                    before: 0,
-                    after: 50,
-                  },
-                  border: {
-                    top: {
-                      color: '#797980',
-                      size: 2,
-                      space: 10,
-                      value: 'single'
-                    },
-                  },
-                  children: [new TextRun({
-                    text: 'Overall Response Rate',
-                    color: '#000000',
-                    size: 24,
-                    bold:true,
-                    style: {
-                      size: 24,
-                      color: '#000000',
-                      bold: true
-                    }
-                  })
-                ]
-                  
-                }),
-                new Paragraph({
-                  spacing: {
-                    before: 100,
-                    after: 400,
-                  },
-                  border: {
-                    bottom: {
-                      color: '#797980',
-                      size: 6,
-                      space: 10,
-                      value: 'single'
-                    }
-                  },
-                  children: [
-                    new TextRun({
-                      text: 'Overall Active Partners Response Rate',
-                      size: 20,
-                      color: '#797980',
-                      style: {
-                        size: 20,
-                        color: '#797980',
-                      }
-                    }), 
-                ]
-                  
-                }),
+                getBigTitle("Overall Response Rate"),
+                getTitle('Overall Active Partners Response Rate'),
                 new Paragraph({
                   spacing: {
                     before: 100,
                     after: 200,
                   },
                   children: [new ImageRun({
-                  data:  Uint8Array.from(atob((v.find(img => img.id === 'idtotalResponseChartsvg')).image.replace('data:image/png;base64,', '')),c=>c.charCodeAt(0)),
+                  data:  Uint8Array.from(atob((document.getElementById('totalResponseChart').querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')),c=>c.charCodeAt(0)),
                   transformation: {
                     width: 450,
                     height: 100
                   },
                 })]}),
-                new Paragraph({
-                  spacing: {
-                    before: 100,
-                    after: 400,
-                  },
-                  border: {
-                    bottom: {
-                      color: '#797980',
-                      size: 6,
-                      space: 10,
-                      value: 'single'
-                    }
-                  },
-                  children: [
-                    new TextRun({
-                      text: 'Overall Active Partners Response Rate by type',
-                      size: 20,
-                      color: '#797980',
-                      style: {
-                        size: 20,
-                        color: '#797980',
-                      }
-                    }), 
-                ]
-                  
-                }),
+                getTitle('Overall Active Partners Response Rate by type'),
+                getImages({}, parentState.totalResponseDisagregatedByPartner, ''),
+                getBigTitle("Effective Response Rate"),
+                getTitle('Total Effective Response'),
                 new Paragraph({
                   spacing: {
                     before: 100,
                     after: 200,
                   },
                   children: [new ImageRun({
-                  data:  Uint8Array.from(atob((v.find(img => img.id === 'idbytypesvg')).image.replace('data:image/png;base64,', '')),c=>c.charCodeAt(0)),
-                  transformation: {
-                    width: 600,
-                    height: 150
-                  },
-                })]}),
-                getImages(v, parentState.totalResponseDisagregatedByPartner, ''),
-                new Paragraph({
-                  spacing: {
-                    before: 0,
-                    after: 50,
-                  },
-                  border: {
-                    top: {
-                      color: '#797980',
-                      size: 2,
-                      space: 10,
-                      value: 'single'
-                    },
-                  },
-                  children: [new TextRun({
-                    text: 'Effective Response Rate',
-                    color: '#000000',
-                    size: 24,
-                    bold:true,
-                    style: {
-                      size: 24,
-                      color: '#000000',
-                      bold: true
-                    }
-                  })
-                ]
-                }),
-                new Paragraph({
-                  spacing: {
-                    before: 100,
-                    after: 400,
-                  },
-                  border: {
-                    bottom: {
-                      color: '#797980',
-                      size: 6,
-                      space: 10,
-                      value: 'single'
-                    }
-                  },
-                  children: [
-                    new TextRun({
-                      text: 'Total Effective Response',
-                      size: 20,
-                      color: '#797980',
-                      style: {
-                        size: 20,
-                        color: '#797980',
-                      }
-                    }), 
-                ]
-                  
-                }),
-                new Paragraph({
-                  spacing: {
-                    before: 100,
-                    after: 200,
-                  },
-                  children: [new ImageRun({
-                  data:  Uint8Array.from(atob((v.find(img => img.id === 'idtotalEffectiveResponseChartsvg')).image.replace('data:image/png;base64,', '')),c=>c.charCodeAt(0)),
+                  data:  Uint8Array.from(atob((document.getElementById('totalEffectiveResponseChart').querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')),c=>c.charCodeAt(0)),
                   transformation: {
                     width: 450,
                     height: 100
                   },
                 })]}),
 
-                getImages(v, parentState.totalEffectiveResponseDisagregatedByPartner, '2'),
+                getImages({}, parentState.totalEffectiveResponseDisagregatedByPartner, '2'),
                 ...getGroupData(parentState),
                 ...getLastPart(parentState)
           
@@ -785,5 +433,7 @@ export default class CCPM_ReportContents {
             sections: sections
           }))
         })
-  })}
+      
+      
+  }
 };
