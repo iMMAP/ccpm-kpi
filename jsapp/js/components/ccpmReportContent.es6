@@ -313,7 +313,7 @@ export default class CCPM_ReportContents extends React.Component {
       return (
         <div id='document-report' >
           <h1 className="bigTitle">Overall Response Rate</h1>
-          <h1 className="title"> Overall Active Partners Response Rate</h1>
+          <h1 className="title">Total Responses</h1>
           <div>
             <div style={{display: 'flex', justifyContent: 'space-between', width: '100%'}}>
               <div style={{height: '150px', width: "60%"}}>
@@ -352,11 +352,11 @@ export default class CCPM_ReportContents extends React.Component {
                       <td className='report_tr_right_with_border' >{Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalReponses.sum))}%</td>
                     </tr>
                     <tr>
-                        <td className='report_tr_left_with_border'>Tot. Partners Responding</td>
+                        <td className='report_tr_left_with_border'>Number Partners Responding</td>
                         <td className='report_tr_right_with_border' >{this.props.parentState.totalReponses.numberOfPartner}</td>
                     </tr>
                     <tr>
-                        <td className='report_tr_left_with_border'>Tot. Number of Partners</td>
+                        <td className='report_tr_left_with_border'>Total Number of Partners</td>
                         <td className='report_tr_right_with_border' >{this.props.parentState.totalReponses.sum}</td>
                     </tr>
                 </tbody>
@@ -438,11 +438,11 @@ export default class CCPM_ReportContents extends React.Component {
                     <td className='report_tr_right_with_border' >{Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalEffectiveResponse.sum))}%</td>
                 </tr>
                 <tr>
-                    <td className='report_tr_left_with_border'>Tot. Partners Responding</td>
+                    <td className='report_tr_left_with_border'>Number Partners Responding</td>
                     <td className='report_tr_right_with_border' >{this.props.parentState.totalEffectiveResponse.numberOfPartner}</td>
                 </tr>
                 <tr>
-                    <td className='report_tr_left_with_border'>Tot. Number of Partners</td>
+                    <td className='report_tr_left_with_border'>Total Number of Partners</td>
                     <td className='report_tr_right_with_border' >{this.props.parentState.totalEffectiveResponse.sum}</td>
                 </tr>
                 </tbody>
@@ -505,7 +505,7 @@ export default class CCPM_ReportContents extends React.Component {
             </table>
           </>)})}
   
-          <h1 className="bigTitle"> Score Breakdown</h1>
+          <h1 className="bigTitle">Score Breakdown</h1>
   
           {Object.keys(dataset).map(group => {
           return (
@@ -540,7 +540,7 @@ export default class CCPM_ReportContents extends React.Component {
              </>
            })}
          </>)})}
-         <h1 className="bigTitle">Question by Question Breakdows of Results</h1>
+         <h1 className="bigTitle">Question by Question Breakdown of Results</h1>
            {
              Object.keys(dataset).map(element => {
               if(element !== 'code' && element !== 'name'){
