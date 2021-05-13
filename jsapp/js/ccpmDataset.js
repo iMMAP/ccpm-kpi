@@ -15,7 +15,7 @@ const dataset = {
         assesments: {code: '01', starting: 1, end: 7, name: 'Assessments', noteName: '',notes: [{code: 'C_IS01', name: 'Have Assessments, Tools and Guidance been agreed?'},{code: 'C_IS02', name: 'Have there been any coordinated assessments (that include a focus on health) over the last year?'}]},
         situationAnalyses: {code: '02', name: 'Situation Analyses', noteName: '',notes: [{code: 'C_IS03', name: 'Has the cluster done any situation analysis over the last year?'}]},
         analysisTopicCovered: {code: '03', starting: 1, end: 5, name: 'Analysis Topics Covered'},
-        crossCuttingIssues: {code: '04', starting: 1, end: 9, name : 'Cross-Cutting Issues'},
+        crossCuttingIssues: {code: '04', starting: 1, end: 10, name : 'Cross-Cutting Issues'},
         supportDecisionMaking: {code: '05', starting: 1, end: 2, name: 'Support for Decision Making', noteName: 'Notes on Informing Strategic Decisions',notes: [{code: 'C_IS04', name: ''}]},
     },
     planningStrategyDevelopment: {
@@ -74,10 +74,23 @@ export const ccpm_getQuestionInRange = (groupIdentifier, subgroupIdentifier) => 
 
 // Get the average of responses in a question
 
+export const ccpm_parseNumber = (n = 0) => {
+    
+    return Number.parseInt(n.toString().replace(/\D/g, ''));
+}
+
 export const ccpm_getAverageInQuestion = (question) => {
+    let sum = 0;
+    let divider = 0;
     if(question){
-    const data  = question.data.responses.reduce((a,b) => Number.parseInt(a.toString().replace(/\D/g,''), 10)+Number.parseInt(b.toString().replace(/\D/g,''), 10), 0);
-    return data/(question.data.responses.length > 0 ?question.data.responses.length : 1);
+    question.data.frequencies.forEach((element, index) => {
+        if(ccpm_parseNumber(question.data.responses[index]) > 0){
+            sum += element * ccpm_parseNumber(question.data.responses[index])
+            divider += element;
+        }
+    });
+    if(divider === 0) return 0;
+    return sum / divider;
     } return 0;
 }
 
@@ -85,10 +98,12 @@ export const ccpm_getAverageInQuestion = (question) => {
 
 export const ccpm_getAverageInBoolQuestion = (question) => {
     if(question){
-    const data = question.data.responses.filter(e => e.toString().toLowerCase() === 'yes');
-    return data.length / (question.data.responses.length > 0 ? question.data.responses.length : 1);
+    const sum = question.data.frequencies[question.data.responses.findIndex(e => e.toString().toLowerCase() === 'yes')];
+    const total = question.data.frequencies.reduce((a, b) => a +b);
+    if(total === 0) return total;
+    return sum / total;
     } 
-    return question;
+    return 0;
 }
 
 // Get average in a subgroup (Check wheither que question contains numeric response or boolean and return the result)

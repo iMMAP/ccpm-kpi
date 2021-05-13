@@ -798,7 +798,8 @@ class Reports extends React.Component {
       currentQuestionGraph: false,
       groupBy: '',
       readyReport: [],
-      ccpmReport: {}
+      ccpmReport: {},
+      p12Result: []
     };
     autoBind(this);
   }
@@ -855,6 +856,21 @@ class Reports extends React.Component {
           let $identifier = r.$autoname || r.name;
           rowsByIdentifier[$identifier] = r;
         });
+
+        dataInterface.getSubmissions(uid, 1000,1, [], [
+          'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02',
+          'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/For_each_of_the_foll_the_following_topics/P_IS03_01',
+          'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/For_each_of_the_foll_the_following_topics/P_IS03_02',
+          'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/For_each_of_the_foll_the_following_topics/P_IS03_03',
+          'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/For_each_of_the_foll_the_following_topics/P_IS03_04',
+          'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/For_each_of_the_foll_the_following_topics/P_IS03_05'
+        ]).done((data) => {
+          if(data && data.count && data.count > 0){
+            this.setState({
+              p12Result : data.results
+            })
+          }
+        })
 
         dataInterface.getReportData({uid: uid, identifiers: [], group_by: groupBy}).done((data)=> {
           var dataWithResponses = [];

@@ -1,5 +1,5 @@
 import React from 'react';
-import dataset, {ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion} from '../ccpmDataset';
+import dataset, {ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion, ccpm_parseNumber} from '../ccpmDataset';
 import ReactDOM from 'react-dom';
 import { ResponsiveWaffleCanvas } from '@nivo/waffle'
 
@@ -172,6 +172,32 @@ export default class CCPM_ReportContents extends React.Component {
     componentDidMount(){
       this.setReportData(this.props.reportData);
     }
+
+    getP12Question() {
+      const {parentState: {p12Result}} = this.props;
+      const no = p12Result.filter(res => res['Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'] === 'no');
+      const yes = p12Result.filter(res => res['Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'] === 'yes');
+      const yesAverage = [];
+      const noAverage = [];
+      if(yes.length > 0){
+      Object.keys(yes[0]).forEach(key => {
+          if(key !== 'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'){
+              let sum = 0;
+              yes.forEach(v => { sum += ccpm_parseNumber(v[key])})
+              yesAverage.push({id: key, average: sum / yes.length, averageLabel: this.getStatusLabel(sum / yes.length)})}  
+      })}
+
+      if(no.length > 0){
+        Object.keys(no[0]).forEach(key => {
+          if(key !== 'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'){
+              let sum = 0;
+              no.forEach(v => { sum += ccpm_parseNumber(v[key])})
+              noAverage.push({id: key, average: sum / no.length, averageLabel: this.getStatusLabel(sum / no.length)})}  
+      })}
+
+      return {yesAverage, noAverage};
+
+    }
   
     getStatusLabel(average){
       if(average < 1.25) return 'Weak';
@@ -309,7 +335,7 @@ export default class CCPM_ReportContents extends React.Component {
     render () {
       const {parentState} = this.props;
       const {totalReponses: {numberOfPartner}} = parentState;
-      this.props.parentState.totalReponses.numberOfPartner
+      const p12Result = this.getP12Question();
       return (
         <div id='document-report' >
           <h1 className="bigTitle">Overall Response Rate</h1>
@@ -401,7 +427,7 @@ export default class CCPM_ReportContents extends React.Component {
           )
         }
   
-         <h1 className="bigTitle">Effective Response Rate</h1>
+         <h1 className="bigTitle" style={{pageBreakBefore: 'always'}}>Effective Response Rate</h1>
   
         <h1 className="title">Total Effective Response</h1>
         <div style={{display: 'flex', justifyContent: 'space-between'}}>
@@ -517,7 +543,31 @@ export default class CCPM_ReportContents extends React.Component {
              <p className="subtitle">{dataset[group][subGroup]['name']}</p>
           <table style={{width: '100%', borderCollapse: 'collapse'}}>
               <tbody>
-                 {
+                 {  subGroup === 'analysisTopicCovered' ?
+                 parentState.ccpmReport[subGroup].questions.map((question,index) => {
+                   const questionYes = p12Result.yesAverage.find(f => f.id.includes(question.name)) || {}
+                   const questionNo = p12Result.noAverage.find(f => f.id.includes(question.name)) || {};
+                  return <>
+                        {index ===0 && <tr key={question.row.label[0]}>
+                          <td className='report_tr_left_1' style={{fontWeight: 'bold'}}> LABEL</td>
+                          <td className='report_tr_middle' style={{fontWeight: 'bold'}}>YES</td>
+                          <td className='report_tr_right_1' style={{fontWeight: 'bold'}}>NO</td>
+                        </tr>}
+                        <tr key={question.row.label[0]}>
+                          <td className='report_tr_left_1'>{question.row.label[0]}</td>
+                          <td className='report_tr_middle' style={{ color: this.getStatusColor(questionYes.averageLabel)}}>{questionYes.averageLabel}</td>
+                          <td className='report_tr_right' style={{ color: this.getStatusColor(questionNo.averageLabel)}}>{questionNo.averageLabel}</td>
+                        </tr>
+                        <tr style={{width: '100%', paddingLeft: '40px'}}>
+                        {(dataset[group][subGroup].notes && (parentState.ccpmReport[subGroup].questions.length -1 === index)) && dataset[group][subGroup].notes.map((question, index2) => {
+                          return <>
+                              {(index2 === 0 && dataset[group][subGroup].noteName) && <h2 className="comment-title">{dataset[group][subGroup].noteName}</h2>}
+                              {this.renderComment(question.code, question.name)}
+                          </>
+                        })}
+                        </tr>
+                 </>
+                }) :
                     parentState.ccpmReport[subGroup].questions.map((question,index) => {
                       return <>
                     <tr key={question.row.label[0]}>
@@ -527,8 +577,8 @@ export default class CCPM_ReportContents extends React.Component {
                     <tr style={{width: '100%', paddingLeft: '40px'}}>
                      {(dataset[group][subGroup].notes && (parentState.ccpmReport[subGroup].questions.length -1 === index)) && dataset[group][subGroup].notes.map((question, index2) => {
                        return <>
-                       {(index2 === 0 && dataset[group][subGroup].noteName) && <h2 className="comment-title">{dataset[group][subGroup].noteName}</h2>}
-                       {this.renderComment(question.code, question.name)}
+                          {(index2 === 0 && dataset[group][subGroup].noteName) && <h2 className="comment-title">{dataset[group][subGroup].noteName}</h2>}
+                          {this.renderComment(question.code, question.name)}
                        </>
                      })}
                     </tr>

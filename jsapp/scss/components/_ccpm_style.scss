@@ -8,11 +8,36 @@
     padding-right: 10px;
     padding-left: 10px;
   }
+
+  .report_tr_left_1 {
+    color : rgb(85, 85, 85);
+    font-size: 14px;
+    width: 50%;
+    border-right: grey solid 1px;
+    border-top: 1px solid grey;
+    border-bottom: 1px solid grey;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
   
   .report_tr_right {
     border-top: solid 1px #808080;
     border-bottom: solid 1px #808080;
     padding: 10px;
+  }
+
+  .report_tr_right_1 {
+    border-top: solid 1px #808080;
+    border-bottom: solid 1px #808080;
+    padding: 10px;
+  }
+
+  .report_tr_middle {
+    border-top: solid 1px #808080;
+    border-bottom: solid 1px #808080;
+    padding: 10px;
+    width: 25%;
+    border-right: grey solid 1px;
   }
   
   .report_tr_right_with_border  {

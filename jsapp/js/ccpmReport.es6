@@ -6,7 +6,14 @@ export const ccpm_getStatusLabel = (average) => {
     if(average < 1.25) return 'Weak';
     if(average < 2.5) return 'Unsatisfactory';
     if(average < 3.75) return 'Satisfactory';
-    if(average > 3.75) return 'Good'; 
+    if(average >= 3.75) return 'Good'; 
+}
+
+export const ccpm_getStatusLabelBoolean = (average) => {
+    if(average < 0.25) return 'Weak';
+    if(average < 0.5) return 'Unsatisfactory';
+    if(average < 0.75) return 'Satisfactory';
+    if(average >= 0.75) return 'Good'; 
 }
 
 export const ccpm_getStatusColor = (status) => {
@@ -56,6 +63,7 @@ const ccpm_getResponseGrouped = (q) => {
 
 
 const ccpm_getData = (data) => {
+    console.log(data);
     const newReport = {};
     const chartData = {};
     const questionResponseGroup = {};
@@ -67,6 +75,9 @@ const ccpm_getData = (data) => {
             // Find all the question of a report subgroup, calculate the average and pupulate the charts
             newReport[subGroup].questions = data.filter(e => ccpm_getQuestionInRange(group, subGroup).includes(e.name)).map(q => {
                 q.average = ccpm_getAverageInquestion(q);
+                if(q.data.responses.includes('Yes') || q.data.responses.includes('No')) {
+                    q.averageLabel = ccpm_getStatusLabelBoolean(q.average);
+                } else
                 q.averageLabel = ccpm_getStatusLabel(q.average);
 
                 const questionGroupedByLabel = ccpm_getResponseGrouped(q);
@@ -97,7 +108,8 @@ const ccpm_getData = (data) => {
     }
 
     const typeOfSurvey = data.find(e => e.name === 'type_of_survey');
-    const numberOfPartner = typeOfSurvey.data.frequencies[1];
+    console.log(typeOfSurvey);
+    const numberOfPartner = typeOfSurvey.data.frequencies[typeOfSurvey.data.responses.findIndex(l => l === 'Partner Survey')];
 
     const finalData =  {report : newReport, chartData, totalReponses: {numberOfPartner : isNaN(numberOfPartner) ? 0 : numberOfPartner, sum: ccpm_getSumOfQuestions(totalResponseQuestions, data)}, 
         totalResponseDisagregatedByPartner: ccpm_getNumberOfParnerResponseByType(totalResponseQuestions, data),
