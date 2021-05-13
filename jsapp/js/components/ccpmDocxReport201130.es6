@@ -1,23 +1,25 @@
-import {Document} from "docx";
-import dataset from '../ccpmDataset';
+import {Document, TabStopPosition, TabStopType} from "docx";
+import dataset, {ccpm_parseNumber} from '../ccpmDataset';
 import {ccpm_getStatusLabel, ccpm_getStatusColor} from '../ccpmReport';
-import {TextRun, Paragraph, ImageRun, SectionType, Table, TableRow, TableCell, WidthType} from 'docx';
+import {TextRun, Paragraph, ImageRun, SectionType, Table, TableRow, TableCell, WidthType, SymbolRun} from 'docx';
 
-const getTable2 = (data, length, border = false, marginBottom = 150, leftMargin = 40) => {
+const getTable2 = (data, length, border = false, marginBottom = 150, leftMargin = 40, top = 0, size = 100) => {
   if (!data) return;
   const columWidth = new Array(length);
   return new Table({
       columnWidths: columWidth.map(w => 9000/columWidth.length),
-      width:{size: 100, type:WidthType.PERCENTAGE},
+      width:{size, type:WidthType.PERCENTAGE},
       margins:{
         top: 150,
         bottom: marginBottom,
         left: leftMargin,
-        right: 40
+        right: 40,
+        marginUnitType: 'dxa'
       },
       borders: border,
       rows: [...data.map(t=>new TableRow({
         children: t.map(tt => new TableCell({
+          margins: {top},
           children: [tt],
           columnSpan: 2
         }))
@@ -25,11 +27,37 @@ const getTable2 = (data, length, border = false, marginBottom = 150, leftMargin 
     })
 }
 
+const getP12Question = (parentState) => {
+  const {p12Result} = parentState;
+  const no = p12Result.filter(res => res['Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'] === 'no');
+  const yes = p12Result.filter(res => res['Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'] === 'yes');
+  const yesAverage = [];
+  const noAverage = [];
+  if(yes.length > 0){
+  Object.keys(yes[0]).forEach(key => {
+      if(key !== 'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'){
+          let sum = 0;
+          yes.forEach(v => { sum += ccpm_parseNumber(v[key])})
+          yesAverage.push({id: key, average: sum / yes.length, averageLabel: ccpm_getStatusLabel(sum / yes.length)})}  
+  })}
+
+  if(no.length > 0){
+    Object.keys(no[0]).forEach(key => {
+      if(key !== 'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'){
+          let sum = 0;
+          no.forEach(v => { sum += ccpm_parseNumber(v[key])})
+          noAverage.push({id: key, average: sum / no.length, averageLabel: ccpm_getStatusLabel(sum / no.length)})}  
+  })}
+
+  return {yesAverage, noAverage};
+
+}
+
 const getBigTitle = (title) => {
   return  new Paragraph({
     spacing: {
-      before: 0,
-      after: 50,
+      before: 150,
+      after: 150,
     },
     border: {
       top: {
@@ -146,11 +174,13 @@ const renderComment = (questionCode, questionName, parentState) => {
     if(!data) return '';
     if(data.row.type === 'select_one') {
         const rows  = data.data.responses.map((response, index) => {
-            return [new Paragraph({
+            return [
+              new Paragraph({
               spacing: {
                 before: 100,
                 after: 400,
               },
+              
               children: [
                 new TextRun({
                   text: response,
@@ -182,7 +212,7 @@ const renderComment = (questionCode, questionName, parentState) => {
             }),
             ];
         })
-        return getTable2(rows, 2, questionName, 20, 100);
+        return getTable2(rows, 2, true, 20, 100);
     } 
     if(data.row.type === 'text') {
         const rows  = data.data.responses.map((response) => {
@@ -206,15 +236,21 @@ const renderComment = (questionCode, questionName, parentState) => {
               }),
             ];
         })
-        return getTable2(rows, 1, questionName, 20, 100);
+        return getTable2(rows, 1, true, 20, 100);
     }
   }
 
   const getGroupData = (parentState) => {
     const dataToShow = [];
     Object.keys(dataset).forEach(group => {
+      dataToShow.push(new Paragraph({
+        children: [ new TextRun('')],
+      }))
 
       dataToShow.push(getTitle(dataset[group].name));
+      dataToShow.push(new Paragraph({
+        children: [ new TextRun('')],
+      }))
 
       const tableData = Object.keys(dataset[group]).filter(sg => sg !== 'code' && sg !== 'name' && sg !== 'comments').map(subGroup => {
         return [
@@ -242,13 +278,62 @@ const renderComment = (questionCode, questionName, parentState) => {
       const table = getTable2(tableData, 2, true, 20);
       if(table) dataToShow.push(table);
 }   );
+    const p12Result = getP12Question(parentState);
      dataToShow.push(getBigTitle("Score Breakdown"));
     Object.keys(dataset).forEach(group => {
-        dataToShow.push(dataset[group].name);
+        dataToShow.push(getTitle(dataset[group].name));
+        dataToShow.push(new Paragraph({
+          children: [ new TextRun('')],
+      }))
         Object.keys(dataset[group]).filter(sg => sg !== 'code' && sg !== 'name' && sg !== 'comments').forEach(subGroup => {
             
-          dataToShow.push(getTitle(dataset[group][subGroup]['name']));
+          dataToShow.push(getSubTitle(dataset[group][subGroup]['name']));
+          dataToShow.push(new Paragraph({
+            children: [ new TextRun('')],
+        }))
           const tableData = parentState.ccpmReport[subGroup].questions.map((question,index) => {
+            if(subGroup === 'analysisTopicCovered') {
+              const questionYes = p12Result.yesAverage.find(f => f.id.includes(question.name)) || {}
+              const questionNo = p12Result.noAverage.find(f => f.id.includes(question.name)) || {};
+            return [
+              getTableContent(question.row.label[0]),
+              new Paragraph({
+                spacing: {
+                  before: 100,
+                  after: 400,
+                },
+                children: [
+                  new TextRun({
+                    text: questionYes.averageLabel,
+                    size: 20,
+                    color: ccpm_getStatusColor(questionYes.averageLabel),
+                    bold: true,
+                    style: {
+                      size: 20,
+                      color: ccpm_getStatusColor(questionYes.averageLabel),
+                    }
+                  }), 
+              ] 
+              }),
+              new Paragraph({
+                spacing: {
+                  before: 100,
+                  after: 400,
+                },
+                children: [
+                  new TextRun({
+                    text: questionNo.averageLabel,
+                    size: 20,
+                    color: ccpm_getStatusColor(questionNo.averageLabel),
+                    bold: true,
+                    style: {
+                      size: 20,
+                      color: ccpm_getStatusColor(questionNo.averageLabel),
+                    }
+                  }), 
+              ] 
+              })
+            ]}
             return [
               getTableContent(question.row.label[0]),
               new Paragraph({
@@ -271,14 +356,42 @@ const renderComment = (questionCode, questionName, parentState) => {
               })
             ]    
           })
-          const table = getTable2(tableData, 2, true, 20);
+          if(subGroup === 'analysisTopicCovered') tableData.unshift([
+            getSubTitle('Question'),
+            getSubTitle('YES'),
+            getSubTitle('NO')
+          ]);
+          const table = getTable2(tableData, subGroup === 'analysisTopicCovered' ? 3 : 2, true);
           if(table) dataToShow.push(table)
           if(dataset[group][subGroup].notes){
             dataset[group][subGroup].notes.forEach((question, index2) =>{
               const commentTable = renderComment(question.code, question.name,parentState);
               if(commentTable){
+              dataToShow.push(new Paragraph({
+                  children: [ new TextRun('')],
+              }))
               dataToShow.push(getNoteTitle(dataset[group][subGroup].noteName));
+              dataToShow.push(new Paragraph({
+                children: [ new TextRun('')],
+            }))
               dataToShow.push(commentTable);
+              dataToShow.push(
+                new Paragraph({
+                  spacing: {
+                    before: 150,
+                    after: 150,
+                  },
+                  border: {
+                    bottom: {
+                      color: '#097ca8',
+                      size: 2,
+                      space: 10,
+                      value: 'single'
+                    },
+                  },
+                  children: [new TextRun(' ')
+                ]}) 
+              )
               }
             })
           }  
@@ -294,8 +407,8 @@ const renderComment = (questionCode, questionName, parentState) => {
     {
       if(i%2 === 0){
         if(data[i+1]){
-        table.push([getSubTitle(`${v.row.label[0]}  (${isNaN(v.questionsDisagregatedByPartner) || v.questionsDisagregatedByPartner === 0 ? '' : Math.floor((v.data.mean || 0 /(isNaN(v.questionsDisagregatedByPartner)) ? 1 : v.questionsDisagregatedByPartner) * 100)}) %`),
-        getSubTitle(`${data[i+1].row.label[0]}  (${isNaN(data[i+1].questionsDisagregatedByPartner) || data[i+1].questionsDisagregatedByPartner === 0 ? '' : Math.floor((data[i+1].data.mean || 0 /(isNaN(data[i+1].questionsDisagregatedByPartner)) ? 1 : data[i+1].questionsDisagregatedByPartner) * 100)}) %`)
+        table.push([getSubTitle(`${v.row.label[0]}  (${Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}) %`),
+        getSubTitle(`${data[i+1].row.label[0]}  (${Math.floor(calculatePercentage(data[i+1].questionsDisagregatedByPartner, data[i+1].data.mean))}) %`)
       ]);
       table.push([new Paragraph({
             spacing: {
@@ -324,7 +437,7 @@ const renderComment = (questionCode, questionName, parentState) => {
        ])
       } else {
           table.push([
-            getSubTitle(`${v.row.label[0]}  (${isNaN(v.questionsDisagregatedByPartner) || v.questionsDisagregatedByPartner === 0 ? '' : Math.floor((v.data.mean || 0 /(isNaN(v.questionsDisagregatedByPartner)) ? 1 : v.questionsDisagregatedByPartner) * 100)}) %`)
+            getSubTitle(`${v.row.label[0]}  (${Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}) %`)
         ]);
         table.push([new Paragraph({
             spacing: {
@@ -345,6 +458,12 @@ const renderComment = (questionCode, questionName, parentState) => {
       }
     })
     return getTable2(table, 2,'');
+  }
+
+  const calculatePercentage = (total, sum) => {
+    if(total === 0 || isNaN(total)) total = 1;
+    if(isNaN(sum)) sum = 0;
+    return (sum / total) * 100;
   }
 
   const getLastPart = (parentState) => {
@@ -383,6 +502,8 @@ const renderComment = (questionCode, questionName, parentState) => {
 
 export default class CCPM_ReportContents {
     create(parentState){
+
+      const {totalReponses: {numberOfPartner}} = parentState;
     
         return new Promise((resolve)=>{
           const  sections = [
@@ -405,7 +526,14 @@ export default class CCPM_ReportContents {
                     height: 100
                   },
                 })]}),
+                getTable2([
+                  [getSubTitle('Total'), getTableContent(`${calculatePercentage(numberOfPartner, parentState.totalReponses.sum)}`)],
+                  [getSubTitle('Number Partners Responding'), getTableContent(`${numberOfPartner}`)],
+                  [getSubTitle('Total Number of Partners'), getTableContent(`${parentState.totalReponses.sum}`)],
+                ], 2, true),
+                new Paragraph(" "),
                 getTitle('Overall Active Partners Response Rate by type'),
+                new Paragraph(" "),
                 getImages({}, parentState.totalResponseDisagregatedByPartner, ''),
                 getBigTitle("Effective Response Rate"),
                 getTitle('Total Effective Response'),
@@ -421,7 +549,14 @@ export default class CCPM_ReportContents {
                     height: 100
                   },
                 })]}),
-
+                getTable2([
+                  [getSubTitle('Total'), getTableContent(`${calculatePercentage(numberOfPartner, parentState.totalEffectiveResponse.sum)}`)],
+                  [getSubTitle('Number Partners Responding'), getTableContent(`${numberOfPartner}`)],
+                  [getSubTitle('Total Number of Partners'), getTableContent(`${parentState.totalEffectiveResponse.sum}`)],
+                ], 2, true),
+                new Paragraph(" "),
+                getTitle('Effective Partners Response Rate by type'),
+                new Paragraph(" "),
                 getImages({}, parentState.totalEffectiveResponseDisagregatedByPartner, '2'),
                 ...getGroupData(parentState),
                 ...getLastPart(parentState)
