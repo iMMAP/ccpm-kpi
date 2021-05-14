@@ -510,7 +510,7 @@ export default class CCPM_ReportContents extends React.Component {
           </>
           )
         }
-          <h1 className="bigTitle">Overall Performance</h1>
+          <h1 className="bigTitle" style={{pageBreakBefore: 'always'}}>Overall Performance</h1>
   
           {Object.keys(dataset).map(group => {
           return (
@@ -531,7 +531,7 @@ export default class CCPM_ReportContents extends React.Component {
             </table>
           </>)})}
   
-          <h1 className="bigTitle">Score Breakdown</h1>
+          <h1 className="bigTitle" style={{pageBreakBefore: 'always'}}>Score Breakdown</h1>
   
           {Object.keys(dataset).map(group => {
           return (
@@ -590,7 +590,7 @@ export default class CCPM_ReportContents extends React.Component {
              </>
            })}
          </>)})}
-         <h1 className="bigTitle">Question by Question Breakdown of Results</h1>
+         <h1 className="bigTitle" style={{pageBreakBefore: 'always'}}>Question by Question Breakdown of Results</h1>
            {
              Object.keys(dataset).map(element => {
               if(element !== 'code' && element !== 'name'){
@@ -603,7 +603,7 @@ export default class CCPM_ReportContents extends React.Component {
               }
            })
           }
-        <h1 className="bigTitle">Final Comments</h1>
+        <h1 className="bigTitle" style={{pageBreakBefore: 'always'}}>Final Comments</h1>
             {this.renderComment('P_OI01', 'Partners')}
             {this.renderComment('C_OI01', 'Coordinator')}
         </div>
