@@ -799,7 +799,7 @@ class Reports extends React.Component {
       groupBy: '',
       readyReport: [],
       ccpmReport: {},
-      p12Result: []
+      P_IS02Result: []
     };
     autoBind(this);
   }
