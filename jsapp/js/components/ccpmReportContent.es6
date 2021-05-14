@@ -173,7 +173,7 @@ export default class CCPM_ReportContents extends React.Component {
       this.setReportData(this.props.reportData);
     }
 
-    getP12Question() {
+    getP_IS02Question() {
       const {parentState: {p12Result}} = this.props;
       const no = p12Result.filter(res => res['Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'] === 'no');
       const yes = p12Result.filter(res => res['Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'] === 'yes');
