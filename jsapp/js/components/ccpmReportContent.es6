@@ -335,7 +335,7 @@ export default class CCPM_ReportContents extends React.Component {
     render () {
       const {parentState} = this.props;
       const {totalReponses: {numberOfPartner}} = parentState;
-      const p12Result = this.getP12Question();
+      const P_IS02Result = this.getP12Question();
       return (
         <div id='document-report' >
           <h1 className="bigTitle">Overall Response Rate</h1>
