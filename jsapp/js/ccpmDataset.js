@@ -9,14 +9,14 @@ const dataset = {
         identificationNeeds: {code: '04', starting: 1, end: 3, name: 'Identification of Needs, Gaps and Response Priorities', noteName: 'Notes on identification of Needs, Gaps and Priorities', notes: [{code: 'C_SD05', name: ''}] },
     },
     informingStrategicDecisions: {
-        name: 'Informing Strategic Decisions',
+        name: 'Informing Strategic Decision-Making of the HC/HCT',
         code: 'P_IS',
         comments: ['P_IS06', 'P_IS07'],
         assesments: {code: '01', starting: 1, end: 7, name: 'Assessments', noteName: '',notes: [{code: 'C_IS01', name: 'Have Assessments, Tools and Guidance been agreed?'},{code: 'C_IS02', name: 'Have there been any coordinated assessments (that include a focus on health) over the last year?'}]},
         situationAnalyses: {code: '02', name: 'Situation Analyses', noteName: '',notes: [{code: 'C_IS03', name: 'Has the cluster done any situation analysis over the last year?'}]},
         analysisTopicCovered: {code: '03', starting: 1, end: 5, name: 'Analysis Topics Covered'},
         crossCuttingIssues: {code: '04', starting: 1, end: 10, name : 'Cross-Cutting Issues'},
-        supportDecisionMaking: {code: '05', starting: 1, end: 2, name: 'Support for Decision Making', noteName: 'Notes on Informing Strategic Decisions',notes: [{code: 'C_IS04', name: ''}]},
+        supportDecisionMaking: {code: '05', starting: 1, end: 2, name: 'Support for Decision Making', noteName: 'Notes on Informing Strategic Decision-Making of the HC/HCT',notes: [{code: 'C_IS04', name: ''}]},
     },
     planningStrategyDevelopment: {
         name: 'Planning and Strategy Development',
@@ -64,11 +64,17 @@ export const ccpm_getQuestionInRange = (groupIdentifier, subgroupIdentifier) => 
     const subgroup = group[subgroupIdentifier]
     const code =  `${group.code}${subgroup.code}`;
     const questions = [];
-    if(!subgroup.starting) questions.push(code);
+    if(!subgroup.starting) 
+        questions.push(code);
     else{
-    for(let i = subgroup.starting; i <= subgroup.end;i++){
-        questions.push(`${code}_0${i}`);
-    }}
+        for(let i = subgroup.starting; i <= subgroup.end;i++){
+            if(i >= 10){
+                questions.push(`${code}_${i}`);
+            }else{
+                questions.push(`${code}_0${i}`);
+            }
+        }
+    }
     return questions;
 }
 

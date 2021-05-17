@@ -27,10 +27,10 @@ const getTable2 = (data, length, border = false, marginBottom = 150, leftMargin 
     })
 }
 
-const getP12Question = (parentState) => {
-  const {p12Result} = parentState;
-  const no = p12Result.filter(res => res['Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'] === 'no');
-  const yes = p12Result.filter(res => res['Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'] === 'yes');
+const getP_IS02Question = (parentState) => {
+  const {P_IS02Result} = parentState;
+  const no = P_IS02Result.filter(res => res['Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'] === 'no');
+  const yes = P_IS02Result.filter(res => res['Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'] === 'yes');
   const yesAverage = [];
   const noAverage = [];
   if(yes.length > 0){
@@ -278,7 +278,7 @@ const renderComment = (questionCode, questionName, parentState) => {
       const table = getTable2(tableData, 2, true, 20);
       if(table) dataToShow.push(table);
 }   );
-    const p12Result = getP12Question(parentState);
+    const P_IS02Result = getP_IS02Question(parentState);
      dataToShow.push(getBigTitle("Score Breakdown"));
     Object.keys(dataset).forEach(group => {
         dataToShow.push(getTitle(dataset[group].name));
@@ -293,8 +293,8 @@ const renderComment = (questionCode, questionName, parentState) => {
         }))
           const tableData = parentState.ccpmReport[subGroup].questions.map((question,index) => {
             if(subGroup === 'analysisTopicCovered') {
-              const questionYes = p12Result.yesAverage.find(f => f.id.includes(question.name)) || {}
-              const questionNo = p12Result.noAverage.find(f => f.id.includes(question.name)) || {};
+              const questionYes = P_IS02Result.yesAverage.find(f => f.id.includes(question.name)) || {}
+              const questionNo = P_IS02Result.noAverage.find(f => f.id.includes(question.name)) || {};
             return [
               getTableContent(question.row.label[0]),
               new Paragraph({
@@ -357,7 +357,7 @@ const renderComment = (questionCode, questionName, parentState) => {
             ]    
           })
           if(subGroup === 'analysisTopicCovered') tableData.unshift([
-            getSubTitle('Question'),
+            getSubTitle('TOPIC'),
             getSubTitle('YES'),
             getSubTitle('NO')
           ]);
@@ -513,7 +513,7 @@ export default class CCPM_ReportContents {
               },
               children: [
                 getBigTitle("Overall Response Rate"),
-                getTitle('Overall Active Partners Response Rate'),
+                getTitle('Total Responses'),
                 new Paragraph({
                   spacing: {
                     before: 100,
@@ -532,11 +532,11 @@ export default class CCPM_ReportContents {
                   [getSubTitle('Total Number of Partners'), getTableContent(`${parentState.totalReponses.sum}`)],
                 ], 2, true),
                 new Paragraph(" "),
-                getTitle('Overall Active Partners Response Rate by type'),
+                getTitle('Responses by Type'),
                 new Paragraph(" "),
                 getImages({}, parentState.totalResponseDisagregatedByPartner, ''),
                 getBigTitle("Effective Response Rate"),
-                getTitle('Total Effective Response'),
+                getTitle('Total Responses'),
                 new Paragraph({
                   spacing: {
                     before: 100,
@@ -555,7 +555,7 @@ export default class CCPM_ReportContents {
                   [getSubTitle('Total Number of Partners'), getTableContent(`${parentState.totalEffectiveResponse.sum}`)],
                 ], 2, true),
                 new Paragraph(" "),
-                getTitle('Effective Partners Response Rate by type'),
+                getTitle('Responses by Type'),
                 new Paragraph(" "),
                 getImages({}, parentState.totalEffectiveResponseDisagregatedByPartner, '2'),
                 ...getGroupData(parentState),

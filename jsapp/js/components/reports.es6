@@ -867,7 +867,7 @@ class Reports extends React.Component {
         ]).done((data) => {
           if(data && data.count && data.count > 0){
             this.setState({
-              p12Result : data.results
+              P_IS02Result : data.results
             })
           }
         })

@@ -66,7 +66,7 @@
     font-size: 18px;
     margin-bottom: 10px;
     font-weight: 400;
-    margin-top: 20px;
+    margin-top: 30px;
     margin-bottom: 20px;
   }
   
@@ -75,6 +75,13 @@
     font-size: 16px;
     font-weight: bold;
   }
+
+  .subtitleScore {
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 35px;
+  }
   
   .bigTitle {
     color: black;
@@ -82,16 +89,16 @@
     font-weight: bold;
     border-top: solid rgb(0, 110, 138) 5px;
     padding-top: 15px;
+    margin-top: 50px;
     width: fit-content
   }
   
   .comment-title {
     color: black;
     font-size: 15px;
-    font-weight: bold;
-    border-top: solid rgb(0, 110, 138) 3px;
+    font-weight: inherit;
+    border-bottom: solid rgb(0, 110, 138) 2px;
     padding-top: 10px;
-    padding-bottom: 10px;
     width: fit-content;
     margin-left: 40px;
   }
