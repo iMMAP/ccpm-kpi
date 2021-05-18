@@ -197,7 +197,7 @@ export default class CCPM_ReportContents extends React.Component {
       })}
 
       if(no.length > 0){
-        Object.keys(no[0]).forEach(key => {
+        keys.forEach(key => {
           if(key !== pathP_IS02){
               let sum = 0;
               let count = 0;
@@ -547,7 +547,6 @@ export default class CCPM_ReportContents extends React.Component {
                  parentState.ccpmReport[subGroup].questions.map((question,index) => {
                    const questionYes = P_IS02Result.yesAverage.find(f => f.id.includes(question.name)) || {}
                    const questionNo = P_IS02Result.noAverage.find(f => f.id.includes(question.name)) || {};
-                   console.log(question.row.label[currentLanguageIndex]);
                   return <>
                         {index ===0 && <tr key={ccpm_getLabel(question.row.label, currentLanguageIndex)}>
                           <td className='report_tr_left_1' style={{fontWeight: 'bold'}}> TOPIC</td>
