@@ -10,8 +10,8 @@ const dataset = {
         identificationNeeds: {code: '04', starting: 1, end: 3, name: 'Identification of Needs, Gaps and Response Priorities', names: {en: 'Identification of Needs, Gaps and Response Priorities',fr: 'Identification des besoins, des lacunes et des priorités de réponse'}, noteName: 'Notes on identification of Needs, Gaps and Priorities', notes: [{code: 'C_SD05', name: ''}] },
     },
     informingStrategicDecisions: {
-        name: 'Informing Strategic Decisions',
-        names: {en: 'Informing Strategic Decisions',fr: 'Communication sur les decisions strategiques'},
+        name: 'Informing Strategic Decision-Making of the HC/HCT',
+        names: {en: 'Informing Strategic Decision-Making of the HC/HCT',fr: 'Communication sur les decisions strategiques du HC/HCT'},
         code: 'P_IS',
         comments: ['P_IS06', 'P_IS07'],
         assesments: {code: '01', starting: 1, end: 7, name: 'Assessments', names: {en: 'Assessments',fr: 'Évaluations'}, noteName: '',notes: [{code: 'C_IS01', name: 'Have Assessments, Tools and Guidance been agreed?'},{code: 'C_IS02', name: 'Have there been any coordinated assessments (that include a focus on health) over the last year?'}]},
@@ -71,11 +71,17 @@ export const ccpm_getQuestionInRange = (groupIdentifier, subgroupIdentifier) => 
     const subgroup = group[subgroupIdentifier]
     const code =  `${group.code}${subgroup.code}`;
     const questions = [];
-    if(!subgroup.starting) questions.push(code);
+    if(!subgroup.starting) 
+        questions.push(code);
     else{
-    for(let i = subgroup.starting; i <= subgroup.end;i++){
-        questions.push(`${code}_0${i}`);
-    }}
+        for(let i = subgroup.starting; i <= subgroup.end;i++){
+            if(i >= 10){
+                questions.push(`${code}_${i}`);
+            }else{
+                questions.push(`${code}_0${i}`);
+            }
+        }
+    }
     return questions;
 }
 

@@ -915,7 +915,7 @@ class Reports extends React.Component {
       groupBy: '',
       readyReport: [],
       ccpmReport: {},
-      p12Result: [],
+      P_IS02Result: [],
       showChangeLanguage: false
     };
     autoBind(this);
@@ -987,7 +987,7 @@ class Reports extends React.Component {
             
             dataInterface.getSubmissions(uid, 1000,1, [],fields).done((data2) => {
               this.setState({
-                p12Result : data2.results,
+                P_IS02Result : data2.results,
                 pathP_IS03,
                 pathP_IS02
               })

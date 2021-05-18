@@ -175,7 +175,7 @@ export default class CCPM_ReportContents extends React.Component {
       this.setReportData(this.props.reportData);
     }
 
-    getP12Question() {
+    getP_IS02Question() {
       const {parentState: {p12Result, pathP_IS02}} = this.props;
       const no = p12Result.filter(res => res[pathP_IS02] === 'no');
       const yes = p12Result.filter(res => res[pathP_IS02] === 'yes');
@@ -329,9 +329,9 @@ export default class CCPM_ReportContents extends React.Component {
     }
 
     calculatePercentage(total, sum) {
-      if(total === 0 || isNaN(total)) total = 1;
+      if(isNaN(total)) total = 0;
       if(isNaN(sum)) sum = 0;
-      return (sum / total) * 100;
+      return (total / sum) * 100;
     }
   
     render () {
@@ -339,7 +339,10 @@ export default class CCPM_ReportContents extends React.Component {
       const {totalReponses: {numberOfPartner}, reportStyles, asset: {content: {translations}}} = parentState;
       const currentLanguageIndex = reportStyles.default.translationIndex;
       const choosenLanguage = translations ?  ((translations[currentLanguageIndex]).match(/\(.*?\)/))[0].replace('(', '').replace(')', '') : 'en';
-      const p12Result = this.getP12Question();
+      const {totalReponses: {numberOfPartner}} = parentState;
+      const P_IS02Result = this.getP_IS02Question();
+      const overallTotalResponsesPercentage = Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalReponses.sum));
+      const efectiveTotalResponsesPercentage = Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalEffectiveResponse.sum));
       return (
         <div id='document-report' >
           <h1 className="bigTitle">Overall Response Rate</h1>
@@ -352,15 +355,9 @@ export default class CCPM_ReportContents extends React.Component {
                   data={[
                     {
                       "id": "totalReponse",
-                      "label": "Total",
-                      "value": Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalReponses.sum)) > 100 ? 100 : Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalReponses.sum)),
+                      "label": "Total Responses (%)",
+                      "value": overallTotalResponsesPercentage,
                       "color": "#097ca8"
-                    },
-                    {
-                      "id": "noResponse",
-                      "label": "",
-                      "value": Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalReponses.sum)) > 100 ? 0 : 100 - Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalReponses.sum)),
-                      "color": "#dedede"
                     }
                   ]}
                   pixelRatio={1}
@@ -372,6 +369,7 @@ export default class CCPM_ReportContents extends React.Component {
                   margin={{ top: 0, right: 10, bottom: 0, left: 5 }}
                   colors={["#097ca8", "#dedede"]}
                   borderColor={{ from: 'color', modifiers: [ [ 'darker', 0.3 ] ] }}
+                  emptyColor="#dedede"
                   />
               </div>
               </div>
@@ -379,7 +377,7 @@ export default class CCPM_ReportContents extends React.Component {
                 <tbody>
                     <tr>
                       <td className='report_tr_left_with_border'>Total</td>
-                      <td className='report_tr_right_with_border' >{Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalReponses.sum))}%</td>
+                      <td className='report_tr_right_with_border' >{overallTotalResponsesPercentage}%</td>
                     </tr>
                     <tr>
                         <td className='report_tr_left_with_border'>Number Partners Responding</td>
@@ -393,27 +391,20 @@ export default class CCPM_ReportContents extends React.Component {
               </table>
             </div>
          </div>
-         <h1 className="title"> Overall Active Partners Response Rate by type</h1>
+         <h1 className="title">Responses by Type</h1>
         {
-          
           parentState.totalResponseDisagregatedByPartner.map((v,i) => <>
           <div style={{width: '50%',display: 'inline-block', height: '150px'}}>
-            <h1 className="subtitle" style={{marginLeft: '10px'}}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}) %</h1>
+            <h1 className="subtitle" style={{marginLeft: '10px'}}> {v.row.label[0]} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
             <div ref={`chart-${i}`} id={`chart-${i}`} style={{height: "80%"}}>
             <ResponsiveWaffleCanvas
                   data={[
                     {
                       "id": "totalReponse",
-                      "label": "Total",
+                      "label": v.row.label[0] + " (%)",
                       "value": Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)) > 100 ? 100 : Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)),
                       "color": "#097ca8"
-                    },
-                    {
-                      "id": "noResponse",
-                      "label": "",
-                      "value": Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)) > 100 ? 0 : 100 - Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)),
-                      "color": "#dedede"
-                    },
+                    }
                   ]}
                   pixelRatio={1}
                   total={100}
@@ -424,6 +415,7 @@ export default class CCPM_ReportContents extends React.Component {
                   margin={{ top: 0, right: 0, bottom: 10, left: 0 }}
                   colors={["#097ca8", "#dedede"]}
                   borderColor={{ from: 'color', modifiers: [ [ 'darker', 0.3 ] ] }}
+                  emptyColor="#dedede"
                   />
               </div>
           </div>
@@ -433,39 +425,35 @@ export default class CCPM_ReportContents extends React.Component {
   
          <h1 className="bigTitle" style={{pageBreakBefore: 'always'}}>Effective Response Rate</h1>
   
-        <h1 className="title">Total Effective Response</h1>
+        <h1 className="title">Total Responses</h1>
         <div style={{display: 'flex', justifyContent: 'space-between'}}>
           <div ref='totalEffectiveResponseChart' style={{margin: 0, padding: 0, width: '60%', height: '150px'}}  id='totalEffectiveResponseChart' >
             <ResponsiveWaffleCanvas
                       data={[
                         {
                           "id": "totalReponse",
-                          "label": "Total",
-                          "value": Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalEffectiveResponse.sum)) > 100 ? 100 : Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalEffectiveResponse.sum)),
+                          "label": "Total Responses (%)",
+                          "value": efectiveTotalResponsesPercentage,
                           "color": "#097ca8"
-                        },
-                        {
-                          "id": "noResponse",
-                          "label": "",
-                          "value": Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalEffectiveResponse.sum)) > 100 ? 0 : 100 - Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalEffectiveResponse.sum)),
-                          "color": "#dedede"
-                        },
+                        }
                       ]}
                       pixelRatio={1}
                       total={100}
                       rows={5}
                       columns={20}
+                      fillDirection="left"
                       padding={2}
-                      margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
+                      margin={{ top: 0, right: 10, bottom: 0, left: 5 }}
                       colors={["#097ca8", "#dedede"]}
                       borderColor={{ from: 'color', modifiers: [ [ 'darker', 0.3 ] ] }}
+                      emptyColor="#dedede"
                       />
           </div>      
           <table style={{width: '30%', borderCollapse: 'collapse'}}>
                 <tbody>
                 <tr>
                     <td className='report_tr_left_with_border'>Total</td>
-                    <td className='report_tr_right_with_border' >{Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalEffectiveResponse.sum))}%</td>
+                    <td className='report_tr_right_with_border' >{efectiveTotalResponsesPercentage}%</td>
                 </tr>
                 <tr>
                     <td className='report_tr_left_with_border'>Number Partners Responding</td>
@@ -478,26 +466,20 @@ export default class CCPM_ReportContents extends React.Component {
                 </tbody>
           </table>
         </div>
-        <h1 className="title"> Effective Partners Response Rate by type</h1>
+        <h1 className="title">Responses by Type</h1>
         {
           parentState.totalEffectiveResponseDisagregatedByPartner.map((v,i) => <>
             <div style={{width: '50%', display: 'inline-block',height: '150px'}}>
-              <h1 className="subtitle" style={{marginLeft: '10px'}}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}) %</h1>
+              <h1 className="subtitle" style={{marginLeft: '10px'}}> {v.row.label[0]} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
               <div ref={`chart2-${i}`} id={`chart2-${i}`} style={{height: "80%"}}>
             <ResponsiveWaffleCanvas
                   data={[
                     {
                       "id": "totalReponse",
-                      "label": "Total",
+                      "label": v.row.label[0] + " (%)",
                       "value": Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)) > 100 ? 100 : Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)),
                       "color": "#097ca8"
-                    },
-                    {
-                      "id": "noResponse",
-                      "label": "",
-                      "value": Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)) > 100 ? 0 : 100 - Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)),
-                      "color": "#dedede"
-                    },
+                    }
                   ]}
                   pixelRatio={1}
                   total={100}
@@ -508,6 +490,7 @@ export default class CCPM_ReportContents extends React.Component {
                   margin={{ top: 0, right: 10, bottom: 10, left: -5 }}
                   colors={["#097ca8", "#dedede"]}
                   borderColor={{ from: 'color', modifiers: [ [ 'darker', 0.3 ] ] }}
+                  emptyColor="#dedede"
                   />
               </div>
           </div>
@@ -544,16 +527,17 @@ export default class CCPM_ReportContents extends React.Component {
            {Object.keys(dataset[group]).map(subGroup => {
              if(!parentState.ccpmReport[subGroup].questions || subGroup === 'code' || subGroup === 'name' || subGroup === 'comments') return '';
              return <>
-             <p className="subtitle">{ccpm_getName(dataset[group][subGroup], choosenLanguage)}</p>
+
+             <p className="subtitleScore">{ccpm_getName(dataset[group][subGroup], choosenLanguage)}</p>
              <table style={{width: '100%', borderCollapse: 'collapse'}}>
               <tbody>
                  {  subGroup === 'analysisTopicCovered' ?
                  parentState.ccpmReport[subGroup].questions.map((question,index) => {
-                   const questionYes = p12Result.yesAverage.find(f => f.id.includes(question.name)) || {}
-                   const questionNo = p12Result.noAverage.find(f => f.id.includes(question.name)) || {};
+                   const questionYes = P_IS02Result.yesAverage.find(f => f.id.includes(question.name)) || {}
+                   const questionNo = P_IS02Result.noAverage.find(f => f.id.includes(question.name)) || {};
                   return <>
                         {index ===0 && <tr key={ccpm_getLabel(question.row.label, currentLanguageIndex)}>
-                          <td className='report_tr_left_1' style={{fontWeight: 'bold'}}> LABEL</td>
+                          <td className='report_tr_left_1' style={{fontWeight: 'bold'}}> TOPIC</td>
                           <td className='report_tr_middle' style={{fontWeight: 'bold'}}>YES</td>
                           <td className='report_tr_right_1' style={{fontWeight: 'bold'}}>NO</td>
                         </tr>}

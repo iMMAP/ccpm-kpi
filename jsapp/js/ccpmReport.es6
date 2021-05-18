@@ -43,10 +43,33 @@ const ccpm_getAverageInquestion = (data) => {
 const ccpm_getSumOfQuestions = (questions, data) => {
     const result  = data.filter(e => questions.includes(e.name));
     const sum =  result.reduce((a,b) =>{ 
-        if(!a.data) return b.data.mean;
-        return a.data.mean+b.data.mean}, 0);
+        return a + b.data.mean}, 0);
     if(isNaN(sum)) return 0;
     return sum;
+}
+
+const ccpm_getElementName = (e) => {
+    switch(e){
+        case "C_CP01_01": return "international_org";
+        case "C_CP01_02": return "national_org";
+        case "C_CP01_03": return "un_org";
+        case "C_CP01_04": return "authority_org";
+        case "C_CP01_05": return "donor_org";
+        case "C_CP01_06": return "academia_org";
+        case "C_CP01_07": return "private_org";
+        case "C_CP01_08": return "observer_org";
+        case "C_CP01_09": return "other";
+        case "C_CP02_01": return "international_org";
+        case "C_CP02_02": return "national_org";
+        case "C_CP02_03": return "un_org";
+        case "C_CP02_04": return "authority_org";
+        case "C_CP02_05": return "donor_org";
+        case "C_CP02_06": return "academia_org";
+        case "C_CP02_07": return "private_org";
+        case "C_CP02_08": return "observer_org";
+        case "C_CP02_09": return "other";
+        default: return "";
+    }
 }
 
 const ccpm_getNumberOfParnerResponseByType = (questionList, data) => {
@@ -54,9 +77,12 @@ const ccpm_getNumberOfParnerResponseByType = (questionList, data) => {
     const disagregatedByType = data.find(e => e.name === 'P_GI03');
     const result = [];
     questions.forEach(element => {
-        const elementName = element.row.label[0].replace(' ','').toLowerCase();
-        const index = disagregatedByType.data.responses.findIndex(e => elementName.replace('ngos', 'ngo') === e.replace(' ', '').toLowerCase());
-        result.push({...element, questionsDisagregatedByPartner: disagregatedByType.data.frequencies[index]});
+        const elementName = ccpm_getElementName(element.name);
+        const index = disagregatedByType.data.responses.indexOf(elementName);
+        var numberResponses = 0;
+        if (index > -1)
+            numberResponses = disagregatedByType.data.frequencies[index];
+        result.push({...element, questionsDisagregatedByPartner: numberResponses});
     })
     return result;
 }
@@ -81,7 +107,7 @@ const ccpm_getData = (data) => {
         Object.keys(dataset[group]).forEach(subGroup => {
             if(subGroup !== 'code' || subGroup !== 'name'){
             newReport[subGroup] = {};
-            // Find all the question of a report subgroup, calculate the average and pupulate the charts
+            // Find all the question of a report subgroup, calculate the average and populate the charts
             newReport[subGroup].questions = data.filter(e => ccpm_getQuestionInRange(group, subGroup).includes(e.name)).map(q => {
                 q.average = ccpm_getAverageInquestion(q);
                 if(q.data.responses.includes('Yes') || q.data.responses.includes('No')) {
@@ -117,7 +143,7 @@ const ccpm_getData = (data) => {
     }
 
     const typeOfSurvey = data.find(e => e.name === 'type_of_survey');
-    const numberOfPartner = typeOfSurvey.data.frequencies[typeOfSurvey.data.responses.findIndex(l => l === 'Partner Survey')];
+    const numberOfPartner = typeOfSurvey.data.frequencies[typeOfSurvey.data.responses.findIndex(l => l === 'partner')];
 
     const finalData =  {report : newReport, chartData, totalReponses: {numberOfPartner : isNaN(numberOfPartner) ? 0 : numberOfPartner, sum: ccpm_getSumOfQuestions(totalResponseQuestions, data)}, 
         totalResponseDisagregatedByPartner: ccpm_getNumberOfParnerResponseByType(totalResponseQuestions, data),
