@@ -513,7 +513,7 @@ export default class CCPM_ReportContents extends React.Component {
               <tbody>
                  {
                     Object.keys(dataset[group]).map(subGroup => {
-                      if(subGroup === 'code' || subGroup === 'name' || subGroup === 'comments' || !dataset[group][subGroup]) return ;
+                      if(subGroup === 'code' || subGroup === 'name' || subGroup === 'names' || subGroup === 'comments' || !dataset[group][subGroup]) return ;
                       return <tr key={subGroup}>
                       <td className='report_tr_left'>{ccpm_getName(dataset[group][subGroup], choosenLanguage)}</td>
                       <td className='report_tr_right' style={{ color: this.getStatusColor(this.getGroupStatus(subGroup))}}>{this.getGroupStatus(subGroup)}</td>
@@ -531,7 +531,7 @@ export default class CCPM_ReportContents extends React.Component {
             <>
             <h1 className="title">{ccpm_getName(dataset[group], choosenLanguage)}</h1>
            {Object.keys(dataset[group]).map(subGroup => {
-             if(!parentState.ccpmReport[subGroup].questions || subGroup === 'code' || subGroup === 'name' || subGroup === 'comments') return '';
+             if(!parentState.ccpmReport[subGroup].questions || subGroup === 'code' || subGroup === 'names' || subGroup === 'name' || subGroup === 'comments') return '';
              return <>
 
              <p className="subtitleScore">{ccpm_getName(dataset[group][subGroup], choosenLanguage)}</p>
