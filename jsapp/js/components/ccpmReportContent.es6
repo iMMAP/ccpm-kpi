@@ -1,5 +1,5 @@
 import React from 'react';
-import dataset, {ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion, ccpm_parseNumber} from '../ccpmDataset';
+import dataset, {ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion, ccpm_parseNumber, ccpm_getQuestionInRange} from '../ccpmDataset';
 import {ccpm_getLabel} from '../ccpmReport';
 import ReactDOM from 'react-dom';
 import { ResponsiveWaffleCanvas } from '@nivo/waffle'
@@ -176,17 +176,24 @@ export default class CCPM_ReportContents extends React.Component {
     }
 
     getP_IS02Question() {
-      const {parentState: {p12Result, pathP_IS02}} = this.props;
-      const no = p12Result.filter(res => res[pathP_IS02] === 'no');
-      const yes = p12Result.filter(res => res[pathP_IS02] === 'yes');
+      const {parentState: {P_IS02Result, pathP_IS02,pathP_IS03}} = this.props;
+      const no = P_IS02Result.filter(res => res[pathP_IS02] === 'no');
+      const yes = P_IS02Result.filter(res => res[pathP_IS02] === 'yes');
       const yesAverage = [];
       const noAverage = [];
       if(yes.length > 0){
-      Object.keys(yes[0]).forEach(key => {
+        const keys = ccpm_getQuestionInRange('informingStrategicDecisions','analysisTopicCovered').map(s => `${pathP_IS03}${s}`)
+        keys.forEach(key => {
           if(key !== pathP_IS02){
               let sum = 0;
-              yes.forEach(v => { sum += ccpm_parseNumber(v[key])})
-              yesAverage.push({id: key, average: sum / yes.length, averageLabel: this.getStatusLabel(sum / yes.length)})}  
+              let count = 0;
+              yes.forEach(v => {
+                if(v[key] > 0){
+                 sum += ccpm_parseNumber(v[key]);
+                 count++;
+                }
+              })
+              yesAverage.push({id: key, average: sum / (count > 0 ? count : 1), averageLabel: this.getStatusLabel(sum / (count > 0 ? count : 1))})}  
       })}
 
       if(no.length > 0){
@@ -339,7 +346,6 @@ export default class CCPM_ReportContents extends React.Component {
       const {totalReponses: {numberOfPartner}, reportStyles, asset: {content: {translations}}} = parentState;
       const currentLanguageIndex = reportStyles.default.translationIndex;
       const choosenLanguage = translations ?  ((translations[currentLanguageIndex]).match(/\(.*?\)/))[0].replace('(', '').replace(')', '') : 'en';
-      const {totalReponses: {numberOfPartner}} = parentState;
       const P_IS02Result = this.getP_IS02Question();
       const overallTotalResponsesPercentage = Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalReponses.sum));
       const efectiveTotalResponsesPercentage = Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalEffectiveResponse.sum));

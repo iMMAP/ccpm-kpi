@@ -1,6 +1,6 @@
 import {Document, TabStopPosition, TabStopType} from "docx";
 import dataset, {ccpm_parseNumber} from '../ccpmDataset';
-import {ccpm_getStatusLabel, ccpm_getStatusColor} from '../ccpmReport';
+import {ccpm_getStatusLabel, ccpm_getStatusColor, ccpm_getLabel} from '../ccpmReport';
 import {TextRun, Paragraph, ImageRun, SectionType, Table, TableRow, TableCell, WidthType, SymbolRun} from 'docx';
 
 const getTable2 = (data, length, border = false, marginBottom = 150, leftMargin = 40, top = 0, size = 100) => {
