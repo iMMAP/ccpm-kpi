@@ -847,7 +847,7 @@ class ReportLanguageSettings extends React.Component {
 
     var tabs = [];
       const selectedTranslationOptions = [];
-      tabs.push(t('PickerTranslation'));
+      tabs.push(t('Language'));
       this.props.parentState.asset.content.translations.map((row, i) => {
         selectedTranslationOptions.push({
           value: i,
@@ -1301,7 +1301,7 @@ class Reports extends React.Component {
         {
           <bem.Button m='icon' className='report-button__settings'
                   onClick={this.toggleReportLanguageSettings}
-                  data-tip={t('Configure Report Style')}>
+                  data-tip={t('Settings')}>
             <i className='k-icon-settings' />
           </bem.Button>
         }
@@ -1466,7 +1466,7 @@ class Reports extends React.Component {
             }
 
             {this.state.showChangeLanguage &&
-              <ui.Modal open onClose={this.toggleReportLanguageSettings} title={t('Change Report language')}>
+              <ui.Modal open onClose={this.toggleReportLanguageSettings} title={t('Settings')}>
                 <ReportLanguageSettings parentState={this.state} />
               </ui.Modal>
             }

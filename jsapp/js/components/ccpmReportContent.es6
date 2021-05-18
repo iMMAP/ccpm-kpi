@@ -181,8 +181,9 @@ export default class CCPM_ReportContents extends React.Component {
       const yes = P_IS02Result.filter(res => res[pathP_IS02] === 'yes');
       const yesAverage = [];
       const noAverage = [];
+      const keys = ccpm_getQuestionInRange('informingStrategicDecisions','analysisTopicCovered').map(s => `${pathP_IS03}${s}`)
+      
       if(yes.length > 0){
-        const keys = ccpm_getQuestionInRange('informingStrategicDecisions','analysisTopicCovered').map(s => `${pathP_IS03}${s}`)
         keys.forEach(key => {
           if(key !== pathP_IS02){
               let sum = 0;
@@ -315,7 +316,7 @@ export default class CCPM_ReportContents extends React.Component {
       const data =  this.props.parentState.reportData.find(q => q.name === questionCode);
       if(!data) return '';
       if(data.row.type === 'select_one') {
-        return <table style={{ width: '100%',marginLeft: '40px', borderCollapse: 'collapse'}}>
+        return <table style={{ width: '95%',marginLeft: '40px', borderCollapse: 'collapse'}}>
                   <tbody>
                     {questionName && <tr><td style={{fontSize: '14px', color: 'black', fontWeight: 'bold', marginTop: '10px',paddingTop: '5px', paddingBottom: '10px'}}>{questionName}</td></tr>}
                     {data.data.responses.map((response, index) => {
@@ -328,7 +329,7 @@ export default class CCPM_ReportContents extends React.Component {
                 </table>
       } 
       if(data.row.type === 'text') {
-        return <table style={{ width: '100%', marginLeft: '40px', borderCollapse: 'collapse'}}>
+        return <table style={{ width: '95%', marginLeft: '40px', borderCollapse: 'collapse'}}>
                   <tbody>
                    {questionName && <tr><td style={{fontSize: '14px', color: 'black', fontWeight: 'bold', paddingTop: '10px', paddingBottom: '10px'}}>{questionName}</td></tr>}
                       {data.data.responses.map(response => {
@@ -549,7 +550,7 @@ export default class CCPM_ReportContents extends React.Component {
                    const questionNo = P_IS02Result.noAverage.find(f => f.id.includes(question.name)) || {};
                   return <>
                         {index ===0 && <tr key={ccpm_getLabel(question.row.label, currentLanguageIndex)}>
-                          <td className='report_tr_left_1' style={{fontWeight: 'bold'}}> TOPIC</td>
+                          <td className='report_tr_left_1' style={{fontWeight: 'bold'}}>TOPIC</td>
                           <td className='report_tr_middle' style={{fontWeight: 'bold'}}>Have done situation analyses with the cluster</td>
                           <td className='report_tr_right_1' style={{fontWeight: 'bold'}}>Have not done situation analyses with the cluster</td>
                         </tr>}
