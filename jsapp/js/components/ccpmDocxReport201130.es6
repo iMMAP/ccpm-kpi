@@ -358,8 +358,8 @@ const renderComment = (questionCode, questionName, parentState) => {
           })
           if(subGroup === 'analysisTopicCovered') tableData.unshift([
             getSubTitle('TOPIC'),
-            getSubTitle('YES'),
-            getSubTitle('NO')
+            getSubTitle('Have done situation analyses with the cluster'),
+            getSubTitle('Have not done situation analyses with the cluster')
           ]);
           const table = getTable2(tableData, subGroup === 'analysisTopicCovered' ? 3 : 2, true);
           if(table) dataToShow.push(table)
@@ -461,9 +461,9 @@ const renderComment = (questionCode, questionName, parentState) => {
   }
 
   const calculatePercentage = (total, sum) => {
-    if(total === 0 || isNaN(total)) total = 1;
+    if(isNaN(total)) total = 0;
     if(isNaN(sum)) sum = 0;
-    return (sum / total) * 100;
+    return (total / sum) * 100;
   }
 
   const getLastPart = (parentState) => {
