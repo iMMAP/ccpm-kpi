@@ -19,6 +19,7 @@ import DocumentCreator  from "./ccpmDocxReport201130";
 import saveAs from 'save-as';
 import ccpmReport from '../ccpmReport';
 import CCPM_ReportContents from './ccpmReportContent';
+import {ccpm_getQuestionInRange} from '../ccpmDataset';
 
 import ReportViewItem from './reportViewItem';
 
@@ -705,7 +706,7 @@ class ReportStyleSettings extends React.Component {
 
     const selectedTranslationOptions = [];
     if (translations) {
-      tabs.push(t('Translation'));
+      tabs.push(t('PickerTranslation'));
       this.props.parentState.asset.content.translations.map((row, i) => {
         selectedTranslationOptions.push({
           value: i,
@@ -780,6 +781,121 @@ class ReportStyleSettings extends React.Component {
   }
 };
 
+class ReportLanguageSettings extends React.Component {
+  constructor(props) {
+    super(props);
+    autoBind(this);
+    this.state = {
+      activeModalTab: 0,
+      reportStyle: props.parentState.reportStyles.default
+    };
+
+    if (props.parentState.currentCustomReport && props.parentState.currentCustomReport.reportStyle) {
+      this.state.reportStyle = props.parentState.currentCustomReport.reportStyle;
+    }
+  }
+  toggleTab(evt) {
+    var i = evt.target.getAttribute('data-index');
+    this.setState({
+      activeModalTab: parseInt(i),
+    });
+  }
+  translationIndexChange (name, value) {
+    let styles = this.state.reportStyle;
+    styles.translationIndex = parseInt(value);
+    this.setState({reportStyle: styles});
+  }
+
+  saveReportStyles() {
+    let currentCustomReport = this.props.parentState.currentCustomReport;
+    let assetUid = this.props.parentState.asset.uid;
+    if (currentCustomReport) {
+      let report_custom = this.props.parentState.asset.report_custom;
+      report_custom[currentCustomReport.crid].reportStyle = this.state.reportStyle;
+      actions.reports.setCustom(assetUid, report_custom);
+    } else {
+      let sett_ = this.props.parentState.reportStyles;
+      assign(sett_.default, this.state.ReportStyle);
+      actions.reports.setStyle(assetUid, sett_);
+    }
+  }
+  render () {
+    let rows = this.props.parentState.rowsByIdentifier || {},
+        translations = this.props.parentState.translations,
+        reportStyle = this.state.reportStyle;
+
+    const groupByOptions = [];
+    groupByOptions.push({
+      value: '',
+      label: t('No grouping')
+    });
+    for (let key in rows) {
+      if (
+        rows.hasOwnProperty(key) &&
+        rows[key].hasOwnProperty('type') &&
+        rows[key].type == 'select_one'
+      ) {
+        const row = rows[key];
+        const val = row.name || row.$autoname;
+        const label = translations ? row.label[reportStyle.translationIndex] : row.label;
+        groupByOptions.push({
+          value: val,
+          label: label
+        });
+      }
+    }
+
+    var tabs = [];
+      const selectedTranslationOptions = [];
+      tabs.push(t('PickerTranslation'));
+      this.props.parentState.asset.content.translations.map((row, i) => {
+        selectedTranslationOptions.push({
+          value: i,
+          label: row || t('Unnamed language')
+        });
+      })
+
+    var modalTabs = tabs.map(function(tab, i){
+      return (
+        <button className={`mdl-button mdl-button--tab ${this.state.activeModalTab === i ? 'active' : ''}`}
+                onClick={this.toggleTab}
+                data-index={i}
+                key={i}>
+          {tab}
+        </button>
+      );
+    }, this);
+
+    return (
+      <bem.GraphSettings>
+        <ui.Modal.Tabs>
+          {modalTabs}
+        </ui.Modal.Tabs>
+        <ui.Modal.Body>
+          <div className='tabs-content'>
+            {selectedTranslationOptions.length > 1 &&
+              <div className='graph-tab__translation' id='graph-labels'>
+                <Radio
+                  name='reports-selected-translation'
+                  options={selectedTranslationOptions}
+                  onChange={this.translationIndexChange}
+                  selected={reportStyle.translationIndex}
+                />
+              </div>
+            }
+          </div>
+          <ui.Modal.Footer>
+            <bem.KoboButton m='blue' onClick={this.saveReportStyles}>
+              {t('Save')}
+            </bem.KoboButton>
+          </ui.Modal.Footer>
+        </ui.Modal.Body>
+      </bem.GraphSettings>
+    );
+
+  }
+};
+
 class Reports extends React.Component {
   constructor(props) {
     super(props);
@@ -799,7 +915,8 @@ class Reports extends React.Component {
       groupBy: '',
       readyReport: [],
       ccpmReport: {},
-      p12Result: []
+      p12Result: [],
+      showChangeLanguage: false
     };
     autoBind(this);
   }
@@ -857,17 +974,23 @@ class Reports extends React.Component {
           rowsByIdentifier[$identifier] = r;
         });
 
-        dataInterface.getSubmissions(uid, 1000,1, [], [
-          'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02',
-          'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/For_each_of_the_foll_the_following_topics/P_IS03_01',
-          'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/For_each_of_the_foll_the_following_topics/P_IS03_02',
-          'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/For_each_of_the_foll_the_following_topics/P_IS03_03',
-          'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/For_each_of_the_foll_the_following_topics/P_IS03_04',
-          'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/For_each_of_the_foll_the_following_topics/P_IS03_05'
-        ]).done((data) => {
+        dataInterface.getSubmissions(uid, 1,1, []).done((data) => {
           if(data && data.count && data.count > 0){
-            this.setState({
-              p12Result : data.results
+            const pathP_IS02 = Object.keys(data.results[0]).find(r => r.includes('P_IS02'));
+            let pathP_IS03 = Object.keys(data.results[0]).find(r => r.includes('P_IS03_01'));
+            pathP_IS03 = pathP_IS03.replace('P_IS03_01', '');
+
+            const fields = [
+              pathP_IS02,
+              ...ccpm_getQuestionInRange('informingStrategicDecisions','analysisTopicCovered').map(s => `${pathP_IS03}${s}`)
+            ];
+            
+            dataInterface.getSubmissions(uid, 1000,1, [],fields).done((data2) => {
+              this.setState({
+                p12Result : data2.results,
+                pathP_IS03,
+                pathP_IS02
+              })
             })
           }
         })
@@ -1005,6 +1128,13 @@ class Reports extends React.Component {
       showReportGraphSettings: !this.state.showReportGraphSettings,
     });
   }
+
+  toggleReportLanguageSettings () {
+    this.setState({
+      showChangeLanguage : !this.state.showChangeLanguage,
+    });
+  }
+
   hasAnyProvidedData (reportData) {
     let hasAny = false;
     reportData.map((rowContent, i)=>{
@@ -1168,6 +1298,13 @@ class Reports extends React.Component {
                 data-tip={t('Export to Document')}>
           <i className='k-icon-download' />
         </bem.Button>
+        {
+          <bem.Button m='icon' className='report-button__settings'
+                  onClick={this.toggleReportLanguageSettings}
+                  data-tip={t('Configure Report Style')}>
+            <i className='k-icon-settings' />
+          </bem.Button>
+        }
       </bem.FormView__reportButtons>
     );
   }
@@ -1325,6 +1462,12 @@ class Reports extends React.Component {
             {this.state.showReportGraphSettings &&
               <ui.Modal open onClose={this.toggleReportGraphSettings} title={t('Edit Report Style')}>
                 <ReportStyleSettings parentState={this.state} />
+              </ui.Modal>
+            }
+
+            {this.state.showChangeLanguage &&
+              <ui.Modal open onClose={this.toggleReportLanguageSettings} title={t('Change Report language')}>
+                <ReportLanguageSettings parentState={this.state} />
               </ui.Modal>
             }
 

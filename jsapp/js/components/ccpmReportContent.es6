@@ -1,7 +1,9 @@
 import React from 'react';
 import dataset, {ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion, ccpm_parseNumber} from '../ccpmDataset';
+import {ccpm_getLabel} from '../ccpmReport';
 import ReactDOM from 'react-dom';
 import { ResponsiveWaffleCanvas } from '@nivo/waffle'
+import { ccpm_getName } from '../ccpmReport.es6';
 
 export default class CCPM_ReportContents extends React.Component {
     constructor(props) {
@@ -174,14 +176,14 @@ export default class CCPM_ReportContents extends React.Component {
     }
 
     getP12Question() {
-      const {parentState: {p12Result}} = this.props;
-      const no = p12Result.filter(res => res['Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'] === 'no');
-      const yes = p12Result.filter(res => res['Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'] === 'yes');
+      const {parentState: {p12Result, pathP_IS02}} = this.props;
+      const no = p12Result.filter(res => res[pathP_IS02] === 'no');
+      const yes = p12Result.filter(res => res[pathP_IS02] === 'yes');
       const yesAverage = [];
       const noAverage = [];
       if(yes.length > 0){
       Object.keys(yes[0]).forEach(key => {
-          if(key !== 'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'){
+          if(key !== pathP_IS02){
               let sum = 0;
               yes.forEach(v => { sum += ccpm_parseNumber(v[key])})
               yesAverage.push({id: key, average: sum / yes.length, averageLabel: this.getStatusLabel(sum / yes.length)})}  
@@ -189,7 +191,7 @@ export default class CCPM_ReportContents extends React.Component {
 
       if(no.length > 0){
         Object.keys(no[0]).forEach(key => {
-          if(key !== 'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'){
+          if(key !== pathP_IS02){
               let sum = 0;
               no.forEach(v => { sum += ccpm_parseNumber(v[key])})
               noAverage.push({id: key, average: sum / no.length, averageLabel: this.getStatusLabel(sum / no.length)})}  
@@ -334,7 +336,9 @@ export default class CCPM_ReportContents extends React.Component {
   
     render () {
       const {parentState} = this.props;
-      const {totalReponses: {numberOfPartner}} = parentState;
+      const {totalReponses: {numberOfPartner}, reportStyles, asset: {content: {translations}}} = parentState;
+      const currentLanguageIndex = reportStyles.default.translationIndex;
+      const choosenLanguage = translations ?  ((translations[currentLanguageIndex]).match(/\(.*?\)/))[0].replace('(', '').replace(')', '') : 'en';
       const p12Result = this.getP12Question();
       return (
         <div id='document-report' >
@@ -394,7 +398,7 @@ export default class CCPM_ReportContents extends React.Component {
           
           parentState.totalResponseDisagregatedByPartner.map((v,i) => <>
           <div style={{width: '50%',display: 'inline-block', height: '150px'}}>
-            <h1 className="subtitle" style={{marginLeft: '10px'}}> {v.row.label[0]} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}) %</h1>
+            <h1 className="subtitle" style={{marginLeft: '10px'}}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}) %</h1>
             <div ref={`chart-${i}`} id={`chart-${i}`} style={{height: "80%"}}>
             <ResponsiveWaffleCanvas
                   data={[
@@ -478,7 +482,7 @@ export default class CCPM_ReportContents extends React.Component {
         {
           parentState.totalEffectiveResponseDisagregatedByPartner.map((v,i) => <>
             <div style={{width: '50%', display: 'inline-block',height: '150px'}}>
-              <h1 className="subtitle" style={{marginLeft: '10px'}}> {v.row.label[0]} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}) %</h1>
+              <h1 className="subtitle" style={{marginLeft: '10px'}}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}) %</h1>
               <div ref={`chart2-${i}`} id={`chart2-${i}`} style={{height: "80%"}}>
             <ResponsiveWaffleCanvas
                   data={[
@@ -515,14 +519,14 @@ export default class CCPM_ReportContents extends React.Component {
           {Object.keys(dataset).map(group => {
           return (
             <>
-            <h1 className="title">{dataset[group].name}</h1>
+            <h1 className="title">{ccpm_getName(dataset[group], choosenLanguage)}</h1>
             <table style={{width: '100%', borderCollapse: 'collapse'}}>
               <tbody>
                  {
                     Object.keys(dataset[group]).map(subGroup => {
                       if(subGroup === 'code' || subGroup === 'name' || subGroup === 'comments' || !dataset[group][subGroup]) return ;
                       return <tr key={subGroup}>
-                      <td className='report_tr_left'>{dataset[group][subGroup].name}</td>
+                      <td className='report_tr_left'>{ccpm_getName(dataset[group][subGroup], choosenLanguage)}</td>
                       <td className='report_tr_right' style={{ color: this.getStatusColor(this.getGroupStatus(subGroup))}}>{this.getGroupStatus(subGroup)}</td>
                     </tr>
                     })
@@ -536,25 +540,25 @@ export default class CCPM_ReportContents extends React.Component {
           {Object.keys(dataset).map(group => {
           return (
             <>
-            <h1 className="title">{dataset[group].name}</h1>
+            <h1 className="title">{ccpm_getName(dataset[group], choosenLanguage)}</h1>
            {Object.keys(dataset[group]).map(subGroup => {
              if(!parentState.ccpmReport[subGroup].questions || subGroup === 'code' || subGroup === 'name' || subGroup === 'comments') return '';
              return <>
-             <p className="subtitle">{dataset[group][subGroup]['name']}</p>
-          <table style={{width: '100%', borderCollapse: 'collapse'}}>
+             <p className="subtitle">{ccpm_getName(dataset[group][subGroup], choosenLanguage)}</p>
+             <table style={{width: '100%', borderCollapse: 'collapse'}}>
               <tbody>
                  {  subGroup === 'analysisTopicCovered' ?
                  parentState.ccpmReport[subGroup].questions.map((question,index) => {
                    const questionYes = p12Result.yesAverage.find(f => f.id.includes(question.name)) || {}
                    const questionNo = p12Result.noAverage.find(f => f.id.includes(question.name)) || {};
                   return <>
-                        {index ===0 && <tr key={question.row.label[0]}>
+                        {index ===0 && <tr key={ccpm_getLabel(question.row.label, currentLanguageIndex)}>
                           <td className='report_tr_left_1' style={{fontWeight: 'bold'}}> LABEL</td>
                           <td className='report_tr_middle' style={{fontWeight: 'bold'}}>YES</td>
                           <td className='report_tr_right_1' style={{fontWeight: 'bold'}}>NO</td>
                         </tr>}
                         <tr key={question.row.label[0]}>
-                          <td className='report_tr_left_1'>{question.row.label[0]}</td>
+                          <td className='report_tr_left_1'>{ccpm_getLabel(question.row.label, currentLanguageIndex)}</td>
                           <td className='report_tr_middle' style={{ color: this.getStatusColor(questionYes.averageLabel)}}>{questionYes.averageLabel}</td>
                           <td className='report_tr_right' style={{ color: this.getStatusColor(questionNo.averageLabel)}}>{questionNo.averageLabel}</td>
                         </tr>
@@ -571,7 +575,7 @@ export default class CCPM_ReportContents extends React.Component {
                     parentState.ccpmReport[subGroup].questions.map((question,index) => {
                       return <>
                     <tr key={question.row.label[0]}>
-                       <td className='report_tr_left'>{question.row.label[0]}</td>
+                       <td className='report_tr_left'>{ccpm_getLabel(currentLanguageIndex, question.row.label)}</td>
                        <td className='report_tr_right' style={{ color: this.getStatusColor(question.averageLabel)}}>{question.averageLabel}</td>
                     </tr>
                     <tr style={{width: '100%', paddingLeft: '40px'}}>

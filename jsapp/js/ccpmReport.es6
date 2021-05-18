@@ -23,6 +23,16 @@ export const ccpm_getStatusColor = (status) => {
     if(status === 'Good') return '#00B8AA';
 }
 
+export const ccpm_getLabel = (index, label) => {
+    if(label[index]) return label[index];
+    return label[0];
+}
+
+export const ccpm_getName = (o, choosenLanguage) => {
+    if(o.names && o.names[choosenLanguage]) return o.names[choosenLanguage];
+    return o.name;
+}
+
 const ccpm_getAverageInquestion = (data) => {
     if(data.data.responses.includes('Yes') || data.data.responses.includes('No')){
       return ccpm_getAverageInBoolQuestion(data);
@@ -63,7 +73,6 @@ const ccpm_getResponseGrouped = (q) => {
 
 
 const ccpm_getData = (data) => {
-    console.log(data);
     const newReport = {};
     const chartData = {};
     const questionResponseGroup = {};
@@ -108,7 +117,6 @@ const ccpm_getData = (data) => {
     }
 
     const typeOfSurvey = data.find(e => e.name === 'type_of_survey');
-    console.log(typeOfSurvey);
     const numberOfPartner = typeOfSurvey.data.frequencies[typeOfSurvey.data.responses.findIndex(l => l === 'Partner Survey')];
 
     const finalData =  {report : newReport, chartData, totalReponses: {numberOfPartner : isNaN(numberOfPartner) ? 0 : numberOfPartner, sum: ccpm_getSumOfQuestions(totalResponseQuestions, data)}, 

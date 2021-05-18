@@ -29,13 +29,13 @@ const getTable2 = (data, length, border = false, marginBottom = 150, leftMargin 
 
 const getP12Question = (parentState) => {
   const {p12Result} = parentState;
-  const no = p12Result.filter(res => res['Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'] === 'no');
-  const yes = p12Result.filter(res => res['Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'] === 'yes');
+  const no = p12Result.filter(res => res[pathP_IS02] === 'no');
+  const yes = p12Result.filter(res => res[pathP_IS02] === 'yes');
   const yesAverage = [];
   const noAverage = [];
   if(yes.length > 0){
   Object.keys(yes[0]).forEach(key => {
-      if(key !== 'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'){
+      if(key !== pathP_IS02){
           let sum = 0;
           yes.forEach(v => { sum += ccpm_parseNumber(v[key])})
           yesAverage.push({id: key, average: sum / yes.length, averageLabel: ccpm_getStatusLabel(sum / yes.length)})}  
@@ -43,7 +43,7 @@ const getP12Question = (parentState) => {
 
   if(no.length > 0){
     Object.keys(no[0]).forEach(key => {
-      if(key !== 'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02'){
+      if(key !== pathP_IS02){
           let sum = 0;
           no.forEach(v => { sum += ccpm_parseNumber(v[key])})
           noAverage.push({id: key, average: sum / no.length, averageLabel: ccpm_getStatusLabel(sum / no.length)})}  
@@ -393,7 +393,7 @@ const renderComment = (questionCode, questionName, parentState) => {
                 ]}) 
               )
               }
-            })
+            })  
           }  
                
         });
