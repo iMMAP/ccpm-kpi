@@ -532,8 +532,8 @@ export default class CCPM_ReportContents extends React.Component {
                   return <>
                         {index ===0 && <tr key={question.row.label[0]}>
                           <td className='report_tr_left_1' style={{fontWeight: 'bold'}}>TOPIC</td>
-                          <td className='report_tr_middle' style={{fontWeight: 'bold'}}>YES</td>
-                          <td className='report_tr_right_1' style={{fontWeight: 'bold'}}>NO</td>
+                          <td className='report_tr_middle' style={{fontWeight: 'bold'}}>Have done situation analyses with the cluster</td>
+                          <td className='report_tr_right_1' style={{fontWeight: 'bold'}}>Have not done situation analyses with the cluster</td>,
                         </tr>}
                         <tr key={question.row.label[0]}>
                           <td className='report_tr_left_1'>{question.row.label[0]}</td>
