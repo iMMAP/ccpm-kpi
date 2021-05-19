@@ -51,23 +51,23 @@ const ccpm_getSumOfQuestions = (questions, data) => {
 
 const ccpm_getElementName = (e) => {
     switch(e){
-        case "C_CP01_01": return "international_org";
-        case "C_CP01_02": return "national_org";
-        case "C_CP01_03": return "un_org";
-        case "C_CP01_04": return "authority_org";
-        case "C_CP01_05": return "donor_org";
-        case "C_CP01_06": return "academia_org";
-        case "C_CP01_07": return "private_org";
-        case "C_CP01_08": return "observer_org";
-        case "C_CP01_09": return "other";
+        case "C_CP01_01": 
         case "C_CP02_01": return "international_org";
+        case "C_CP01_02": 
         case "C_CP02_02": return "national_org";
+        case "C_CP01_03": 
         case "C_CP02_03": return "un_org";
+        case "C_CP01_04": 
         case "C_CP02_04": return "authority_org";
+        case "C_CP01_05": 
         case "C_CP02_05": return "donor_org";
+        case "C_CP01_06": 
         case "C_CP02_06": return "academia_org";
+        case "C_CP01_07": 
         case "C_CP02_07": return "private_org";
+        case "C_CP01_08": 
         case "C_CP02_08": return "observer_org";
+        case "C_CP01_09": 
         case "C_CP02_09": return "other";
         default: return "";
     }
