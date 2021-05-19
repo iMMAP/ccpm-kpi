@@ -1,19 +1,19 @@
-import dataset, {ccpm_getQuestionInRange, ccpm_getAverageInSubGroup, ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion} from './ccpmDataset';
+import dataset, {ccpm_getQuestionInRange, ccpm_getAverageInSubGroup, ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion, titleConstants} from './ccpmDataset';
 
 
 // Get label based on the average 
-export const ccpm_getStatusLabel = (average) => {
-    if(average < 1.25) return 'Weak';
-    if(average < 2.5) return 'Unsatisfactory';
-    if(average < 3.75) return 'Satisfactory';
-    if(average >= 3.75) return 'Good'; 
+export const ccpm_getStatusLabel = (average, choosenLanguage = 'en') => {
+    if(average < 1.25) return titleConstants.weak[choosenLanguage];
+    if(average < 2.5) return titleConstants.unsatisfactory[choosenLanguage];
+    if(average < 3.75) return titleConstants.satifactory[choosenLanguage];
+    if(average > 3.75) return titleConstants.good[choosenLanguage]; 
 }
 
-export const ccpm_getStatusLabelBoolean = (average) => {
-    if(average < 0.25) return 'Weak';
-    if(average < 0.5) return 'Unsatisfactory';
-    if(average < 0.75) return 'Satisfactory';
-    if(average >= 0.75) return 'Good'; 
+export const ccpm_getStatusLabelBoolean = (average, choosenLanguage = 'en') => {
+    if(average < 0.25) return titleConstants.weak[choosenLanguage];
+    if(average < 0.5) titleConstants.unsatisfactory[choosenLanguage];
+    if(average < 0.75) return titleConstants.satifactory[choosenLanguage];
+    if(average >= 0.75) return titleConstants.good[choosenLanguage]; 
 }
 
 export const ccpm_getStatusColor = (status) => {

@@ -4,6 +4,10 @@ import {ccpm_getLabel, ccpm_getStatusLabelBoolean} from '../ccpmReport';
 import ReactDOM from 'react-dom';
 import { ResponsiveWaffleCanvas } from '@nivo/waffle'
 import { ccpm_getName } from '../ccpmReport.es6';
+import Chart from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+Chart.plugins.register(ChartDataLabels);
 
 export default class CCPM_ReportContents extends React.Component {
     constructor(props) {
@@ -175,7 +179,7 @@ export default class CCPM_ReportContents extends React.Component {
       this.setReportData(this.props.reportData);
     }
 
-    getP_IS02Question() {
+    getP_IS02Question(choosenLanguage) {
       const {parentState: {P_IS02Result, pathP_IS02,pathP_IS03}} = this.props;
       const no = P_IS02Result.filter(res => res[pathP_IS02] === 'no');
       const yes = P_IS02Result.filter(res => res[pathP_IS02] === 'yes');
@@ -194,7 +198,7 @@ export default class CCPM_ReportContents extends React.Component {
                  count++;
                 }
               })
-              yesAverage.push({id: key, average: sum / (count > 0 ? count : 1), averageLabel: this.getStatusLabel(sum / (count > 0 ? count : 1))})}  
+              yesAverage.push({id: key, average: sum / (count > 0 ? count : 1), averageLabel: this.getStatusLabel(sum / (count > 0 ? count : 1), choosenLanguage)})}  
       })}
 
       if(no.length > 0){
@@ -208,25 +212,25 @@ export default class CCPM_ReportContents extends React.Component {
                   count++;
                  }
               })
-              noAverage.push({id: key, average: sum / (count > 0 ? count : 1), averageLabel: this.getStatusLabel(sum / (count > 0 ? count : 1))})} 
+              noAverage.push({id: key, average: sum / (count > 0 ? count : 1), averageLabel: this.getStatusLabel(sum / (count > 0 ? count : 1), choosenLanguage)})} 
       })}
 
       return {yesAverage, noAverage};
 
     }
   
-    getStatusLabel(average){
-      if(average < 1.25) return 'Weak';
-      if(average < 2.5) return 'Unsatisfactory';
-      if(average < 3.75) return 'Satisfactory';
-      if(average > 3.75) return 'Good'; 
+    getStatusLabel(average, choosenLanguage){
+      if(average < 1.25) return titleConstants.weak[choosenLanguage];
+      if(average < 2.5) return titleConstants.unsatisfactory[choosenLanguage];
+      if(average < 3.75) return titleConstants.satifactory[choosenLanguage];
+      if(average > 3.75) return titleConstants.good[choosenLanguage]; 
     }
   
-    getGroupStatus(subgroupName, groupName){
+    getGroupStatus(subgroupName, groupName, choosenLanguage){
       if(this.props.parentState.ccpmReport[subgroupName]){
         const average = this.props.parentState.ccpmReport[subgroupName].averageInGroup;
-        if(!dataset[groupName][subgroupName].starting) return ccpm_getStatusLabelBoolean(average)
-        return this.getStatusLabel(average);
+        if(!dataset[groupName][subgroupName].starting) return ccpm_getStatusLabelBoolean(average, choosenLanguage)
+        return this.getStatusLabel(average, choosenLanguage);
       }
     }
   
@@ -245,7 +249,7 @@ export default class CCPM_ReportContents extends React.Component {
       return ccpm_getAverageInQuestion(data);
     }
   
-    buildChartOptions (data) {
+    buildChartOptions (data, choosenLanguage = 'en') {
       var chartType = 'horizontalBar';
   
       // TODO: set as default globally in a higher level (PM)
@@ -283,13 +287,16 @@ export default class CCPM_ReportContents extends React.Component {
         borderWidth: 1
       }];
   
+      const labels =  {en: ['Strongly Disagree', 'Disagree', 'Neither Agree or Disagree', 'Agree', 'Strongly Agree'],
+                       fr: ['Pas du tout d\'accord', 'Pas d\'accord', 'Neutre', 'D\'accord', 'Vraiment d\'accord']}
   
       var opts = {
         type: chartType,
         data: {
-            labels: ['Strongly Disagree', 'Disagree', 'Neither Agree or Disagree', 'Agree', 'Strongly Agree'],
+            labels: labels[choosenLanguage],
             datasets
         },
+        plugins: [ChartDataLabels],
         options: {
           // events: [''],
           legend: {
@@ -298,11 +305,22 @@ export default class CCPM_ReportContents extends React.Component {
           animation: {
             duration: 500
           },
+          plugins: {
+            // Change options for ALL labels of THIS CHART
+            datalabels: {
+              color: '#000',
+              formatter: function(value, context) {
+                return `${Number.parseFloat(value).toFixed(2)} %`;
+              },
+              clamp: true,
+              align:'center'
+            }
+          },
           indexAxis: 'y',
           tooltips: {
             callbacks: {
               label: function(tooltipItem, data) {
-                return `${tooltipItem.value}%`;
+                return `${Number.parseFloat(`${tooltipItem.value}`).toFixed(2)}%`;
               },
             }
           }
@@ -313,10 +331,15 @@ export default class CCPM_ReportContents extends React.Component {
     }
   
     loadChart() {
+      const {parentState} = this.props;
+      const {reportStyles, asset: {content: {translations}}} = parentState;
+      const currentLanguageIndex = reportStyles.default.translationIndex;
+      const choosenLanguage = translations ?  ((translations[currentLanguageIndex]).match(/\(.*?\)/))[0].replace('(', '').replace(')', '') : 'en';
+      
       Object.keys(dataset).forEach(element => {
         if(element !== 'code'){
         var canvas = ReactDOM.findDOMNode(this.refs[`canvas${element}`]);
-        var opts = this.buildChartOptions(this.props.parentState.questionResponseGroup[element]);
+        var opts = this.buildChartOptions(this.props.parentState.questionResponseGroup[element], choosenLanguage);
     
         if (this[`itemChart-${element}`]) {
           this[`itemChart-${element}`].destroy();
@@ -374,7 +397,7 @@ export default class CCPM_ReportContents extends React.Component {
       const {totalReponses: {numberOfPartner}, reportStyles, asset: {content: {translations}}} = parentState;
       const currentLanguageIndex = reportStyles.default.translationIndex;
       const choosenLanguage = translations ?  ((translations[currentLanguageIndex]).match(/\(.*?\)/))[0].replace('(', '').replace(')', '') : 'en';
-      const P_IS02Result = this.getP_IS02Question();
+      const P_IS02Result = this.getP_IS02Question(choosenLanguage);
       const overallTotalResponsesPercentage = Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalReponses.sum));
       const efectiveTotalResponsesPercentage = Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalEffectiveResponse.sum));
       return (
@@ -429,7 +452,7 @@ export default class CCPM_ReportContents extends React.Component {
         {
           parentState.totalResponseDisagregatedByPartner.map((v,i) => <>
           <div style={{width: '50%',display: 'inline-block', height: '150px'}}>
-            <h1 className="subtitle" style={{marginLeft: '10px', color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000'}}> {v.row.label[0]} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
+            <h1 className="subtitle" style={{marginLeft: '10px', color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000'}}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
             <div ref={`chart-${i}`} id={`chart-${i}`} style={{height: "80%"}}>
             <ResponsiveWaffleCanvas
                   data={[
@@ -504,7 +527,7 @@ export default class CCPM_ReportContents extends React.Component {
         {
           parentState.totalEffectiveResponseDisagregatedByPartner.map((v,i) => <>
             <div style={{width: '50%', display: 'inline-block',height: '150px'}}>
-              <h1 className="subtitle" style={{marginLeft: '10px', color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000'}}> {v.row.label[0]} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
+              <h1 className="subtitle" style={{marginLeft: '10px', color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000'}}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
               <div ref={`chart2-${i}`} id={`chart2-${i}`} style={{height: "80%"}}>
             <ResponsiveWaffleCanvas
                   data={[
@@ -544,7 +567,7 @@ export default class CCPM_ReportContents extends React.Component {
                       if(subGroup === 'code' || subGroup === 'name' || subGroup === 'names' || subGroup === 'comments' || !dataset[group][subGroup]) return ;
                       return <tr key={subGroup}>
                       <td className='report_tr_left'>{ccpm_getName(dataset[group][subGroup], choosenLanguage)}</td>
-                      <td className='report_tr_right' style={{ color: this.getStatusColor(this.getGroupStatus(subGroup, group))}}>{this.getGroupStatus(subGroup, group)}</td>
+                      <td className='report_tr_right' style={{ color: this.getStatusColor(this.getGroupStatus(subGroup, group, 'en'))}}>{this.getGroupStatus(subGroup, group, choosenLanguage)}</td>
                     </tr>
                     })
                  }
@@ -577,8 +600,8 @@ export default class CCPM_ReportContents extends React.Component {
                         </tr>}
                         <tr key={question.row.label[0]}>
                           <td className='report_tr_left_1'>{ccpm_getLabel( currentLanguageIndex, question.row.label)}</td>
-                          <td className='report_tr_middle' style={{ color: this.getStatusColor(questionYes.averageLabel)}}>{questionYes.averageLabel}</td>
-                          <td className='report_tr_right' style={{ color: this.getStatusColor(questionNo.averageLabel)}}>{questionNo.averageLabel}</td>
+                          <td className='report_tr_middle' style={{ color: this.getStatusColor(this.getStatusLabel(questionYes.average, 'en'))}}>{questionYes.averageLabel}</td>
+                          <td className='report_tr_right' style={{ color: this.getStatusColor(this.getStatusLabel(questionNo.average, 'en'))}}>{questionNo.averageLabel}</td>
                         </tr>
                         <tr style={{width: '100%', paddingLeft: '40px'}}>
                         {(dataset[group][subGroup].notes && (parentState.ccpmReport[subGroup].questions.length -1 === index)) && dataset[group][subGroup].notes.map((question, index2) => {
@@ -595,7 +618,7 @@ export default class CCPM_ReportContents extends React.Component {
                       return <>
                     <tr key={question.row.label[0]}>
                        <td className='report_tr_left'>{ccpm_getLabel(currentLanguageIndex, question.row.label)}</td>
-                       <td className='report_tr_right' style={{ color: this.getStatusColor(question.averageLabel)}}>{question.averageLabel}</td>
+                       <td className='report_tr_right' style={{ color: this.getStatusColor(question.averageLabel)}}>{this.getStatusLabel(question.average, choosenLanguage)}</td>
                     </tr>
                     <tr style={{width: '100%', paddingLeft: '40px'}}>
                      {(dataset[group][subGroup].notes && (parentState.ccpmReport[subGroup].questions.length -1 === index)) && dataset[group][subGroup].notes.map((question, index2) => {
@@ -618,7 +641,7 @@ export default class CCPM_ReportContents extends React.Component {
              Object.keys(dataset).map(element => {
               if(element !== 'code' && element !== 'name'){
                 return <>
-                <h1 className="title" style={{marginLeft: '10px'}}> {dataset[element].name}</h1>
+                <h1 className="title" style={{marginLeft: '10px'}}> {ccpm_getName(dataset[element], choosenLanguage)}</h1>
                 <canvas ref={`canvas${element}`} id={`${element}canv`} />
                 {this.renderComment(dataset[element].comments[0], titleConstants.commentSuggestedImprovment[choosenLanguage])}
                 {this.renderComment(dataset[element].comments[1], titleConstants.commentSuccessStories[choosenLanguage])}

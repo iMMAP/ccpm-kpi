@@ -151,7 +151,11 @@ export const titleConstants = {
     haveDoneSituationAnalysis: {en: 'Have done situation analyses with the cluster', fr: 'Avoir fait des analyses de situation avec le cluster'},
     haveNotDoneSituationAnalysis: {en: 'Have not done situation analyses with the cluster', fr: 'N\'ont pas fait d\'analyses de situation avec le cluster'},
     numberPartnerResponding: {en: 'Number Partners Responding', fr: 'Nombre de partenaires ayant répondu'},
-    totalNumberOfPartner: {en: 'Total Number of Partners', fr: 'Nombre total de partenaires'}
+    totalNumberOfPartner: {en: 'Total Number of Partners', fr: 'Nombre total de partenaires'},
+    weak: {en: 'Weak', fr: 'Faible'},
+    unsatisfactory: {en: 'Unsatisfactory', fr: 'Insatisfaisant'},
+    satifactory: {en: 'Satisfactory', fr: 'Satisfaisant'},
+    good: {en: 'Good', fr: 'Bon'}
 }
 
 

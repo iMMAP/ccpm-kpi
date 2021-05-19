@@ -818,6 +818,7 @@ class ReportLanguageSettings extends React.Component {
       assign(sett_.default, this.state.ReportStyle);
       actions.reports.setStyle(assetUid, sett_);
     }
+    this.props.toggleReportGraphSettings();
   }
   render () {
     let rows = this.props.parentState.rowsByIdentifier || {},
@@ -1469,7 +1470,7 @@ class Reports extends React.Component {
 
             {this.state.showChangeLanguage &&
               <ui.Modal open onClose={this.toggleReportLanguageSettings} title={t('Settings')}>
-                <ReportLanguageSettings parentState={this.state} />
+                <ReportLanguageSettings parentState={this.state} toggleReportGraphSettings = {this.toggleReportLanguageSettings} />
               </ui.Modal>
             }
 
