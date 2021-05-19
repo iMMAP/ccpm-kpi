@@ -388,7 +388,7 @@ export default class CCPM_ReportContents extends React.Component {
 
     calculatePercentage(total, sum) {
       if(isNaN(total)) total = 0;
-      if(isNaN(sum)) sum = 0;
+      if(isNaN(sum)) sum = 1;
       return (total / sum) * 100;
     }
   

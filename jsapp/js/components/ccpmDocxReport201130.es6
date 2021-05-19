@@ -76,7 +76,7 @@ const getBigTitle = (title) => {
     border: {
       top: {
         color: '#097ca8',
-        size: 15,
+        size: 25,
         space: 10,
         value: 'single'
       },
@@ -84,10 +84,10 @@ const getBigTitle = (title) => {
     children: [new TextRun({
       text: title,
       color: '#000000',
-      size: 28,
+      size: 32,
       bold:true,
       style: {
-        size: 28,
+        size: 32,
         color: '#000000',
         bold: true
       }
@@ -105,10 +105,10 @@ const getTitle = (text) => {
     children: [new TextRun({
       text,
       color: '#4e4e4e',
-      size: 26,
+      size: 28,
       bold:true,
       style: {
-        size: 26,
+        size: 28,
         color: '#4e4e4e',
         bold: true
       }
@@ -477,7 +477,7 @@ const renderComment = (questionCode, questionName, parentState) => {
 
   const calculatePercentage = (total, sum) => {
     if(isNaN(total)) total = 0;
-    if(isNaN(sum)) sum = 0;
+    if(isNaN(sum)) sum = 1;
     return (total / sum) * 100;
   }
 
