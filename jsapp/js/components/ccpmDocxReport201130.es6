@@ -1,7 +1,8 @@
 import {Document, TabStopPosition, TabStopType} from "docx";
-import dataset, {ccpm_parseNumber} from '../ccpmDataset';
-import {ccpm_getStatusLabel, ccpm_getStatusColor, ccpm_getLabel} from '../ccpmReport';
+import dataset, {ccpm_parseNumber, titleConstants, ccpm_getQuestionInRange, ccpm_getAverageInBoolQuestion} from '../ccpmDataset';
+import {ccpm_getStatusLabel, ccpm_getStatusColor, ccpm_getLabel, ccpm_getName} from '../ccpmReport';
 import {TextRun, Paragraph, ImageRun, SectionType, Table, TableRow, TableCell, WidthType, SymbolRun} from 'docx';
+import { ccpm_getStatusLabelBoolean } from "../ccpmReport.es6";
 
 const getTable2 = (data, length, border = false, marginBottom = 150, leftMargin = 40, top = 0, size = 100) => {
   if (!data) return;
@@ -28,25 +29,38 @@ const getTable2 = (data, length, border = false, marginBottom = 150, leftMargin 
 }
 
 const getP_IS02Question = (parentState) => {
-  const {P_IS02Result} = parentState;
+  const {P_IS02Result, pathP_IS02,pathP_IS03} = parentState;
   const no = P_IS02Result.filter(res => res[pathP_IS02] === 'no');
   const yes = P_IS02Result.filter(res => res[pathP_IS02] === 'yes');
   const yesAverage = [];
   const noAverage = [];
+  const keys = ccpm_getQuestionInRange('informingStrategicDecisions','analysisTopicCovered').map(s => `${pathP_IS03}${s}`)
   if(yes.length > 0){
-  Object.keys(yes[0]).forEach(key => {
+    keys.forEach(key => {
       if(key !== pathP_IS02){
           let sum = 0;
-          yes.forEach(v => { sum += ccpm_parseNumber(v[key])})
-          yesAverage.push({id: key, average: sum / yes.length, averageLabel: ccpm_getStatusLabel(sum / yes.length)})}  
+          let count = 0;
+          yes.forEach(v => {
+            if(v[key] > 0){
+             sum += ccpm_parseNumber(v[key]);
+             count++;
+            }
+          })
+          yesAverage.push({id: key, average: sum / (count > 0 ? count : 1), averageLabel: ccpm_getStatusLabel(sum / (count > 0 ? count : 1))})}  
   })}
 
   if(no.length > 0){
-    Object.keys(no[0]).forEach(key => {
+    keys.forEach(key => {
       if(key !== pathP_IS02){
           let sum = 0;
-          no.forEach(v => { sum += ccpm_parseNumber(v[key])})
-          noAverage.push({id: key, average: sum / no.length, averageLabel: ccpm_getStatusLabel(sum / no.length)})}  
+          let count = 0;
+          no.forEach(v => { 
+            if(v[key] > 0){
+              sum += ccpm_parseNumber(v[key]);
+              count++;
+             }
+          })
+          noAverage.push({id: key, average: sum / (count > 0 ? count : 1), averageLabel: ccpm_getStatusLabel(sum / (count > 0 ? count : 1))})} 
   })}
 
   return {yesAverage, noAverage};
@@ -240,21 +254,20 @@ const renderComment = (questionCode, questionName, parentState) => {
     }
   }
 
-  const getGroupData = (parentState) => {
+  const getGroupData = (parentState, choosenLanguage, languageIndex) => {
     const dataToShow = [];
     Object.keys(dataset).forEach(group => {
       dataToShow.push(new Paragraph({
         children: [ new TextRun('')],
       }))
-
-      dataToShow.push(getTitle(dataset[group].name));
+      dataToShow.push(getTitle(ccpm_getName(dataset[group], choosenLanguage)));
       dataToShow.push(new Paragraph({
         children: [ new TextRun('')],
       }))
 
-      const tableData = Object.keys(dataset[group]).filter(sg => sg !== 'code' && sg !== 'name' && sg !== 'comments').map(subGroup => {
+      const tableData = Object.keys(dataset[group]).filter(sg => sg !== 'code' && sg !== 'names' && sg !== 'name' && sg !== 'comments').map(subGroup => {
         return [
-          getTableContent(dataset[group][subGroup].name),
+          getTableContent(ccpm_getName(dataset[group][subGroup], choosenLanguage)),
           new Paragraph({
             spacing: {
               before: 100,
@@ -262,13 +275,13 @@ const renderComment = (questionCode, questionName, parentState) => {
             },
             children: [
               new TextRun({
-                text: ccpm_getStatusLabel(parentState.ccpmReport[subGroup].averageInGroup),
+                text: dataset[group][subGroup].starting ?  ccpm_getStatusLabel(parentState.ccpmReport[subGroup].averageInGroup) : ccpm_getStatusLabelBoolean(parentState.ccpmReport[subGroup].averageInGroup),
                 size: 20,
-                color: ccpm_getStatusColor(ccpm_getStatusLabel(parentState.ccpmReport[subGroup].averageInGroup)),
+                color: ccpm_getStatusColor(dataset[group][subGroup].starting ?  ccpm_getStatusLabel(parentState.ccpmReport[subGroup].averageInGroup) : ccpm_getStatusLabelBoolean(parentState.ccpmReport[subGroup].averageInGroup)),
                 bold: true,
                 style: {
                   size: 20,
-                  color: ccpm_getStatusColor(ccpm_getStatusLabel(parentState.ccpmReport[subGroup].averageInGroup)),
+                  color: ccpm_getStatusColor(dataset[group][subGroup].starting ?  ccpm_getStatusLabel(parentState.ccpmReport[subGroup].averageInGroup) : ccpm_getStatusLabelBoolean(parentState.ccpmReport[subGroup].averageInGroup)),
                 }
               }), 
           ] 
@@ -279,15 +292,14 @@ const renderComment = (questionCode, questionName, parentState) => {
       if(table) dataToShow.push(table);
 }   );
     const P_IS02Result = getP_IS02Question(parentState);
-     dataToShow.push(getBigTitle("Score Breakdown"));
+     dataToShow.push(getBigTitle(titleConstants.scoreBreakdown[choosenLanguage]));
     Object.keys(dataset).forEach(group => {
-        dataToShow.push(getTitle(dataset[group].name));
+        dataToShow.push(getTitle(ccpm_getName(dataset[group], choosenLanguage)));
         dataToShow.push(new Paragraph({
           children: [ new TextRun('')],
       }))
-        Object.keys(dataset[group]).filter(sg => sg !== 'code' && sg !== 'name' && sg !== 'comments').forEach(subGroup => {
-            
-          dataToShow.push(getSubTitle(dataset[group][subGroup]['name']));
+        Object.keys(dataset[group]).filter(sg => sg !== 'code' && sg !== 'names' && sg !== 'name' && sg !== 'comments').forEach(subGroup => {
+          dataToShow.push(getSubTitle(ccpm_getName(dataset[group][subGroup], choosenLanguage)));
           dataToShow.push(new Paragraph({
             children: [ new TextRun('')],
         }))
@@ -296,7 +308,7 @@ const renderComment = (questionCode, questionName, parentState) => {
               const questionYes = P_IS02Result.yesAverage.find(f => f.id.includes(question.name)) || {}
               const questionNo = P_IS02Result.noAverage.find(f => f.id.includes(question.name)) || {};
             return [
-              getTableContent(question.row.label[0]),
+              getTableContent(ccpm_getLabel(languageIndex,question.row.label)),
               new Paragraph({
                 spacing: {
                   before: 100,
@@ -335,7 +347,7 @@ const renderComment = (questionCode, questionName, parentState) => {
               })
             ]}
             return [
-              getTableContent(question.row.label[0]),
+              getTableContent(ccpm_getLabel(languageIndex,question.row.label)),
               new Paragraph({
                 spacing: {
                   before: 100,
@@ -357,20 +369,23 @@ const renderComment = (questionCode, questionName, parentState) => {
             ]    
           })
           if(subGroup === 'analysisTopicCovered') tableData.unshift([
-            getSubTitle('TOPIC'),
-            getSubTitle('Have done situation analyses with the cluster'),
-            getSubTitle('Have not done situation analyses with the cluster')
+            getSubTitle(titleConstants.topic[choosenLanguage]),
+            getSubTitle(titleConstants.haveDoneSituationAnalysis[choosenLanguage]),
+            getSubTitle(titleConstants.haveNotDoneSituationAnalysis[choosenLanguage])
           ]);
           const table = getTable2(tableData, subGroup === 'analysisTopicCovered' ? 3 : 2, true);
           if(table) dataToShow.push(table)
           if(dataset[group][subGroup].notes){
             dataset[group][subGroup].notes.forEach((question, index2) =>{
-              const commentTable = renderComment(question.code, question.name,parentState);
+
+
+
+              const commentTable = renderComment(question.code, ccpm_getLabel(languageIndex, (parentState.reportData.find(q => q.name === question.code)).row.label),parentState);
               if(commentTable){
               dataToShow.push(new Paragraph({
                   children: [ new TextRun('')],
               }))
-              dataToShow.push(getNoteTitle(dataset[group][subGroup].noteName));
+              dataToShow.push(getNoteTitle(dataset[group][subGroup].noteName[choosenLanguage]));
               dataToShow.push(new Paragraph({
                 children: [ new TextRun('')],
             }))
@@ -466,11 +481,11 @@ const renderComment = (questionCode, questionName, parentState) => {
     return (total / sum) * 100;
   }
 
-  const getLastPart = (parentState) => {
+  const getLastPart = (parentState, choosenLanguage) => {
       const data = [];
       Object.keys(dataset).forEach(element => {
        if(element !== 'code' && element !== 'name'){
-        data.push(getTitle(dataset[element].name));
+        data.push(getTitle(ccpm_getName(dataset[element].name, choosenLanguage)));
         let image = '';
         const canv = window.document.getElementById(`${element}canv`);
         if(canv){
@@ -489,12 +504,12 @@ const renderComment = (questionCode, questionName, parentState) => {
           })]}),)
         }
 
-        data.push(getNoteTitle("Comment on Suggested Improvements"));
+        data.push(getNoteTitle(titleConstants.commentSuggestedImprovment[choosenLanguage]));
 
-        data.push(renderComment(dataset[element].comments[0], 'Comments on Suggested Improvements', parentState));
+        data.push(renderComment(dataset[element].comments[0], titleConstants.commentSuggestedImprovment[choosenLanguage], parentState));
 
-        data.push(getNoteTitle("Comments on Success Stories"));
-        data.push(renderComment(dataset[element].comments[1], 'Comments on Success Stories', parentState))
+        data.push(getNoteTitle(titleConstants.commentSuccessStories[choosenLanguage]));
+        data.push(renderComment(dataset[element].comments[1], titleConstants.commentSuccessStories[choosenLanguage], parentState))
        }
     })
     return data;
@@ -502,8 +517,10 @@ const renderComment = (questionCode, questionName, parentState) => {
 
 export default class CCPM_ReportContents {
     create(parentState){
-
-      const {totalReponses: {numberOfPartner}} = parentState;
+      const {totalReponses: {numberOfPartner}, reportStyles, asset: {content: {translations}}} = parentState;
+      const currentLanguageIndex = reportStyles.default.translationIndex;
+      const choosenLanguage = translations ?  ((translations[currentLanguageIndex]).match(/\(.*?\)/))[0].replace('(', '').replace(')', '') : 'en';
+      
     
         return new Promise((resolve)=>{
           const  sections = [
@@ -512,8 +529,8 @@ export default class CCPM_ReportContents {
                 type: SectionType.CONTINUOUS,
               },
               children: [
-                getBigTitle("Overall Response Rate"),
-                getTitle('Total Responses'),
+                getBigTitle(titleConstants.overallActivePartner[choosenLanguage]),
+                getTitle(titleConstants[choosenLanguage]),
                 new Paragraph({
                   spacing: {
                     before: 100,
@@ -528,15 +545,15 @@ export default class CCPM_ReportContents {
                 })]}),
                 getTable2([
                   [getSubTitle('Total'), getTableContent(`${calculatePercentage(numberOfPartner, parentState.totalReponses.sum)}`)],
-                  [getSubTitle('Number Partners Responding'), getTableContent(`${numberOfPartner}`)],
-                  [getSubTitle('Total Number of Partners'), getTableContent(`${parentState.totalReponses.sum}`)],
+                  [getSubTitle(titleConstants.numberPartnerResponding[choosenLanguage]), getTableContent(`${numberOfPartner}`)],
+                  [getSubTitle(titleConstants.totalNumberOfPartner[choosenLanguage]), getTableContent(`${parentState.totalReponses.sum}`)],
                 ], 2, true),
                 new Paragraph(" "),
-                getTitle('Responses by Type'),
+                getTitle(titleConstants.responseByType[choosenLanguage]),
                 new Paragraph(" "),
                 getImages({}, parentState.totalResponseDisagregatedByPartner, ''),
-                getBigTitle("Effective Response Rate"),
-                getTitle('Total Responses'),
+                getBigTitle(titleConstants.effectiveResponseRate[choosenLanguage]),
+                getTitle(titleConstants.totalResponse[choosenLanguage]),
                 new Paragraph({
                   spacing: {
                     before: 100,
@@ -551,15 +568,15 @@ export default class CCPM_ReportContents {
                 })]}),
                 getTable2([
                   [getSubTitle('Total'), getTableContent(`${calculatePercentage(numberOfPartner, parentState.totalEffectiveResponse.sum)}`)],
-                  [getSubTitle('Number Partners Responding'), getTableContent(`${numberOfPartner}`)],
-                  [getSubTitle('Total Number of Partners'), getTableContent(`${parentState.totalEffectiveResponse.sum}`)],
+                  [getSubTitle(titleConstants.numberPartnerResponding[choosenLanguage]), getTableContent(`${numberOfPartner}`)],
+                  [getSubTitle(titleConstants.totalNumberOfPartner[choosenLanguage]), getTableContent(`${parentState.totalEffectiveResponse.sum}`)],
                 ], 2, true),
                 new Paragraph(" "),
-                getTitle('Responses by Type'),
+                getTitle(titleConstants.responseByType[choosenLanguage]),
                 new Paragraph(" "),
                 getImages({}, parentState.totalEffectiveResponseDisagregatedByPartner, '2'),
-                ...getGroupData(parentState),
-                ...getLastPart(parentState)
+                ...getGroupData(parentState, choosenLanguage, currentLanguageIndex),
+                ...getLastPart(parentState, choosenLanguage)
           
               ]
             }

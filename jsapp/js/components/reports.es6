@@ -974,18 +974,20 @@ class Reports extends React.Component {
           rowsByIdentifier[$identifier] = r;
         });
 
-        dataInterface.getSubmissions(uid, 1,1, []).done((data) => {
+        dataInterface.getSubmissions(uid, 2,0, []).done((data) => {
           if(data && data.count && data.count > 0){
-            const pathP_IS02 = Object.keys(data.results[0]).find(r => r.includes('P_IS02'));
-            let pathP_IS03 = Object.keys(data.results[0]).find(r => r.includes('P_IS03_01'));
-            pathP_IS03 = pathP_IS03.replace('P_IS03_01', '');
+            const firstPartnerSubmission = data.results.find(v => !(v[Object.keys(v).find(k => k.includes('type_of_survey'))].includes('coordinator')));
+            const pathP_IS02 = Object.keys(firstPartnerSubmission).find(r => r.includes('P_IS02'));
+            let pathP_IS03 = Object.keys(firstPartnerSubmission).find(r => r.includes('P_IS03'));
+            const sliceIndex = pathP_IS03.indexOf('P_IS03');
+            pathP_IS03 = pathP_IS03.substring(0, sliceIndex);
 
             const fields = [
               pathP_IS02,
               ...ccpm_getQuestionInRange('informingStrategicDecisions','analysisTopicCovered').map(s => `${pathP_IS03}${s}`)
             ];
             
-            dataInterface.getSubmissions(uid, 1000,1, [],fields).done((data2) => {
+            dataInterface.getSubmissions(uid, 1000,0, [],fields).done((data2) => {
               this.setState({
                 P_IS02Result : data2.results,
                 pathP_IS03,

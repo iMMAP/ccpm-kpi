@@ -29,6 +29,7 @@ export const ccpm_getLabel = (index, label) => {
 }
 
 export const ccpm_getName = (o, choosenLanguage) => {
+    if(!o) return '';
     if(o.names && o.names[choosenLanguage]) return o.names[choosenLanguage];
     return o.name;
 }
