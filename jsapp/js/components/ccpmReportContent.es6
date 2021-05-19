@@ -182,6 +182,7 @@ export default class CCPM_ReportContents extends React.Component {
       const yesAverage = [];
       const noAverage = [];
       const keys = ccpm_getQuestionInRange('informingStrategicDecisions','analysisTopicCovered').map(s => `${pathP_IS03}${s}`)
+      
       if(yes.length > 0){
         keys.forEach(key => {
           if(key !== pathP_IS02){
@@ -330,7 +331,7 @@ export default class CCPM_ReportContents extends React.Component {
       const data =  this.props.parentState.reportData.find(q => q.name === questionCode);
       if(!data) return '';
       if(data.row.type === 'select_one') {
-        return <table style={{ width: '100%',marginLeft: '40px', borderCollapse: 'collapse'}}>
+        return <table style={{ width: '95%',marginLeft: '40px', borderCollapse: 'collapse'}}>
                   <tbody>
                     {questionName && <tr><td style={{fontSize: '14px', color: 'black', fontWeight: 'bold', marginTop: '10px',paddingTop: '5px', paddingBottom: '10px'}}>{questionName}</td></tr>}
                     {data.data.responseLabels && data.data.responseLabels.map((response, index) => {
@@ -349,7 +350,7 @@ export default class CCPM_ReportContents extends React.Component {
                 </table>
       } 
       if(data.row.type === 'text') {
-        return <table style={{ width: '100%', marginLeft: '40px', borderCollapse: 'collapse'}}>
+        return <table style={{ width: '95%', marginLeft: '40px', borderCollapse: 'collapse'}}>
                   <tbody>
                    {questionName && <tr><td style={{fontSize: '14px', color: 'black', fontWeight: 'bold', paddingTop: '10px', paddingBottom: '10px'}}>{questionName}</td></tr>}
                       {data.data.responses.map(response => {
