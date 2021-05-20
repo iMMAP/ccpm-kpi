@@ -299,7 +299,7 @@ export default class CCPM_ReportContents extends React.Component {
         plugins: [ChartDataLabels],
         options: {
           scales: {
-            yAxes: [{
+            xAxes: [{
                 ticks: {
                     beginAtZero: true
                 }
@@ -314,9 +314,10 @@ export default class CCPM_ReportContents extends React.Component {
           plugins: {
             // Change options for ALL labels of THIS CHART
             datalabels: {
-              color: '#000',
+              color: '#fff',
               formatter: function(value, context) {
-                return `${Number.parseFloat(value).toFixed(2)} %`;
+                const percent = Number.parseFloat(value).toFixed(2);
+                return percent > 0 ? `${percent}%` : '';
               },
               clamp: true,
               align:'center'
@@ -423,7 +424,7 @@ export default class CCPM_ReportContents extends React.Component {
               <table style={{width: '30%', borderCollapse: 'collapse'}}>
                 <tbody>
                     <tr>
-                      <td className='report_tr_left_with_border' >Total</td>
+                      <td className='report_tr_left_with_border'>Total</td>
                       <td className='report_tr_right_with_border' style={{color: overallTotalResponsesPercentage > 100 ? '#FD625E' : '#000'}}>{overallTotalResponsesPercentage}%</td>
                     </tr>
                     <tr>
@@ -499,8 +500,8 @@ export default class CCPM_ReportContents extends React.Component {
           <table style={{width: '30%', borderCollapse: 'collapse'}}>
                 <tbody>
                 <tr>
-                    <td className='report_tr_left_with_border' style={{color: efectiveTotalResponsesPercentage > 100 ? '#FD625E' : '#000'}}>Total</td>
-                    <td className='report_tr_right_with_border' >{efectiveTotalResponsesPercentage}%</td>
+                    <td className='report_tr_left_with_border'>Total</td>
+                    <td className='report_tr_right_with_border' style={{color: efectiveTotalResponsesPercentage > 100 ? '#FD625E' : '#000'}}>{efectiveTotalResponsesPercentage}%</td>
                 </tr>
                 <tr>
                     <td className='report_tr_left_with_border'>{titleConstants.numberPartnerResponding[choosenLanguage]}</td>

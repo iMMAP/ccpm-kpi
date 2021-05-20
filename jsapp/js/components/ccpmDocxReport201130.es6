@@ -463,8 +463,8 @@ const renderComment = (questionCode, questionName, parentState) => {
     {
       if(i%2 === 0){
         if(data[i+1]){
-        table.push([getSubTitle(`${v.row.label[0]}  (${Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)`),
-        getSubTitle(`${data[i+1].row.label[0]}  (${Math.floor(calculatePercentage(data[i+1].questionsDisagregatedByPartner, data[i+1].data.mean))}%)`)
+        table.push([getSubTitle(`${v.row.label[0]} (${Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)`),
+        getSubTitle(`${data[i+1].row.label[0]} (${Math.floor(calculatePercentage(data[i+1].questionsDisagregatedByPartner, data[i+1].data.mean))}%)`)
       ]);
       table.push([new Paragraph({
             spacing: {
@@ -493,7 +493,7 @@ const renderComment = (questionCode, questionName, parentState) => {
        ])
       } else {
           table.push([
-            getSubTitle(`${v.row.label[0]}  (${Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)`)
+            getSubTitle(`${v.row.label[0]} (${Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)`)
         ]);
         table.push([new Paragraph({
             spacing: {
