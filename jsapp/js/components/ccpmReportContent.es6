@@ -298,7 +298,13 @@ export default class CCPM_ReportContents extends React.Component {
         },
         plugins: [ChartDataLabels],
         options: {
-          // events: [''],
+          scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        },
           legend: {
             display: true
           },
@@ -417,8 +423,8 @@ export default class CCPM_ReportContents extends React.Component {
               <table style={{width: '30%', borderCollapse: 'collapse'}}>
                 <tbody>
                     <tr>
-                      <td className='report_tr_left_with_border' style={{color: overallTotalResponsesPercentage > 100 ? '#FD625E' : '#000'}}>Total</td>
-                      <td className='report_tr_right_with_border' >{overallTotalResponsesPercentage}%</td>
+                      <td className='report_tr_left_with_border' >Total</td>
+                      <td className='report_tr_right_with_border' style={{color: overallTotalResponsesPercentage > 100 ? '#FD625E' : '#000'}}>{overallTotalResponsesPercentage}%</td>
                     </tr>
                     <tr>
                         <td className='report_tr_left_with_border'>{titleConstants.numberPartnerResponding[choosenLanguage]}</td>
