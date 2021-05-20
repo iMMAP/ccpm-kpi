@@ -353,37 +353,21 @@ export default class CCPM_ReportContents extends React.Component {
     renderComment(questionCode, questionName) {
       const data =  this.props.parentState.reportData.find(q => q.name === questionCode);
       if(!data) return '';
-      if(data.row.type === 'select_one') {
         return <table style={{ width: '95%',marginLeft: '40px', borderCollapse: 'collapse'}}>
                   <tbody>
                     {questionName && <tr><td style={{fontSize: '14px', color: 'black', fontWeight: 'bold', marginTop: '10px',paddingTop: '5px', paddingBottom: '10px'}}>{questionName}</td></tr>}
                     {data.data.responseLabels && data.data.responseLabels.map((response, index) => {
                       return  <tr>
                                   <td className='report_tr_left_with_border'>{response}</td>
-                                  <td className='report_tr_right_with_border' >{data.data.percentages[index]} %</td>
                               </tr>
                     })}
                     {!data.data.responseLabels && data.data.responses.map((response, index) => {
                       return  <tr>
                                   <td className='report_tr_left_with_border'>{response}</td>
-                                  <td className='report_tr_right_with_border' >{data.data.percentages[index]} %</td>
                               </tr>
                     })}
                   </tbody>
                 </table>
-      } 
-      if(data.row.type === 'text') {
-        return <table style={{ width: '95%', marginLeft: '40px', borderCollapse: 'collapse'}}>
-                  <tbody>
-                   {questionName && <tr><td style={{fontSize: '14px', color: 'black', fontWeight: 'bold', paddingTop: '10px', paddingBottom: '10px'}}>{questionName}</td></tr>}
-                      {data.data.responses.map(response => {
-                        return  <tr>
-                                    <td className="bordered-td">{response}</td>
-                                </tr>
-                      })}
-                  </tbody>
-                </table>
-      }
     }
 
     calculatePercentage(total, sum) {

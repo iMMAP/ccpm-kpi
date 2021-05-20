@@ -136,7 +136,7 @@ export const ccpm_getAverageInSubGroup = (data) =>{
 export const titleConstants = {
     overallResponseRate: {en : 'Overall Response Rate', fr: 'Taux de réponse global'},
     overallActivePartner: {en: 'Overall Active Partners Response Rate', fr: 'Taux de réponse global des partenaires actifs'},
-    responseByType: {en: 'Response By Type', fr: 'Taux de réponse global des partenaires actifs par type'},
+    responseByType: {en: 'Response By Type', fr: 'Reponse par type'},
     effectiveResponseRate: {en: 'Effective Response Rate', fr: 'Taux de réponse effective'},
     totalResponse: {en: 'Total Response', fr: 'Total des réponses'},
     overallPerformance: {en: 'Overall Performance', fr: 'Performance global'},

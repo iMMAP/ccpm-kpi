@@ -975,27 +975,21 @@ class Reports extends React.Component {
           rowsByIdentifier[$identifier] = r;
         });
 
-        dataInterface.getSubmissions(uid, 2,0, []).done((data) => {
-          if(data && data.count && data.count > 0){
-            const firstPartnerSubmission = data.results.find(v => !(v[Object.keys(v).find(k => k.includes('type_of_survey'))].includes('coordinator')));
-            const pathP_IS02 = Object.keys(firstPartnerSubmission).find(r => r.includes('P_IS02'));
-            let pathP_IS03 = Object.keys(firstPartnerSubmission).find(r => r.includes('P_IS03'));
-            const sliceIndex = pathP_IS03.indexOf('P_IS03');
-            pathP_IS03 = pathP_IS03.substring(0, sliceIndex);
+        const pathP_IS02 = 'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02';
+        const pathP_IS03 = 'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/For_each_of_the_foll_the_following_topics/';
 
-            const fields = [
-              pathP_IS02,
-              ...ccpm_getQuestionInRange('informingStrategicDecisions','analysisTopicCovered').map(s => `${pathP_IS03}${s}`)
-            ];
-            
-            dataInterface.getSubmissions(uid, 1000,0, [],fields).done((data2) => {
-              this.setState({
-                P_IS02Result : data2.results,
-                pathP_IS03,
-                pathP_IS02
-              })
-            })
-          }
+
+        const fields = [
+          pathP_IS02,
+          ...ccpm_getQuestionInRange('informingStrategicDecisions','analysisTopicCovered').map(s => `${pathP_IS03}${s}`)
+        ];
+        
+        dataInterface.getSubmissions(uid, 1000,0, [],fields).done((data2) => {
+          this.setState({
+            P_IS02Result : data2.results,
+            pathP_IS03,
+            pathP_IS02
+          })
         })
 
         dataInterface.getReportData({uid: uid, identifiers: [], group_by: groupBy}).done((data)=> {
