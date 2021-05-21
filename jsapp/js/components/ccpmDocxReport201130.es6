@@ -25,7 +25,7 @@ const getTable2 = (data, length, border = false, marginBottom = 150, leftMargin 
     } : false,
     rows: [...data.map(t => new TableRow({
       children: t.map((tt, ind) => new TableCell({
-        margins: { top },
+        margins: { left: 100, right: 100 },
         children: [tt],
         columnSpan: 2,
         width: length === 2 ? !comment ? ind === 1 ? {
@@ -163,7 +163,6 @@ const getTableContent = (text, color = '#4e4e4e') => {
       before: 100,
       after: 100,
     },
-    alignment: AlignmentType.CENTER,
     children: [
       new TextRun({
         text: text,
@@ -315,7 +314,6 @@ const getGroupData = (parentState, choosenLanguage, languageIndex) => {
             before: 100,
             after: 100,
           },
-          alignment: AlignmentType.CENTER,
           children: [
             new TextRun({
               text: dataset[group][subGroup].starting ? ccpm_getStatusLabel(parentState.ccpmReport[subGroup].averageInGroup, choosenLanguage) : ccpm_getStatusLabelBoolean(parentState.ccpmReport[subGroup].averageInGroup, choosenLanguage),
@@ -367,7 +365,6 @@ const scoreBreakDownGroup = (parentState, choosenLanguage, languageIndex) => {
                 before: 100,
                 after: 100,
               },
-              alignment: AlignmentType.CENTER,
               children: [
                 new TextRun({
                   text: ccpm_getStatusLabel(questionYes.average, choosenLanguage),
@@ -386,7 +383,6 @@ const scoreBreakDownGroup = (parentState, choosenLanguage, languageIndex) => {
                 before: 100,
                 after: 100,
               },
-              alignment: AlignmentType.CENTER,
               children: [
                 new TextRun({
                   text: ccpm_getStatusLabel(questionNo.average, choosenLanguage),
@@ -409,7 +405,6 @@ const scoreBreakDownGroup = (parentState, choosenLanguage, languageIndex) => {
               before: 100,
               after: 100,
             },
-            alignment: AlignmentType.CENTER,
             children: [
               new TextRun({
                 text: ccpm_getStatusLabel(question.average, choosenLanguage),
@@ -448,11 +443,6 @@ const scoreBreakDownGroup = (parentState, choosenLanguage, languageIndex) => {
             }))
             const subNoteTitle = [[new Paragraph(''), getNoteSubTitle(ccpm_getLabel(languageIndex, (parentState.reportData.find(q => q.name === question.code)).row.label))]]
             dataToShow.push(getTable2(subNoteTitle, 2, false, undefined, undefined, undefined, undefined, true));
-            dataToShow.push(new Paragraph({
-              children: [new TextRun('')],
-            }))
-
-
             dataToShow.push(commentTable);
           }
         })
@@ -481,7 +471,7 @@ const getImages = (imageData, data, chartNumber = '') => {
           children: [new ImageRun({
             data: Uint8Array.from(atob((document.getElementById(`chart${chartNumber}-${i}`).querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
             transformation: {
-              width: 340,
+              width: 290,
               height: 100
             },
           })]
@@ -494,7 +484,7 @@ const getImages = (imageData, data, chartNumber = '') => {
           children: [new ImageRun({
             data: Uint8Array.from(atob((document.getElementById(`chart${chartNumber}-${i + 1}`).querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
             transformation: {
-              width: 340,
+              width: 290,
               height: 100
             },
           })]
@@ -513,8 +503,8 @@ const getImages = (imageData, data, chartNumber = '') => {
           children: [new ImageRun({
             data: Uint8Array.from(atob((document.getElementById(`chart${chartNumber}-${i}`).querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
             transformation: {
-              width: 250,
-              height: 80
+              width: 290,
+              height: 100
             },
           })
           ]
@@ -551,7 +541,7 @@ const getLastPart = (parentState, choosenLanguage) => {
           children: [new ImageRun({
             data: Uint8Array.from(atob(image.replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
             transformation: {
-              width: 600,
+              width: 550,
               height: 250
             },
           })]
@@ -574,7 +564,8 @@ export default class CCPM_ReportContents {
     const currentLanguageIndex = reportStyles.default.translationIndex;
     const choosenLanguage = translations ? ((translations[currentLanguageIndex]).match(/\(.*?\)/))[0].replace('(', '').replace(')', '') : 'en';
 
-    const numberPartnerRespondingPercentage = Number.parseFloat(`${calculatePercentage(numberOfPartner, parentState.totalReponses.sum)}`).toFixed(2);
+    const overallTotalPercentage = Number.parseFloat(`${calculatePercentage(numberOfPartner, parentState.totalReponses.sum)}`).toFixed(2);
+    const effectiveTotalPercentage = Number.parseFloat(`${calculatePercentage(numberOfPartner, parentState.totalEffectiveResponse.sum)}`).toFixed(2);
 
     return new Promise((resolve) => {
       const sections = [
@@ -593,16 +584,16 @@ export default class CCPM_ReportContents {
               children: [new ImageRun({
                 data: Uint8Array.from(atob((document.getElementById('totalResponseChart').querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
                 transformation: {
-                  width: 450,
+                  width: 400,
                   height: 100
                 },
               })]
             }),
             getTable2([
-              [getSubTitle('Total'), getTableContent(`${numberPartnerRespondingPercentage}%`, numberPartnerRespondingPercentage > 100 ? '#FD625E' : 'black')],
+              [getSubTitle('Total'), getTableContent(`${overallTotalPercentage}%`, overallTotalPercentage > 100 ? '#FD625E' : '#4e4e4e')],
               [getSubTitle(titleConstants.numberPartnerResponding[choosenLanguage]), getTableContent(`${numberOfPartner}`)],
               [getSubTitle(titleConstants.totalNumberOfPartner[choosenLanguage]), getTableContent(`${parentState.totalReponses.sum}`)],
-            ], 2, true, undefined, undefined, undefined, 70),
+            ], 2, true, undefined, undefined, undefined, 50),
             new Paragraph(" "),
             getTitle(titleConstants.responseByType[choosenLanguage]),
             new Paragraph(" "),
@@ -623,16 +614,16 @@ export default class CCPM_ReportContents {
               children: [new ImageRun({
                 data: Uint8Array.from(atob((document.getElementById('totalEffectiveResponseChart').querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
                 transformation: {
-                  width: 450,
+                  width: 400,
                   height: 100
                 },
               })]
             }),
             getTable2([
-              [getSubTitle('Total'), getTableContent(`${Number.parseFloat(`${calculatePercentage(numberOfPartner, parentState.totalEffectiveResponse.sum)}`).toFixed(2)}`)],
+              [getSubTitle('Total'), getTableContent(`${effectiveTotalPercentage}%`, effectiveTotalPercentage > 100 ? '#FD625E' : '#4e4e4e')],
               [getSubTitle(titleConstants.numberPartnerResponding[choosenLanguage]), getTableContent(`${numberOfPartner}`)],
               [getSubTitle(titleConstants.totalNumberOfPartner[choosenLanguage]), getTableContent(`${parentState.totalEffectiveResponse.sum}`)],
-            ], 2, true, undefined, undefined, undefined, 70),
+            ], 2, true, undefined, undefined, undefined, 50),
             new Paragraph(" "),
             getTitle(titleConstants.responseByType[choosenLanguage]),
             new Paragraph(" "),
