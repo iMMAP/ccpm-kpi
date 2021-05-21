@@ -4,7 +4,7 @@ import {ccpm_getStatusLabel, ccpm_getStatusColor, ccpm_getLabel, ccpm_getName} f
 import {TextRun, Paragraph, ImageRun, SectionType, Table, TableRow, TableCell, WidthType, SymbolRun} from 'docx';
 import { ccpm_getStatusLabelBoolean } from "../ccpmReport.es6";
 
-const getTable2 = (data, length, border = false, marginBottom = 150, leftMargin = 40, top = 0, size = 100, comment = false) => {
+const getTable2 = (data, length, border = false, marginBottom = 150, leftMargin = 40, top = 0, size = 100, comment = false, omitHorizintalBorder = false) => {
   if (!data) return;
   const columWidth = new Array(length);
   return new Table({
@@ -18,10 +18,10 @@ const getTable2 = (data, length, border = false, marginBottom = 150, leftMargin 
         marginUnitType: 'dxa'
       },
       borders: border ? {
-        bottom: {color: 'grey', size: 1, style: BorderStyle.SINGLE},
-        top: {color: 'grey', size: 1, style: BorderStyle.SINGLE},
-        left: {color: '#808080', size: 1, style: BorderStyle.SINGLE},
-        right: {color: '#808080', size: 1, style: BorderStyle.SINGLE},
+        bottom: {color: '#555555', size: 1, style: BorderStyle.SINGLE},
+        top: {color: '#555555', size: 1, style: BorderStyle.THICK},
+        left: omitHorizintalBorder ? {style: BorderStyle.NONE} : {color: '#555555', size: 10, style: BorderStyle.THICK},
+        right: omitHorizintalBorder ? {style: BorderStyle.NONE} : {color: '#555555', size: 10, style: BorderStyle.THICK},
       }: false,
       rows: [...data.map(t=>new TableRow({
         children: t.map((tt, ind) => new TableCell({
@@ -31,7 +31,7 @@ const getTable2 = (data, length, border = false, marginBottom = 150, leftMargin 
           width: length ===  2 ? !comment ?  ind === 1 ? {
             size: '30%',
             type: WidthType.PERCENTAGE,
-          } : {size: '70%', type: WidthType.PERCENTAGE} : ind === 0 ? {size: '30%', type: WidthType.PERCENTAGE} : {size: '70%', type: WidthType.PERCENTAGE} :
+          } : {size: '70%', type: WidthType.PERCENTAGE} : ind === 0 ? {size: '20%', type: WidthType.PERCENTAGE} : {size: '80%', type: WidthType.PERCENTAGE} :
           {
             size: `${100/length}%`,
             type: WidthType.PERCENTAGE
@@ -131,7 +131,7 @@ const getTitle = (text) => {
   })
 }
 
-const getSubTitle = (text) => {
+const getSubTitle = (text, color = 'black') => {
   return new Paragraph({
     spacing: {
       before: 100,
@@ -142,33 +142,33 @@ const getSubTitle = (text) => {
       new TextRun({
         text: text,
         size: 22,
-        color: '#000000',
+        color,
         bold: true,
         style: {
           size: 22,
-          color: '#000000',
+          color,
         }
       }), 
   ] 
   })
 }
 
-const getTableContent = (text) => {
+const getTableContent = (text, color = '#4e4e4e') => {
   return new Paragraph({
     spacing: {
       before: 100,
       after: 100,
     },
-    
+    alignment: AlignmentType.CENTER,
     children: [
       new TextRun({
         text: text,
         size: 22,
-        color: '#4e4e4e',
+        color,
         bold: false,
         style: {
           size: 22,
-          color: '#4e4e4e',
+          color,
         }
       }), 
   ] 
@@ -288,7 +288,7 @@ const renderComment = (questionCode, questionName, parentState) => {
             ];
         })
       }
-        return getTable2(rows, 1, false, 20, 100,undefined,undefined, true);
+        return getTable2(rows, 2, false, 20, 100,undefined,undefined, true);
   }
 
   const getGroupData = (parentState, choosenLanguage, languageIndex) => {
@@ -327,7 +327,7 @@ const renderComment = (questionCode, questionName, parentState) => {
           })
         ]    
       });
-      const table = getTable2(tableData, 2, true, 20);
+      const table = getTable2(tableData, 2, true, 20, undefined, undefined, undefined, undefined, true);
       if(table) dataToShow.push(table);
 }   );
     
@@ -424,7 +424,7 @@ const renderComment = (questionCode, questionName, parentState) => {
            getSubTitle(titleConstants.haveDoneSituationAnalysis[choosenLanguage]),
            getSubTitle(titleConstants.haveNotDoneSituationAnalysis[choosenLanguage])
          ]);
-         const table = getTable2(tableData, subGroup === 'analysisTopicCovered' ? 3 : 2, true);
+         const table = getTable2(tableData, subGroup === 'analysisTopicCovered' ? 3 : 2, true, undefined, undefined, undefined, undefined, false, true);
          if(table) dataToShow.push(table)
          if(dataset[group][subGroup].notes){
            dataset[group][subGroup].notes.forEach((question, index2) =>{
@@ -451,7 +451,7 @@ const renderComment = (questionCode, questionName, parentState) => {
              }
            })  
          }  
-              
+         dataToShow.push(new Paragraph(''));
        });
  });
    return dataToShow;
@@ -463,8 +463,10 @@ const renderComment = (questionCode, questionName, parentState) => {
     {
       if(i%2 === 0){
         if(data[i+1]){
-        table.push([getSubTitle(`${v.row.label[0]} (${Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)`),
-        getSubTitle(`${data[i+1].row.label[0]} (${Math.floor(calculatePercentage(data[i+1].questionsDisagregatedByPartner, data[i+1].data.mean))}%)`)
+          const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
+          const p1 = Math.floor(calculatePercentage(data[i+1].questionsDisagregatedByPartner, data[i+1].data.mean));
+        table.push([getSubTitle(`${v.row.label[0]} (${p}%)`, p > 100 ? '#FD625E' : '#000000'),
+        getSubTitle(`${data[i+1].row.label[0]} (${p1}%)`, p1 > 100 ? '#FD625E' : '#000000')
       ]);
       table.push([new Paragraph({
             spacing: {
@@ -492,8 +494,9 @@ const renderComment = (questionCode, questionName, parentState) => {
         })]})
        ])
       } else {
+        const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
           table.push([
-            getSubTitle(`${v.row.label[0]} (${Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)`)
+            getSubTitle(`${v.row.label[0]} (${p}%)`, p > 100 ? 'red' : 'black')
         ]);
         table.push([new Paragraph({
             spacing: {
@@ -524,9 +527,10 @@ const renderComment = (questionCode, questionName, parentState) => {
 
   const getLastPart = (parentState, choosenLanguage) => {
       const data = [];
+      data.push(getBigTitle(titleConstants.qustionByquestionBreakdown[choosenLanguage]))
       Object.keys(dataset).forEach(element => {
        if(element !== 'code' && element !== 'name'){
-        data.push(getTitle(ccpm_getName(dataset[element].name, choosenLanguage)));
+        data.push(getTitle(ccpm_getName(dataset[element], choosenLanguage)));
         let image = '';
         const canv = window.document.getElementById(`${element}canv`);
         if(canv){
@@ -545,11 +549,10 @@ const renderComment = (questionCode, questionName, parentState) => {
           })]}),)
         }
 
-        data.push(getNoteTitle(titleConstants.commentSuggestedImprovment[choosenLanguage]));
+        data.push( getTable2([[new Paragraph(''),getNoteTitle(titleConstants.commentSuggestedImprovment[choosenLanguage])]], 2, false, undefined, undefined, undefined, undefined, true));
 
         data.push(renderComment(dataset[element].comments[0], titleConstants.commentSuggestedImprovment[choosenLanguage], parentState));
-
-        data.push(getNoteTitle(titleConstants.commentSuccessStories[choosenLanguage]));
+        data.push(getTable2([[new Paragraph(''),getNoteTitle(titleConstants.commentSuccessStories[choosenLanguage])]], 2, false, undefined, undefined, undefined, undefined, true));
         data.push(renderComment(dataset[element].comments[1], titleConstants.commentSuccessStories[choosenLanguage], parentState))
        }
     })
@@ -562,6 +565,7 @@ export default class CCPM_ReportContents {
       const currentLanguageIndex = reportStyles.default.translationIndex;
       const choosenLanguage = translations ?  ((translations[currentLanguageIndex]).match(/\(.*?\)/))[0].replace('(', '').replace(')', '') : 'en';
       
+      const numberPartnerRespondingPercentage = Number.parseFloat(`${calculatePercentage(numberOfPartner, parentState.totalReponses.sum)}`).toFixed(2);
     
         return new Promise((resolve)=>{
           const  sections = [
@@ -585,7 +589,7 @@ export default class CCPM_ReportContents {
                   },
                 })]}),
                 getTable2([
-                  [getSubTitle('Total'), getTableContent(`${calculatePercentage(numberOfPartner, parentState.totalReponses.sum)}%`)],
+                  [getSubTitle('Total'), getTableContent(`${numberPartnerRespondingPercentage}%`, numberPartnerRespondingPercentage > 100 ? '#FD625E' : 'black')],
                   [getSubTitle(titleConstants.numberPartnerResponding[choosenLanguage]), getTableContent(`${numberOfPartner}`)],
                   [getSubTitle(titleConstants.totalNumberOfPartner[choosenLanguage]), getTableContent(`${parentState.totalReponses.sum}`)],
                 ], 2, true, undefined, undefined, undefined, 70),
@@ -613,7 +617,7 @@ export default class CCPM_ReportContents {
                   },
                 })]}),
                 getTable2([
-                  [getSubTitle('Total'), getTableContent(`${calculatePercentage(numberOfPartner, parentState.totalEffectiveResponse.sum)}`)],
+                  [getSubTitle('Total'), getTableContent(`${Number.parseFloat(`${calculatePercentage(numberOfPartner, parentState.totalEffectiveResponse.sum)}`).toFixed(2)}`)],
                   [getSubTitle(titleConstants.numberPartnerResponding[choosenLanguage]), getTableContent(`${numberOfPartner}`)],
                   [getSubTitle(titleConstants.totalNumberOfPartner[choosenLanguage]), getTableContent(`${parentState.totalEffectiveResponse.sum}`)],
                 ], 2, true, undefined, undefined, undefined, 70),
@@ -642,7 +646,20 @@ export default class CCPM_ReportContents {
                     type: SectionType.NEXT_PAGE,
                   },
                   children:  getLastPart(parentState, choosenLanguage)
-                }   
+                },
+                {
+                  properties: {
+                    type: SectionType.NEXT_PAGE,
+                  },
+                  children:  [
+                    getBigTitle(titleConstants.finalComments[choosenLanguage]),
+                    getNoteTitle(titleConstants.partner[choosenLanguage]),
+                    renderComment('P_OI01', titleConstants.partner[choosenLanguage], parentState),
+                    getNoteTitle(titleConstants.coordinator[choosenLanguage]),
+                    renderComment('C_OI01', titleConstants.coordinator[choosenLanguage], parentState)
+                  ]
+                }      
+
         ];
           resolve(new Document({
             sections: sections
