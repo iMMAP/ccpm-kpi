@@ -1285,12 +1285,6 @@ class Reports extends React.Component {
         </bem.Button>
 
         <bem.Button m='icon' className='report-button__print'
-                onClick={launchPrinting}
-                data-tip={t('Print')}>
-          <i className='k-icon-print' />
-        </bem.Button>
-
-        <bem.Button m='icon' className='report-button__print'
                 onClick={e => {this.exportToDocx(this.state)}}
                 data-tip={t('Export to Document')}>
           <i className='k-icon-download' />
