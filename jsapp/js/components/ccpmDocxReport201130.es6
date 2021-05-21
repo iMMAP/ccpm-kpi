@@ -463,15 +463,15 @@ const scoreBreakDownGroup = (parentState, choosenLanguage, languageIndex) => {
   return dataToShow;
 }
 
-const getImages = (imageData, data, chartNumber = '') => {
+const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
   const table = [];
   data.forEach((v, i) => {
     if (i % 2 === 0) {
       if (data[i + 1]) {
         const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
         const p1 = Math.floor(calculatePercentage(data[i + 1].questionsDisagregatedByPartner, data[i + 1].data.mean));
-        table.push([getSubTitle(`${v.row.label[0]} (${p}%)`, p > 100 ? '#FD625E' : '#000000'),
-        getSubTitle(`${data[i + 1].row.label[0]} (${p1}%)`, p1 > 100 ? '#FD625E' : '#000000')
+        table.push([getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${p}%)`, p > 100 ? '#FD625E' : '#000000'),
+        getSubTitle(`${ccpm_getLabel(currentLanguageIndex,data[i + 1].row.label)} (${p1}%)`, p1 > 100 ? '#FD625E' : '#000000')
         ]);
         table.push([new Paragraph({
           spacing: {
@@ -503,7 +503,7 @@ const getImages = (imageData, data, chartNumber = '') => {
       } else {
         const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
         table.push([
-          getSubTitle(`${v.row.label[0]} (${p}%)`, p > 100 ? 'red' : 'black')
+          getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${p}%)`, p > 100 ? 'red' : 'black')
         ]);
         table.push([new Paragraph({
           spacing: {
@@ -606,7 +606,7 @@ export default class CCPM_ReportContents {
             new Paragraph(" "),
             getTitle(titleConstants.responseByType[choosenLanguage]),
             new Paragraph(" "),
-            getImages({}, parentState.totalResponseDisagregatedByPartner, ''),]
+            getImages({}, parentState.totalResponseDisagregatedByPartner, '', currentLanguageIndex),]
         },
         {
           properties: {
@@ -636,7 +636,7 @@ export default class CCPM_ReportContents {
             new Paragraph(" "),
             getTitle(titleConstants.responseByType[choosenLanguage]),
             new Paragraph(" "),
-            getImages({}, parentState.totalEffectiveResponseDisagregatedByPartner, '2'),
+            getImages({}, parentState.totalEffectiveResponseDisagregatedByPartner, '2',currentLanguageIndex),
           ]
         }, {
           properties: {
