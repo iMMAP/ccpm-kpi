@@ -147,7 +147,7 @@ export const titleConstants = {
     commentSuccessStories: { en: 'Comments on Success Stories', fr: 'Commentaires sur les Histoires de Réussite' },
     partner: { en: 'Partner', fr: 'Partenaire' },
     coordinator: { en: 'Coordinator', fr: 'Coordinateur' },
-    topic: { en: 'TOPIC', fr: 'SUJET' },
+    topic: { en: 'Topic', fr: 'Sujet' },
     haveDoneSituationAnalysis: { en: 'Have done situation analyses with the cluster', fr: 'Avoir fait des analyses de situation avec le cluster' },
     haveNotDoneSituationAnalysis: { en: 'Have not done situation analyses with the cluster', fr: 'N\'ont pas fait d\'analyses de situation avec le cluster' },
     numberPartnerResponding: { en: 'Number Partners Responding', fr: 'Nombre de Partenaires ayant Répondu' },
