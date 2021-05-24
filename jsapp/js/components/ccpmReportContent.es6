@@ -451,7 +451,7 @@ export default class CCPM_ReportContents extends React.Component {
           parentState.totalResponseDisagregatedByPartner.map((v, i) => <>
             <div style={{ width: '50%', display: 'inline-block', height: '150px' }}>
               <h1 className="subtitle" style={{ marginLeft: '10px', color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000' }}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
-              <div ref={`chart-${i}`} id={`chart-${i}`} style={{ height: "80%" }}>
+              <div ref={`chart-${i}`} id={`chart-${i}`} style={{ height: "80%", width: "95%" }}>
                 <ResponsiveWaffleCanvas
                   data={[
                     {
@@ -526,7 +526,7 @@ export default class CCPM_ReportContents extends React.Component {
           parentState.totalEffectiveResponseDisagregatedByPartner.map((v, i) => <>
             <div style={{ width: '50%', display: 'inline-block', height: '150px' }}>
               <h1 className="subtitle" style={{ marginLeft: '10px', color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000' }}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
-              <div ref={`chart2-${i}`} id={`chart2-${i}`} style={{ height: "80%" }}>
+              <div ref={`chart2-${i}`} id={`chart2-${i}`} style={{ height: "80%", width: "95%" }}>
                 <ResponsiveWaffleCanvas
                   data={[
                     {
