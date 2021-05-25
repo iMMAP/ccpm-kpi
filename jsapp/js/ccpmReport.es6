@@ -77,6 +77,7 @@ const ccpm_getElementName = (e) => {
 const ccpm_getNumberOfParnerResponseByType = (questionList, data) => {
     const questions = data.filter(e => questionList.includes(e.name));
     const disagregatedByType = data.find(e => e.name === 'P_GI03');
+    if(disagregatedByType){
     const result = [];
     questions.forEach(element => {
         const elementName = ccpm_getElementName(element.name);
@@ -86,7 +87,8 @@ const ccpm_getNumberOfParnerResponseByType = (questionList, data) => {
             numberResponses = disagregatedByType.data.frequencies[index];
         result.push({ ...element, questionsDisagregatedByPartner: numberResponses });
     })
-    return result;
+    return result;}
+    return [];
 }
 
 const ccpm_getResponseGrouped = (q) => {

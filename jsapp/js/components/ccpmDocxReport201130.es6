@@ -640,8 +640,8 @@ export default class CCPM_ReportContents {
     const currentLanguageIndex = reportStyles.default.translationIndex;
     const choosenLanguage = translations ? ((translations[currentLanguageIndex]).match(/\(.*?\)/))[0].replace('(', '').replace(')', '') : 'en';
 
-    const overallTotalPercentage = Number.parseFloat(`${calculatePercentage(numberOfPartner, parentState.totalReponses.sum)}`).toFixed(2);
-    const effectiveTotalPercentage = Number.parseFloat(`${calculatePercentage(numberOfPartner, parentState.totalEffectiveResponse.sum)}`).toFixed(2);
+    const overallTotalPercentage = Math.floor(Number.parseFloat(`${calculatePercentage(numberOfPartner, parentState.totalReponses.sum)}`));
+    const effectiveTotalPercentage = Math.floor(Number.parseFloat(`${calculatePercentage(numberOfPartner, parentState.totalEffectiveResponse.sum)}`));
 
     return new Promise((resolve) => {
       const sections = [

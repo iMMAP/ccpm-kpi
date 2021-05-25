@@ -346,7 +346,8 @@ export default class CCPM_ReportContents extends React.Component {
   loadChart() {
     const { parentState } = this.props;
     const { reportStyles, asset: { content: { translations } } } = parentState;
-    const currentLanguageIndex = reportStyles.default.translationIndex;
+    let currentLanguageIndex = reportStyles.default.translationIndex;
+    if(!translations[currentLanguageIndex]) currentLanguageIndex = translations.findIndex(lan => lan && lan.includes('en'));
     const choosenLanguage = translations ? ((translations[currentLanguageIndex]).match(/\(.*?\)/))[0].replace('(', '').replace(')', '') : 'en';
 
     Object.keys(dataset).forEach(element => {
@@ -393,7 +394,8 @@ export default class CCPM_ReportContents extends React.Component {
   render() {
     const { parentState } = this.props;
     const { totalReponses: { numberOfPartner }, reportStyles, asset: { content: { translations } } } = parentState;
-    const currentLanguageIndex = reportStyles.default.translationIndex;
+    let currentLanguageIndex = reportStyles.default.translationIndex;
+    if(!translations[currentLanguageIndex]) currentLanguageIndex = translations.findIndex(lan => lan && lan.includes('en'));
     const choosenLanguage = translations ? ((translations[currentLanguageIndex]).match(/\(.*?\)/))[0].replace('(', '').replace(')', '') : 'en';
     const P_IS02Result = this.getP_IS02Question(choosenLanguage);
     const overallTotalResponsesPercentage = Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalReponses.sum));
@@ -401,7 +403,7 @@ export default class CCPM_ReportContents extends React.Component {
     return (
       <div id='document-report' style={{ paddingBottom: '100px' }} >
         <h1 className="bigTitle">{titleConstants.overallResponseRate[choosenLanguage]}</h1>
-        <h1 className="title">{titleConstants.totalResponse[choosenLanguage]}</h1>
+        <h1 className="title" style={{marginTop: '22px' }}>{titleConstants.totalResponse[choosenLanguage]}</h1>
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
             <div style={{ height: '150px', width: "60%" }}>
@@ -480,7 +482,7 @@ export default class CCPM_ReportContents extends React.Component {
 
         <h1 className="bigTitle" style={{ pageBreakBefore: 'always' }}>{titleConstants.effectiveResponseRate[choosenLanguage]}</h1>
 
-        <h1 className="title">{titleConstants.totalResponse[choosenLanguage]}</h1>
+        <h1 className="title" style={{marginTop: '22px' }}>{titleConstants.totalResponse[choosenLanguage]}</h1>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <div ref='totalEffectiveResponseChart' style={{ margin: 0, padding: 0, width: '60%', height: '150px' }} id='totalEffectiveResponseChart' >
             <ResponsiveWaffleCanvas
@@ -557,7 +559,7 @@ export default class CCPM_ReportContents extends React.Component {
         {Object.keys(dataset).map(group => {
           return (
             <>
-              <h1 className="title">{ccpm_getName(dataset[group], choosenLanguage)}</h1>
+              <h1 className="title" style={{marginTop: '22px'}}>{ccpm_getName(dataset[group], choosenLanguage)}</h1>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <tbody>
                   {
@@ -579,7 +581,7 @@ export default class CCPM_ReportContents extends React.Component {
         {Object.keys(dataset).map(group => {
           return (
             <>
-              <h1 className="title">{ccpm_getName(dataset[group], choosenLanguage)}</h1>
+              <h1 className="title" style={{marginTop: '30px'}}>{ccpm_getName(dataset[group], choosenLanguage)}</h1>
               {Object.keys(dataset[group]).map(subGroup => {
                 if (!parentState.ccpmReport[subGroup].questions || subGroup === 'code' || subGroup === 'names' || subGroup === 'name' || subGroup === 'comments') return '';
                 return <>
@@ -593,9 +595,9 @@ export default class CCPM_ReportContents extends React.Component {
                           const questionNo = P_IS02Result.noAverage.find(f => f.id.includes(question.name)) || {};
                           return <>
                             {index === 0 && <tr key={ccpm_getLabel(question.row.label, currentLanguageIndex)}>
-                              <td className='report_tr_left_1' style={{ fontWeight: 'bold' }}> {titleConstants.topic[choosenLanguage]}</td>
-                              <td className='report_tr_middle' style={{ fontWeight: 'bold' }}>{titleConstants.haveDoneSituationAnalysis[choosenLanguage]}</td>
-                              <td className='report_tr_right_1' style={{ fontWeight: 'bold' }}>{titleConstants.haveNotDoneSituationAnalysis[choosenLanguage]}</td>
+                              <td className='report_tr_left_1' style={{ fontWeight: 'bold', verticalAlign: 'center' }}> {titleConstants.topic[choosenLanguage]}</td>
+                              <td className='report_tr_middle' style={{ fontWeight: 'bold', verticalAlign: 'center' }}>{titleConstants.haveDoneSituationAnalysis[choosenLanguage]}</td>
+                              <td className='report_tr_right_1' style={{ fontWeight: 'bold', verticalAlign: 'center' }}>{titleConstants.haveNotDoneSituationAnalysis[choosenLanguage]}</td>
                             </tr>}
                             <tr key={question.row.label[0]}>
                               <td className='report_tr_left_1'>{ccpm_getLabel(currentLanguageIndex, question.row.label)}</td>
@@ -641,7 +643,7 @@ export default class CCPM_ReportContents extends React.Component {
           Object.keys(dataset).map(element => {
             if (element !== 'code' && element !== 'name') {
               return <>
-                <h1 className="title" style={{ marginLeft: '10px' }}> {ccpm_getName(dataset[element], choosenLanguage)}</h1>
+                <h1 className="title" style={{ marginLeft: '10px', marginTop: '20px' }}> {ccpm_getName(dataset[element], choosenLanguage)}</h1>
                 <canvas ref={`canvas${element}`} id={`${element}canv`} />
                 {this.renderComment(dataset[element].comments[0], titleConstants.commentSuggestedImprovment[choosenLanguage])}
                 {this.renderComment(dataset[element].comments[1], titleConstants.commentSuccessStories[choosenLanguage])}
@@ -649,8 +651,9 @@ export default class CCPM_ReportContents extends React.Component {
             }
           })
         }
-        <h1 className="bigTitle" style={{ pageBreakBefore: 'always' }}>{titleConstants.finalComments[choosenLanguage]}</h1>
+        <h1 className="bigTitle" style={{ pageBreakBefore: 'always', marginBottom: '22px' }}>{titleConstants.finalComments[choosenLanguage]}</h1>
         {this.renderComment('P_OI01', titleConstants.partner[choosenLanguage])}
+        <p style={{marginTop: '22px'}}></p>
         {this.renderComment('C_OI01', titleConstants.coordinator[choosenLanguage])}
       </div>
     );
