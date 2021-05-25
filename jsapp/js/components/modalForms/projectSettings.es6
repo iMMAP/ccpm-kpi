@@ -834,7 +834,7 @@ class ProjectSettings extends React.Component {
 
           <bem.FormModal__item>
             <label className='long'>
-              {t('Please specify the country where this project will be deployed. ')}
+              {t('Please specify the cluster where this project will be deployed. ')}
               {/*t('This information will be used to help you filter results on the project list page.')*/}
             </label>
           </bem.FormModal__item>
