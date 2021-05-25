@@ -372,12 +372,12 @@ export default class CCPM_ReportContents extends React.Component {
       <tbody>
         {questionName && <tr><td style={{ fontSize: '14px', color: 'black', fontWeight: 'bold', paddingTop: '20px', paddingBottom: '10px' }}>{questionName}</td></tr>}
         {data.data.responseLabels && data.data.responseLabels.map((response, index) => {
-          return <tr>
+          return <tr key={`${index}-com-${questionCode}`}> 
             <td className='report_tr_left_with_border'>{response}</td>
           </tr>
         })}
         {!data.data.responseLabels && data.data.responses.map((response, index) => {
-          return <tr>
+          return <tr key={`${index}-com-${questionCode}`}>
             <td className='report_tr_left_with_border'>{response}</td>
           </tr>
         })}
@@ -451,7 +451,7 @@ export default class CCPM_ReportContents extends React.Component {
         <h1 className="title">{titleConstants.responseByType[choosenLanguage]}</h1>
         {
           parentState.totalResponseDisagregatedByPartner.map((v, i) => <>
-            <div style={{ width: '50%', display: 'inline-block', height: '150px' }}>
+            <div key={`${i}-disag-11`} style={{ width: '50%', display: 'inline-block', height: '150px' }}>
               <h1 className="subtitle" style={{ marginLeft: '10px', color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000' }}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
               <div ref={`chart-${i}`} id={`chart-${i}`} style={{ height: "80%", width: "95%" }}>
                 <ResponsiveWaffleCanvas
@@ -526,7 +526,7 @@ export default class CCPM_ReportContents extends React.Component {
         <h1 className="title">{titleConstants.responseByType[choosenLanguage]}</h1>
         {
           parentState.totalEffectiveResponseDisagregatedByPartner.map((v, i) => <>
-            <div style={{ width: '50%', display: 'inline-block', height: '150px' }}>
+            <div key={`${i}-disag`} style={{ width: '50%', display: 'inline-block', height: '150px' }}>
               <h1 className="subtitle" style={{ marginLeft: '10px', color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000' }}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
               <div ref={`chart2-${i}`} id={`chart2-${i}`} style={{ height: "80%", width: "95%" }}>
                 <ResponsiveWaffleCanvas
