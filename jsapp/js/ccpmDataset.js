@@ -1,12 +1,12 @@
 const dataset = {
     supportServiceDelivery: {
         name: 'Support to Service Delivery',
-        names: { en: 'Support to Service Delivery', fr: 'Soutien à la Prestation de Services' },
+        names: { en: 'Support to Service Delivery', fr: 'Appui à la Prestation de Services' },
         code: 'P_SS',
         comments: ['P_SS05', 'P_SS06'],
-        meeting: { code: '01a', starting: 1, end: 6, name: 'Meetings', names: { en: 'Meetings', fr: 'Reunions' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_SD01', name: 'Meeting Frequency' }, { code: 'C_SD02', name: 'Notes on Meetings' }] },
+        meeting: { code: '01a', starting: 1, end: 6, name: 'Meetings', names: { en: 'Meetings', fr: 'Réunions' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_SD01', name: 'Meeting Frequency' }, { code: 'C_SD02', name: 'Notes on Meetings' }] },
         clusterStrategicDecisions: { code: '02', starting: 1, end: 3, name: 'Cluster Strategic Decisions', names: { en: 'Cluster Strategic Decisions', fr: 'Décisions Stratégiques du Groupe' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_SD03', name: '' }] },
-        clusterMapping: { code: '03', starting: 1, end: 5, name: 'Cluster Mapping', names: { en: 'Cluster Mapping', fr: 'Mappage du Groupe' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_SD04', name: '' }] },
+        clusterMapping: { code: '03', starting: 1, end: 5, name: 'Cluster Mapping', names: { en: 'Cluster Mapping', fr: 'Cartographie des Clusters' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_SD04', name: '' }] },
         identificationNeeds: { code: '04', starting: 1, end: 3, name: 'Identification of Needs, Gaps and Response Priorities', names: { en: 'Identification of Needs, Gaps and Response Priorities', fr: 'Identification des Besoins, des Lacunes et des Priorités de Réponse' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_SD05', name: '' }] },
     },
     informingStrategicDecisions: {
@@ -22,7 +22,7 @@ const dataset = {
     },
     planningStrategyDevelopment: {
         name: 'Planning and Strategy Development',
-        names: { en: 'Planning and Strategy Development', fr: 'Plannification et Developement des Strategies' },
+        names: { en: 'Planning and Strategy Development', fr: 'Planification et Développement des Stratégies' },
         code: 'P_PS',
         comments: ['P_PS03', 'P_PS04'],
         strategicPlan: { code: '01b', starting: 1, end: 4, name: 'Strategic Plan', names: { en: 'Strategic Plan', fr: 'Plan Stratégique' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_PS01', name: 'Has the cluster developed a strategic plan?' }] },
@@ -57,7 +57,7 @@ const dataset = {
     aap: {
         code: 'P_AA',
         name: 'Accountability to Affected Populations',
-        names: { en: 'Accountability to Affected Populations', fr: 'Responsabilité envers les Populations Touchées' },
+        names: { en: 'Accountability to Affected Populations', fr: 'Redevabilité envers les Populations Touchées' },
         comments: ['P_AA02', 'P_AA03'],
         mechanismForConsulting: { code: '01', starting: 1, end: 2, name: 'Mechanisms for Consulting and Involving Affected Populations in Decision Making', names: { en: 'Mechanisms for Consulting and Involving Affected Populations in Decision Making', fr: 'Mécanismes de Consultation et d\'Implication des Populations Affectées dans la Prise de Décision' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_AA01', name: 'Has the cluster agreed on mechanisms for consulting and involving affected populations in decision making?' }] },
         mechanismToReceive: { code: '01', starting: 3, end: 4, name: 'Mechanisms to Receive, Investigate and Act on Complaints by Affected People', names: { en: 'Mechanisms to Receive, Investigate and Act on Complaints by Affected People', fr: 'Mécanismes pour Recevoir, Enquêter et Donner Suite aux Plaintes des Personnes Touchées' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_AA02', name: 'Has the cluster agreed on mechanisms for receiving, investigating and acting on complaints from affected people?' }, { code: 'C_AA03', name: 'Notes on Accountability to Affected Populations' }] }
