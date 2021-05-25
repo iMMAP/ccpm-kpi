@@ -456,7 +456,6 @@ const scoreBreakDownGroup = (parentState, choosenLanguage, languageIndex) => {
 const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
   let table = [];
   data.slice(0, 6).forEach((v, i) => {
-    console.log(i);
     if (i % 2 === 0) {
       if (data[i + 1]) {
         const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
@@ -520,75 +519,76 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
   })
   const result  = [];
   result.push(getTable2(table, 2, ''));
-  result.push(new Paragraph({
+  if(data.length > 6){
+    result.push(new Paragraph({
     pageBreakBefore: true,
     children: [new TextRun('')]
   }));
   table = [];
-  data.slice(7).forEach((v, i) => {
-    console.log(i);
-    if (i % 2 === 0) {
-      if (data[i + 1]) {
-        const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
-        const p1 = Math.floor(calculatePercentage(data[i + 1].questionsDisagregatedByPartner, data[i + 1].data.mean));
-        table.push([getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${p}%)`, p > 100 ? '#FD625E' : '#000000'),
-        getSubTitle(`${ccpm_getLabel(currentLanguageIndex,data[i + 1].row.label)} (${p1}%)`, p1 > 100 ? '#FD625E' : '#000000')
-        ]);
-        table.push([new Paragraph({
-          spacing: {
-            before: i === 7 ? 400 :  100,
-            after: 200,
-          },
-          pageBreakBefore: i === 5 ? true : false,
-          children: [new ImageRun({
-            data: Uint8Array.from(atob((document.getElementById(`chart${chartNumber}-${i}`).querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
-            transformation: {
-              width: 290,
-              height: 100
+    data.slice(7).forEach((v, i) => {
+      console.log(i);
+      if (i % 2 === 0) {
+        if (data[i + 1]) {
+          const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
+          const p1 = Math.floor(calculatePercentage(data[i + 1].questionsDisagregatedByPartner, data[i + 1].data.mean));
+          table.push([getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${p}%)`, p > 100 ? '#FD625E' : '#000000'),
+          getSubTitle(`${ccpm_getLabel(currentLanguageIndex,data[i + 1].row.label)} (${p1}%)`, p1 > 100 ? '#FD625E' : '#000000')
+          ]);
+          table.push([new Paragraph({
+            spacing: {
+              before: i === 7 ? 400 :  100,
+              after: 200,
             },
-          })]
-        }),
-        new Paragraph({
-          spacing: {
-            before: i === 7 ? 400 : 100,
-            after: 200,
-          },
-          pageBreakBefore: i === 5 ? true : false,
-          children: [new ImageRun({
-            data: Uint8Array.from(atob((document.getElementById(`chart${chartNumber}-${i + 1}`).querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
-            transformation: {
-              width: 290,
-              height: 100
+            pageBreakBefore: i === 5 ? true : false,
+            children: [new ImageRun({
+              data: Uint8Array.from(atob((document.getElementById(`chart${chartNumber}-${i}`).querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
+              transformation: {
+                width: 290,
+                height: 100
+              },
+            })]
+          }),
+          new Paragraph({
+            spacing: {
+              before: i === 7 ? 400 : 100,
+              after: 200,
             },
-          })]
-        })
-        ])
-      } else {
-        const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
-        table.push([
-          getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${p}%)`, p > 100 ? 'red' : 'black')
-        ]);
-        table.push([new Paragraph({
-          spacing: {
-            before: i === 7 ? 400 : 100,
-            after: 200,
-          },
-          pageBreakBefore: i === 5 ? true : false,
-          children: [new ImageRun({
-            data: Uint8Array.from(atob((document.getElementById(`chart${chartNumber}-${i}`).querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
-            transformation: {
-              width: 290,
-              height: 100
-            },
+            pageBreakBefore: i === 5 ? true : false,
+            children: [new ImageRun({
+              data: Uint8Array.from(atob((document.getElementById(`chart${chartNumber}-${i + 1}`).querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
+              transformation: {
+                width: 290,
+                height: 100
+              },
+            })]
           })
-          ]
-        })
-        ])
+          ])
+        } else {
+          const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
+          table.push([
+            getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${p}%)`, p > 100 ? 'red' : 'black')
+          ]);
+          table.push([new Paragraph({
+            spacing: {
+              before: i === 7 ? 400 : 100,
+              after: 200,
+            },
+            pageBreakBefore: i === 5 ? true : false,
+            children: [new ImageRun({
+              data: Uint8Array.from(atob((document.getElementById(`chart${chartNumber}-${i}`).querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
+              transformation: {
+                width: 290,
+                height: 100
+              },
+            })
+            ]
+          })
+          ])
 
+        }
       }
-    }
-  });
-  table.slice()
+    });
+  }
   result.push(getTable2(table, 2, ''));
   return result;
 }

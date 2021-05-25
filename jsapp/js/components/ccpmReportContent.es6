@@ -393,7 +393,6 @@ export default class CCPM_ReportContents extends React.Component {
 
   render() {
     const { parentState } = this.props;
-    console.log(parentState);
     const { totalReponses: { numberOfPartner }, reportStyles, asset: { content: { translations } } } = parentState;
     let currentLanguageIndex = reportStyles.default.translationIndex;
     if(!translations[currentLanguageIndex]) currentLanguageIndex = translations.findIndex(lan => lan && lan.includes('en'));
