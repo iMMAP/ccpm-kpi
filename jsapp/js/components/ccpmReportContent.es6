@@ -366,11 +366,11 @@ export default class CCPM_ReportContents extends React.Component {
   }
 
   renderComment(questionCode, questionName) {
-    const data = this.props.parentState.reportData.find(q => q.name === questionCode);
+    const data = this.props.reportData.find(q => q.name === questionCode);
     if (!data) return '';
     return <table style={{ width: '95%', marginLeft: '40px', borderCollapse: 'collapse' }}>
       <tbody>
-        {questionName && <tr><td style={{ fontSize: '14px', color: 'black', fontWeight: 'bold', paddingTop: '20px', paddingTop: '5px', paddingBottom: '10px' }}>{questionName}</td></tr>}
+        {questionName && <tr><td style={{ fontSize: '14px', color: 'black', fontWeight: 'bold', paddingTop: '20px', paddingBottom: '10px' }}>{questionName}</td></tr>}
         {data.data.responseLabels && data.data.responseLabels.map((response, index) => {
           return <tr>
             <td className='report_tr_left_with_border'>{response}</td>
@@ -393,6 +393,7 @@ export default class CCPM_ReportContents extends React.Component {
 
   render() {
     const { parentState } = this.props;
+    console.log(parentState);
     const { totalReponses: { numberOfPartner }, reportStyles, asset: { content: { translations } } } = parentState;
     let currentLanguageIndex = reportStyles.default.translationIndex;
     if(!translations[currentLanguageIndex]) currentLanguageIndex = translations.findIndex(lan => lan && lan.includes('en'));
@@ -609,7 +610,7 @@ export default class CCPM_ReportContents extends React.Component {
 
                                 return <>
                                   {(index2 === 0 && dataset[group][subGroup].noteName) && <h2 className="comment-title">{ccpm_getName(dataset[group][subGroup].noteName, choosenLanguage)}</h2>}
-                                  {this.renderComment(question.code, ccpm_getLabel(currentLanguageIndex, (parentState.reportData.find(q => q.name === question.code)).row.label))}
+                                  {this.renderComment(question.code, ccpm_getLabel(currentLanguageIndex, (parentState.reportData.find(q => q.name === question.code)) ? parentState.reportData.find(q => q.name === question.code).row.label : ['']))}
                                 </>
                               })}
                             </tr>
@@ -625,7 +626,7 @@ export default class CCPM_ReportContents extends React.Component {
                               {(dataset[group][subGroup].notes && (parentState.ccpmReport[subGroup].questions.length - 1 === index)) && dataset[group][subGroup].notes.map((question, index2) => {
                                 return <>
                                   {(index2 === 0 && dataset[group][subGroup].noteName) && <h2 className="comment-title">{dataset[group][subGroup].noteName[choosenLanguage]}</h2>}
-                                  {this.renderComment(question.code, ccpm_getLabel(currentLanguageIndex, (parentState.reportData.find(q => q.name === question.code)).row.label))}
+                                  {this.renderComment(question.code, ccpm_getLabel(currentLanguageIndex, (this.props.parentState.reportData.find(q => q.name === question.code)) ? this.props.parentState.reportData.find(q => q.name === question.code).row.label : ['']))}
                                 </>
                               })}
                             </tr>

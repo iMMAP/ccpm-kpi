@@ -1016,7 +1016,7 @@ class Reports extends React.Component {
             rowsByKuid: rowsByKuid,
             rowsByIdentifier: rowsByIdentifier,
             reportStyles: reportStyles,
-            reportData: dataWithResponses,
+            reportData: dataWithResponses || [],
             reportCustom: reportCustom,
             translations: asset.content.translations.length > 1 ? true : false,
             groupBy: groupBy,
