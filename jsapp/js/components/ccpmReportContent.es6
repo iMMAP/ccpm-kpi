@@ -370,7 +370,7 @@ export default class CCPM_ReportContents extends React.Component {
     if (!data) return '';
     return <table style={{ width: '95%', marginLeft: '40px', borderCollapse: 'collapse' }}>
       <tbody>
-        {questionName && <tr><td style={{ fontSize: '14px', color: 'black', fontWeight: 'bold', marginTop: '10px', paddingTop: '5px', paddingBottom: '10px' }}>{questionName}</td></tr>}
+        {questionName && <tr><td style={{ fontSize: '14px', color: 'black', fontWeight: 'bold', marginTop: '20px', paddingTop: '5px', paddingBottom: '10px' }}>{questionName}</td></tr>}
         {data.data.responseLabels && data.data.responseLabels.map((response, index) => {
           return <tr>
             <td className='report_tr_left_with_border'>{response}</td>
@@ -653,7 +653,7 @@ export default class CCPM_ReportContents extends React.Component {
         }
         <h1 className="bigTitle" style={{ pageBreakBefore: 'always', marginBottom: '22px' }}>{titleConstants.finalComments[choosenLanguage]}</h1>
         {this.renderComment('P_OI01', titleConstants.partner[choosenLanguage])}
-        <p style={{marginTop: '22px'}}></p>
+        
         {this.renderComment('C_OI01', titleConstants.coordinator[choosenLanguage])}
       </div>
     );
