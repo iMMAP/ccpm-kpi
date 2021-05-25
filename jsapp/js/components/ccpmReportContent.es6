@@ -370,7 +370,7 @@ export default class CCPM_ReportContents extends React.Component {
     if (!data) return '';
     return <table style={{ width: '95%', marginLeft: '40px', borderCollapse: 'collapse' }}>
       <tbody>
-        {questionName && <tr><td style={{ fontSize: '14px', color: 'black', fontWeight: 'bold', marginTop: '20px', paddingTop: '5px', paddingBottom: '10px' }}>{questionName}</td></tr>}
+        {questionName && <tr><td style={{ fontSize: '14px', color: 'black', fontWeight: 'bold', paddingTop: '20px', paddingTop: '5px', paddingBottom: '10px' }}>{questionName}</td></tr>}
         {data.data.responseLabels && data.data.responseLabels.map((response, index) => {
           return <tr>
             <td className='report_tr_left_with_border'>{response}</td>
@@ -559,7 +559,7 @@ export default class CCPM_ReportContents extends React.Component {
         {Object.keys(dataset).map(group => {
           return (
             <>
-              <h1 className="title" style={{marginTop: '22px'}}>{ccpm_getName(dataset[group], choosenLanguage)}</h1>
+              <h1 className="title" style={{paddingTop: '15px'}}>{ccpm_getName(dataset[group], choosenLanguage)}</h1>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <tbody>
                   {
@@ -581,7 +581,7 @@ export default class CCPM_ReportContents extends React.Component {
         {Object.keys(dataset).map(group => {
           return (
             <>
-              <h1 className="title" style={{marginTop: '30px'}}>{ccpm_getName(dataset[group], choosenLanguage)}</h1>
+              <h1 className="title" style={{paddingTop: '15px'}}>{ccpm_getName(dataset[group], choosenLanguage)}</h1>
               {Object.keys(dataset[group]).map(subGroup => {
                 if (!parentState.ccpmReport[subGroup].questions || subGroup === 'code' || subGroup === 'names' || subGroup === 'name' || subGroup === 'comments') return '';
                 return <>
@@ -643,7 +643,7 @@ export default class CCPM_ReportContents extends React.Component {
           Object.keys(dataset).map(element => {
             if (element !== 'code' && element !== 'name') {
               return <>
-                <h1 className="title" style={{ marginLeft: '10px', marginTop: '20px' }}> {ccpm_getName(dataset[element], choosenLanguage)}</h1>
+                <h1 className="title" style={{ marginLeft: '10px', paddingTop: '20px' }}> {ccpm_getName(dataset[element], choosenLanguage)}</h1>
                 <canvas ref={`canvas${element}`} id={`${element}canv`} />
                 {this.renderComment(dataset[element].comments[0], titleConstants.commentSuggestedImprovment[choosenLanguage])}
                 {this.renderComment(dataset[element].comments[1], titleConstants.commentSuccessStories[choosenLanguage])}
@@ -651,7 +651,7 @@ export default class CCPM_ReportContents extends React.Component {
             }
           })
         }
-        <h1 className="bigTitle" style={{ pageBreakBefore: 'always', marginBottom: '22px' }}>{titleConstants.finalComments[choosenLanguage]}</h1>
+        <h1 className="bigTitle" style={{ pageBreakBefore: 'always', paddingBottom: '22px' }}>{titleConstants.finalComments[choosenLanguage]}</h1>
         {this.renderComment('P_OI01', titleConstants.partner[choosenLanguage])}
         
         {this.renderComment('C_OI01', titleConstants.coordinator[choosenLanguage])}
