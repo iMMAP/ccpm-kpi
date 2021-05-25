@@ -293,7 +293,7 @@ export default class CCPM_ReportContents extends React.Component {
 
     const labels = {
       en: ['Strongly Disagree', 'Disagree', 'Neither Agree or Disagree', 'Agree', 'Strongly Agree'],
-      fr: ['Pas du tout d\'accord', 'Pas d\'accord', 'Neutre', 'D\'accord', 'Vraiment d\'accord']
+      fr: ['Pas du tout d\'accord', 'Pas d\'accord', 'Neutre', 'D\'accord', 'Tout à fait d\'accord']
     }
 
     var opts = {
