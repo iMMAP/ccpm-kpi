@@ -643,7 +643,7 @@ export default class CCPM_ReportContents extends React.Component {
           Object.keys(dataset).map(element => {
             if (element !== 'code' && element !== 'name') {
               return <>
-                <h1 className="title" style={{ marginLeft: '10px', paddingTop: '20px' }}> {ccpm_getName(dataset[element], choosenLanguage)}</h1>
+                <h1 className="title" style={{ marginLeft: '10px', paddingTop: '15px' }}> {ccpm_getName(dataset[element], choosenLanguage)}</h1>
                 <canvas ref={`canvas${element}`} id={`${element}canv`} />
                 {this.renderComment(dataset[element].comments[0], titleConstants.commentSuggestedImprovment[choosenLanguage])}
                 {this.renderComment(dataset[element].comments[1], titleConstants.commentSuccessStories[choosenLanguage])}
@@ -651,7 +651,7 @@ export default class CCPM_ReportContents extends React.Component {
             }
           })
         }
-        <h1 className="bigTitle" style={{ pageBreakBefore: 'always', paddingBottom: '22px' }}>{titleConstants.finalComments[choosenLanguage]}</h1>
+        <h1 className="bigTitle" style={{ pageBreakBefore: 'always', paddingBottom: '0px' }}>{titleConstants.finalComments[choosenLanguage]}</h1>
         {this.renderComment('P_OI01', titleConstants.partner[choosenLanguage])}
         
         {this.renderComment('C_OI01', titleConstants.coordinator[choosenLanguage])}

@@ -300,10 +300,11 @@ const getGroupData = (parentState, choosenLanguage, languageIndex) => {
   Object.keys(dataset).forEach(group => {
     dataToShow.push(new Paragraph({
       children: [new TextRun('')],
+      spacing: {before: 100, after: 100}
     }))
     dataToShow.push(getTitle(ccpm_getName(dataset[group], choosenLanguage)));
     dataToShow.push(new Paragraph({
-      children: [new TextRun('')],
+      children: [new TextRun('')],spacing: {before: 100, after: 100}
     }))
 
     const tableData = Object.keys(dataset[group]).filter(sg => sg !== 'code' && sg !== 'names' && sg !== 'name' && sg !== 'comments').map(subGroup => {
@@ -588,8 +589,8 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
         }
       }
     });
+    result.push(getTable2(table, 2, ''));
   }
-  result.push(getTable2(table, 2, ''));
   return result;
 }
 
@@ -601,9 +602,11 @@ const calculatePercentage = (total, sum) => {
 
 const getLastPart = (parentState, choosenLanguage) => {
   const data = [];
+  data.push(new Paragraph({spacing: {before: 100, after: 100},children: [new TextRun('')]}))
   data.push(getBigTitle(titleConstants.qustionByquestionBreakdown[choosenLanguage]))
   Object.keys(dataset).forEach(element => {
     if (element !== 'code' && element !== 'name') {
+      data.push(new Paragraph({spacing: {before: 100, after: 100},children: [new TextRun('')]}))
       data.push(getTitle(ccpm_getName(dataset[element], choosenLanguage)));
       let image = '';
       const canv = window.document.getElementById(`${element}canv`);
@@ -623,10 +626,10 @@ const getLastPart = (parentState, choosenLanguage) => {
           })]
         }))
       }
-
+      data.push(new Paragraph({spacing: {before: 100, after: 100},children: [new TextRun('')]}))
       data.push(getTable2([[new Paragraph(''), getNoteTitle(titleConstants.commentSuggestedImprovment[choosenLanguage])]], 2, false, undefined, undefined, undefined, undefined, true));
-
       data.push(renderComment(dataset[element].comments[0], titleConstants.commentSuggestedImprovment[choosenLanguage], parentState));
+      data.push(new Paragraph({spacing: {before: 100, after: 100},children: [new TextRun('')]}))
       data.push(getTable2([[new Paragraph(''), getNoteTitle(titleConstants.commentSuccessStories[choosenLanguage])]], 2, false, undefined, undefined, undefined, undefined, true));
       data.push(renderComment(dataset[element].comments[1], titleConstants.commentSuccessStories[choosenLanguage], parentState))
     }
@@ -651,6 +654,7 @@ export default class CCPM_ReportContents {
           },
           children: [
             getBigTitle(titleConstants.overallResponseRate[choosenLanguage]),
+            new Paragraph(''),
             getTitle(titleConstants.totalResponse[choosenLanguage]),
             new Paragraph({
               spacing: {
@@ -681,6 +685,7 @@ export default class CCPM_ReportContents {
           },
           children: [
             getBigTitle(titleConstants.effectiveResponseRate[choosenLanguage]),
+            new Paragraph(''),
             getTitle(titleConstants.totalResponse[choosenLanguage]),
             new Paragraph({
               spacing: {
