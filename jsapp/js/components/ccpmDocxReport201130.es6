@@ -28,6 +28,7 @@ const getTable2 = (data, length, border = false, marginBottom = 150, leftMargin 
         margins: { left: 100, right: 100 },
         children: [tt],
         columnSpan: 2,
+        verticalAlign: 'center',
         width: length === 2 ? !comment ? ind === 1 ? {
           size: '30%',
           type: WidthType.PERCENTAGE,
@@ -301,15 +302,9 @@ const renderComment = (questionCode, questionName, parentState) => {
 const getGroupData = (parentState, choosenLanguage, languageIndex) => {
   const dataToShow = [];
   Object.keys(dataset).forEach(group => {
-    dataToShow.push(new Paragraph({
-      children: [new TextRun('')],
-      spacing: {before: 100, after: 100}
-    }))
+    dataToShow.push(new Paragraph(''));
     dataToShow.push(getTitle(ccpm_getName(dataset[group], choosenLanguage)));
-    dataToShow.push(new Paragraph({
-      children: [new TextRun('')],spacing: {before: 100, after: 100}
-    }))
-
+    dataToShow.push(new Paragraph(''));
     const tableData = Object.keys(dataset[group]).filter(sg => sg !== 'code' && sg !== 'names' && sg !== 'name' && sg !== 'comments').map(subGroup => {
       return [
         getTableContent(ccpm_getName(dataset[group][subGroup], choosenLanguage)),
@@ -336,6 +331,7 @@ const getGroupData = (parentState, choosenLanguage, languageIndex) => {
     });
     const table = getTable2(tableData, 2, true, 20, undefined, undefined, undefined, undefined, true);
     if (table) dataToShow.push(table);
+    dataToShow.push(new Paragraph(''));
   });
 
   return dataToShow;
@@ -655,6 +651,7 @@ export default class CCPM_ReportContents {
             getBigTitle(titleConstants.overallResponseRate[choosenLanguage]),
             new Paragraph(''),
             getTitle(titleConstants.totalResponse[choosenLanguage]),
+            new Paragraph(''),
             new Paragraph({
               spacing: {
                 before: 100,
@@ -673,9 +670,10 @@ export default class CCPM_ReportContents {
               [getSubTitle(titleConstants.numberPartnerResponding[choosenLanguage]), getTableContent(`${numberOfPartner}`)],
               [getSubTitle(titleConstants.totalNumberOfPartner[choosenLanguage]), getTableContent(`${parentState.totalReponses.sum}`)],
             ], 2, true, undefined, undefined, undefined, 50),
-            new Paragraph(" "),
+            new Paragraph(''),
+            new Paragraph(''),
             getTitle(titleConstants.responseByType[choosenLanguage]),
-            new Paragraph(" "),
+            new Paragraph(''),
             ...getImages({}, parentState.totalResponseDisagregatedByPartner, '', currentLanguageIndex),]
         },
         {
@@ -686,6 +684,7 @@ export default class CCPM_ReportContents {
             getBigTitle(titleConstants.effectiveResponseRate[choosenLanguage]),
             new Paragraph(''),
             getTitle(titleConstants.totalResponse[choosenLanguage]),
+            new Paragraph(''),
             new Paragraph({
               spacing: {
                 before: 100,
@@ -704,9 +703,10 @@ export default class CCPM_ReportContents {
               [getSubTitle(titleConstants.numberPartnerResponding[choosenLanguage]), getTableContent(`${numberOfPartner}`)],
               [getSubTitle(titleConstants.totalNumberOfPartner[choosenLanguage]), getTableContent(`${parentState.totalEffectiveResponse.sum}`)],
             ], 2, true, undefined, undefined, undefined, 50),
-            new Paragraph(" "),
+            new Paragraph(''),
+            new Paragraph(''),
             getTitle(titleConstants.responseByType[choosenLanguage]),
-            new Paragraph(" "),
+            new Paragraph(''),
             ...getImages({}, parentState.totalEffectiveResponseDisagregatedByPartner, '2',currentLanguageIndex),
           ]
         }, {
