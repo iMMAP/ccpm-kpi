@@ -132,13 +132,13 @@ class ProjectSettings extends React.Component {
   getBaseTitle() {
     switch (this.props.context) {
       case PROJECT_SETTINGS_CONTEXTS.NEW:
-        return t('Create project');
+        return t('New CCPM');
       case PROJECT_SETTINGS_CONTEXTS.REPLACE:
         return t('Replace form');
       case PROJECT_SETTINGS_CONTEXTS.EXISTING:
       case PROJECT_SETTINGS_CONTEXTS.BUILDER:
       default:
-        return t('Project settings');
+        return t('CCPM settings');
     }
   }
 
@@ -148,7 +148,7 @@ class ProjectSettings extends React.Component {
       case this.STEPS.CHOOSE_TEMPLATE: return t('Choose template');
       case this.STEPS.UPLOAD_FILE: return t('Upload XLSForm');
       case this.STEPS.IMPORT_URL: return t('Import XLSForm');
-      case this.STEPS.PROJECT_DETAILS: return t('Project details');
+      case this.STEPS.PROJECT_DETAILS: return t('CCPM details');
       default: return '';
     }
   }
@@ -432,7 +432,7 @@ class ProjectSettings extends React.Component {
     }).done((asset) => {
       this.goToFormBuilder(asset.uid);
     }).fail(function(r){
-      alertify.error(t('Error: new project could not be created.') + ` (code: ${r.statusText})`);
+      alertify.error(t('Error: new CCPM could not be created.') + ` (code: ${r.statusText})`);
     });
   }
 
@@ -516,7 +516,7 @@ class ProjectSettings extends React.Component {
                 }
               }).fail(() => {
                 this.resetImportUrlButton();
-                alertify.error(t('Failed to reload project after import!'));
+                alertify.error(t('Failed to reload CCPM after import!'));
               });
             },
             (response) => {
@@ -579,7 +579,7 @@ class ProjectSettings extends React.Component {
                 }
               }).fail(() => {
                 this.setState({isUploadFilePending: false});
-                alertify.error(t('Failed to reload project after upload!'));
+                alertify.error(t('Failed to reload CCPM after upload!'));
               });
             },
             (response) => {
@@ -609,7 +609,7 @@ class ProjectSettings extends React.Component {
 
     // simple non-empty name validation
     if (!this.state.name.trim()) {
-      alertify.error(t('Please enter a title for your project!'));
+      alertify.error(t('Please enter a title for your CCPM!'));
       return;
     }
 
@@ -627,7 +627,7 @@ class ProjectSettings extends React.Component {
    */
 
   getNameInputLabel(nameVal) {
-    let label = t('Project Name');
+    let label = t('CCPM Name');
     if (nameVal.length >= NAME_MAX_LENGTH - 99) {
       label += ` (${t('##count## characters left').replace('##count##', NAME_MAX_LENGTH - nameVal.length)})`;
     }
@@ -814,7 +814,7 @@ class ProjectSettings extends React.Component {
                 type='text'
                 maxLength={NAME_MAX_LENGTH}
                 id='name'
-                placeholder={t('Enter title of project here')}
+                placeholder={t('Enter title of CCPM here')}
                 value={this.state.name}
                 onChange={this.onNameChange}
               />
@@ -834,7 +834,7 @@ class ProjectSettings extends React.Component {
 
           <bem.FormModal__item>
             <label className='long'>
-              {t('Please specify the cluster where this project will be deployed. ')}
+              {t('Please specify the cluster where this CCPM will be deployed. ')}
               {/*t('This information will be used to help you filter results on the project list page.')*/}
             </label>
           </bem.FormModal__item>
@@ -895,7 +895,7 @@ class ProjectSettings extends React.Component {
                 disabled={this.state.isSubmitPending}
               >
                 {this.state.isSubmitPending && t('Please wait…')}
-                {!this.state.isSubmitPending && this.props.context === PROJECT_SETTINGS_CONTEXTS.NEW && t('Create project')}
+                {!this.state.isSubmitPending && this.props.context === PROJECT_SETTINGS_CONTEXTS.NEW && t('New CCPM')}
                 {!this.state.isSubmitPending && this.props.context === PROJECT_SETTINGS_CONTEXTS.REPLACE && t('Save')}
               </bem.KoboButton>
             </bem.Modal__footer>
@@ -909,7 +909,7 @@ class ProjectSettings extends React.Component {
                     m='blue'
                     onClick={this.unarchiveProject}
                   >
-                    {t('Unarchive Project')}
+                    {t('Unarchive CCPM')}
                   </bem.KoboButton>
                 }
 
@@ -918,13 +918,13 @@ class ProjectSettings extends React.Component {
                     m='orange'
                     onClick={this.archiveProject}
                   >
-                    {t('Archive Project')}
+                    {t('Archive CCPM')}
                   </bem.KoboButton>
                 }
               </bem.FormModal__item>
 
               <bem.FormModal__item m='inline'>
-                {this.isArchived() ? t('Unarchive project to resume accepting submissions.') : t('Archive project to stop accepting submissions.')}
+                {this.isArchived() ? t('Unarchive CCPM to resume accepting submissions.') : t('Archive CCPM to stop accepting submissions.')}
               </bem.FormModal__item>
             </bem.FormModal__item>
           }
@@ -932,7 +932,7 @@ class ProjectSettings extends React.Component {
           {isSelfOwned && this.props.context === PROJECT_SETTINGS_CONTEXTS.EXISTING &&
             <bem.FormModal__item>
               <bem.KoboButton m='red' onClick={this.deleteProject}>
-                {t('Delete Project and Data')}
+                {t('Delete CCPM and Data')}
               </bem.KoboButton>
             </bem.FormModal__item>
           }

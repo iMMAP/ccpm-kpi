@@ -345,14 +345,10 @@ const scoreBreakDownGroup = (parentState, choosenLanguage, languageIndex) => {
   const dataToShow = [];
   const P_IS02Result = getP_IS02Question(parentState);
   dataToShow.push(getBigTitle(titleConstants.scoreBreakdown[choosenLanguage]));
-  dataToShow.push(new Paragraph({
-    children: [new TextRun('')],
-  }))
   Object.keys(dataset).forEach(group => {
+    dataToShow.push(new Paragraph({children: [new TextRun('')],}))
     dataToShow.push(getTitle(ccpm_getName(dataset[group], choosenLanguage)));
-    dataToShow.push(new Paragraph({
-      children: [new TextRun('')],
-    }))
+    dataToShow.push(new Paragraph({children: [new TextRun('')],}))
     Object.keys(dataset[group]).filter(sg => sg !== 'code' && sg !== 'names' && sg !== 'name' && sg !== 'comments').forEach(subGroup => {
       dataToShow.push(getSubTitle(ccpm_getName(dataset[group][subGroup], choosenLanguage)));
       dataToShow.push(new Paragraph({
@@ -604,12 +600,12 @@ const calculatePercentage = (total, sum) => {
 
 const getLastPart = (parentState, choosenLanguage) => {
   const data = [];
-  data.push(new Paragraph({spacing: {before: 100, after: 100},children: [new TextRun('')]}))
   data.push(getBigTitle(titleConstants.qustionByquestionBreakdown[choosenLanguage]))
   Object.keys(dataset).forEach(element => {
     if (element !== 'code' && element !== 'name') {
       data.push(new Paragraph({spacing: {before: 100, after: 100},children: [new TextRun('')]}))
       data.push(getTitle(ccpm_getName(dataset[element], choosenLanguage)));
+      data.push(new Paragraph({spacing: {before: 100, after: 100},children: [new TextRun('')]}))
       let image = '';
       const canv = window.document.getElementById(`${element}canv`);
       if (canv) {
@@ -742,8 +738,10 @@ export default class CCPM_ReportContents {
           },
           children: [
             getBigTitle(titleConstants.finalComments[choosenLanguage]),
+            new Paragraph(''),
             getNoteTitle(titleConstants.partner[choosenLanguage]),
             renderComment('P_OI01', titleConstants.partner[choosenLanguage], parentState),
+            new Paragraph(''),
             getNoteTitle(titleConstants.coordinator[choosenLanguage]),
             renderComment('C_OI01', titleConstants.coordinator[choosenLanguage], parentState)
           ]
