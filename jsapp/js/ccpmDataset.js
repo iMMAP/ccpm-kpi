@@ -153,7 +153,7 @@ export const titleConstants = {
     numberPartnerResponding: { en: 'Number Partners Responding', fr: 'Nombre de Partenaires ayant Répondu' },
     totalNumberOfPartner: { en: 'Total Number of Partners', fr: 'Nombre Total de Partenaires' },
     weak: { en: 'Weak', fr: 'Faible' },
-    unsatisfactory: { en: 'Unsatisfactory', fr: 'Insatisfaisant' },
+    unsatisfactory: { en: 'Unsatisfactory', fr: 'Non satisfaisant' },
     satifactory: { en: 'Satisfactory', fr: 'Satisfaisant' },
     good: { en: 'Good', fr: 'Bon' }
 }

@@ -975,9 +975,28 @@ class Reports extends React.Component {
           rowsByIdentifier[$identifier] = r;
         });
 
-        const pathP_IS02 = 'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/P_IS02';
-        const pathP_IS03 = 'Partner_Survey_GROUP/Partner_Inform_Strategy_GROUP/For_each_of_the_foll_the_following_topics/';
 
+        const end = asset.content.survey.findIndex(v => v.name === 'P_IS03_01');
+        const firstSet = asset.content.survey.slice(0, end).filter(v => v.type === 'begin_group' || v.type === 'end_group');
+
+        const secondSet = [];
+        firstSet.filter(v => v.type === 'begin_group').forEach(v => {
+          if(!firstSet.find(r => r.type === 'end_group' && r['$kuid'] === `/${v['$kuid']}`)) secondSet.push(v);
+        })
+
+        let path  = '';
+        let pathP_IS02 = '';
+        let pathP_IS03 = '';
+        secondSet.forEach((s,i) => {
+          path = `${path}${i > 0 ? '/' : ''}${s.name}`;
+          if(i === secondSet.length - 2) pathP_IS02 = path;
+          if(i === secondSet.length - 1) pathP_IS03 = path;
+        })
+
+        pathP_IS02 = `${pathP_IS02}/P_IS02`;
+        pathP_IS03 = `${pathP_IS03}/`;
+
+        console.log(pathP_IS02, pathP_IS03);
 
         const fields = [
           pathP_IS02,

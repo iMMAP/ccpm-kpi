@@ -230,6 +230,7 @@ const getNoteSubTitle = (text) => {
 }
 
 const renderComment = (questionCode, questionName, parentState) => {
+  if(parentState) {
   const data = parentState.reportData.find(q => q.name === questionCode);
   if (!data) return '';
   let rows = [];
@@ -293,6 +294,8 @@ const renderComment = (questionCode, questionName, parentState) => {
     })
   }
   return getTable2(rows, 2, false, 20, 100, undefined, undefined, true);
+}
+  return '';
 }
 
 const getGroupData = (parentState, choosenLanguage, languageIndex) => {
@@ -430,7 +433,7 @@ const scoreBreakDownGroup = (parentState, choosenLanguage, languageIndex) => {
       if (table) dataToShow.push(table)
       if (dataset[group][subGroup].notes) {
         dataset[group][subGroup].notes.forEach((question, index2) => {
-          const commentTable = renderComment(question.code, ccpm_getLabel(languageIndex, (parentState.reportData.find(q => q.name === question.code)).row.label), parentState);
+          const commentTable = renderComment(question.code, ccpm_getLabel(languageIndex, (parentState.reportData.find(q => q.name === question.code)) ? (parentState.reportData.find(q => q.name === question.code)).row.label : [''], parentState));
           if (commentTable) {
             if (index2 === 0) {
               dataToShow.push(new Paragraph({
@@ -442,7 +445,7 @@ const scoreBreakDownGroup = (parentState, choosenLanguage, languageIndex) => {
             dataToShow.push(new Paragraph({
               children: [new TextRun('')],
             }))
-            const subNoteTitle = [[new Paragraph(''), getNoteSubTitle(ccpm_getLabel(languageIndex, (parentState.reportData.find(q => q.name === question.code)).row.label))]]
+            const subNoteTitle = [[new Paragraph(''), getNoteSubTitle(ccpm_getLabel(languageIndex, (parentState.reportData.find(q => q.name === question.code)) ? (parentState.reportData.find(q => q.name === question.code)).row.label : [''], parentState))]]
             dataToShow.push(getTable2(subNoteTitle, 2, false, undefined, undefined, undefined, undefined, true));
             dataToShow.push(commentTable);
           }
@@ -527,7 +530,6 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
   }));
   table = [];
     data.slice(7).forEach((v, i) => {
-      console.log(i);
       if (i % 2 === 0) {
         if (data[i + 1]) {
           const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
@@ -640,7 +642,8 @@ const getLastPart = (parentState, choosenLanguage) => {
 export default class CCPM_ReportContents {
   create(parentState) {
     const { totalReponses: { numberOfPartner }, reportStyles, asset: { content: { translations } } } = parentState;
-    const currentLanguageIndex = reportStyles.default.translationIndex;
+    let currentLanguageIndex = reportStyles.default.translationIndex;
+    if(!translations[currentLanguageIndex]) currentLanguageIndex = translations.findIndex(lan => lan && lan.includes('en'));
     const choosenLanguage = translations ? ((translations[currentLanguageIndex]).match(/\(.*?\)/))[0].replace('(', '').replace(')', '') : 'en';
 
     const overallTotalPercentage = Math.floor(Number.parseFloat(`${calculatePercentage(numberOfPartner, parentState.totalReponses.sum)}`));
@@ -745,13 +748,10 @@ export default class CCPM_ReportContents {
             renderComment('C_OI01', titleConstants.coordinator[choosenLanguage], parentState)
           ]
         }
-
       ];
       resolve(new Document({
         sections: sections
       }))
     })
-
-
   }
 };
