@@ -1,9 +1,10 @@
 const regions = {
-    EMRO: ['AFG', 'IRQ', 'LBY', 'PSE', 'SOM', 'SYR', 'WSYR', 'YEM', 'SDN'],
+    EMRO: ['AFG', 'IRQ', 'LBY', 'PSE', 'SOM', 'SYRD', 'SYRW', 'YEM', 'SDN'],
     SEARO: ['COX', 'MMR'],
     AFRO: ['BFA', 'BDI', 'CMR', 'CAF', 'TCD', 'COD', 'ETH', 'MLI', 'MOZ', 'NER', 'NGA', 'SSD', 'ZWE'],
     AMRO: ['COL', 'HND', 'VEN'],
-    EURO: ['CBNSYR', 'CBNTK', 'UKR'],
+    EURO: ['SYRCB', 'TURCB', 'UKR'],
+    WPRO: ['ROP'],
 };
 
 export const ccpmGetRegion = (countryCode) => {

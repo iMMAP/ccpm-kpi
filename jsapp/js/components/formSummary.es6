@@ -352,7 +352,7 @@ class FormSummary extends React.Component {
                     <bem.FormView__group m={['items', 'description-cols']}>
                       {this.state.settings.country &&
                         <bem.FormView__cell>
-                          <bem.FormView__label m='country'>{t('Project country')}</bem.FormView__label>
+                          <bem.FormView__label m='country'>{t('Cluster')}</bem.FormView__label>
                           {this.state.settings.country.label}
                         </bem.FormView__cell>
                       }
