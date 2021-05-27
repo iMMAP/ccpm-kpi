@@ -235,6 +235,10 @@ var sessionStore = Reflux.createStore({
       environment.all_languages = environment.all_languages.map(
         nestedArrToChoiceObjs);
     }
+    if (environment.ccpm_available_regions) {
+      environment.ccpm_available_regions = environment.ccpm_available_regions.map(
+        nestedArrToChoiceObjs);
+    }
     this.environment = environment;
     this.trigger({environment: environment});
   },

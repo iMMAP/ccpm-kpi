@@ -83,7 +83,14 @@ class ProjectSettings extends React.Component {
       isUploadFilePending: false,
       // archive flow
       isAwaitingArchiveCompleted: false,
-      isAwaitingUnarchiveCompleted: false
+      isAwaitingUnarchiveCompleted: false,
+
+      // CCPM Test
+      yearTest: new Date().getFullYear(),
+      regionTest: null,
+      clusterTest: "Somalia",
+      addSubClusterTest: false,
+      subClusterTest: "Somalia Sub-Cluster 1"
     };
 
     autoBind(this);
@@ -190,6 +197,31 @@ class ProjectSettings extends React.Component {
   onShareMetadataChange(isChecked) {
     this.setState({'share-metadata': isChecked});
     this.onAnyDataChange('share-metadata', isChecked);
+  }
+
+  onYearChange(evt) {
+    this.setState({yearTest: evt});
+    this.onAnyDataChange('yearTest', removeInvalidChars(evt.target.value));
+  }
+
+  onRegionChange(val) {
+    this.setState({regionTest: val});
+    this.onAnyDataChange('regionTest', val);
+  }
+
+  onClusterChange(evt) {
+    this.setState({clusterTest: evt});
+    this.onAnyDataChange('clusterTest', removeInvalidChars(evt.target.value));
+  }
+
+  onAddSubClusterTestChange(isChecked) {
+    this.setState({addSubClusterTest: isChecked});
+    this.onAnyDataChange('addSubClusterTest', isChecked);
+  }
+
+  onSubClusterChange(evt) {
+    this.setState({subClusterTest: evt});
+    this.onAnyDataChange('subClusterTest', removeInvalidChars(evt.target.value));
   }
 
   onImportUrlChange(value) {
@@ -779,6 +811,7 @@ class ProjectSettings extends React.Component {
   renderStepProjectDetails() {
     const sectors = stores.session.environment.available_sectors;
     const countries = stores.session.environment.available_countries;
+    const ccpmRegions = stores.session.environment.ccpm_available_regions;
     const isSelfOwned = this.userIsOwner(this.state.formAsset);
 
     return (
@@ -832,12 +865,12 @@ class ProjectSettings extends React.Component {
             />
           </bem.FormModal__item>
 
-          <bem.FormModal__item>
+          {/* <bem.FormModal__item>
             <label className='long'>
-              {t('Please specify the cluster where this CCPM will be deployed. ')}
-              {/*t('This information will be used to help you filter results on the project list page.')*/}
+              {t('Please specify the country and the sector where this project will be deployed. ')}
+              {t('This information will be used to help you filter results on the project list page.')}
             </label>
-          </bem.FormModal__item>
+          </bem.FormModal__item> */}
 
           {/* <bem.FormModal__item m='sector'>
             <label htmlFor='sector'>
@@ -855,7 +888,7 @@ class ProjectSettings extends React.Component {
             />
           </bem.FormModal__item> */}
 
-          <bem.FormModal__item m='country'>
+          {/* <bem.FormModal__item m='country'>
             <label htmlFor='country'>
               {t('Country')}
             </label>
@@ -869,7 +902,7 @@ class ProjectSettings extends React.Component {
               menuPlacement='auto'
               isClearable
             />
-          </bem.FormModal__item>
+          </bem.FormModal__item> */}
 
           {/* <bem.FormModal__item m='metadata-share'>
             <Checkbox
@@ -878,6 +911,67 @@ class ProjectSettings extends React.Component {
               label={t('Help KoboToolbox improve this product by sharing the sector and country where this project will be deployed.') + ' ' + t('All the information is submitted anonymously, and will not include the project name or description listed above.')}
             />
           </bem.FormModal__item> */}
+
+          <bem.FormModal__item>
+            <label>
+              {t('Year')}
+            </label>
+            <TextareaAutosize
+              onChange={this.onYearChange}
+              value={this.state.yearTest}
+              placeholder={t('Year')}
+            />
+          </bem.FormModal__item>
+
+          <bem.FormModal__item>
+            <label>
+              {t('Region')}
+            </label>
+            <Select
+              id='ccpmRegion'
+              value={this.state.regionTest}
+              onChange={this.onRegionChange}
+              options={ccpmRegions}
+              className='kobo-select'
+              classNamePrefix='kobo-select'
+              menuPlacement='auto'
+              isClearable
+            />
+          </bem.FormModal__item>
+
+          <bem.FormModal__item>
+            <label>
+              {t('Country/Cluster')}
+            </label>
+            <TextareaAutosize
+              onChange={this.onClusterChange}
+              value={this.state.clusterTest}
+              placeholder={t('Country/Cluster')}
+            />
+          </bem.FormModal__item>
+
+          <bem.FormModal__item>
+            <bem.FormModal__item>
+              <Checkbox
+                checked={this.state.addSubClusterTest}
+                onChange={this.onAddSubClusterTestChange}
+                label={t('Creating a Sub National CCPM?')}
+              />
+            </bem.FormModal__item>
+
+            { this.state.addSubClusterTest &&
+              <bem.FormModal__item>
+                <label>
+                  {t('Sub-Cluster')}
+                </label>
+                <TextareaAutosize
+                  onChange={this.onSubClusterChange}
+                  value={this.state.subClusterTest}
+                  placeholder={t('Sub-Cluster')}
+                />
+              </bem.FormModal__item>
+            }
+          </bem.FormModal__item>
 
           <bem.FormModal__item m='ccpm-metadata-share' />
 
