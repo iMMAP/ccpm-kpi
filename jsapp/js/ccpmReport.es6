@@ -50,7 +50,7 @@ const ccpm_getSumOfQuestions = (questions, data) => {
     return sum;
 }
 
-const ccpm_getElementName = (e) => {
+const ccpm_getElementName = (e, data, content) => {
     switch (e) {
         case "C_CP01_01":
         case "C_CP02_01": return "international_org";
@@ -74,13 +74,14 @@ const ccpm_getElementName = (e) => {
     }
 }
 
-const ccpm_getNumberOfParnerResponseByType = (questionList, data) => {
+const ccpm_getNumberOfParnerResponseByType = (questionList, data, choices) => {
+    console.log(data, questionList);
     const questions = data.filter(e => questionList.includes(e.name));
     const disagregatedByType = data.find(e => e.name === 'P_GI03');
     if(disagregatedByType){
     const result = [];
     questions.forEach(element => {
-        const elementName = ccpm_getElementName(element.name);
+        const elementName = ccpm_getElementName(element.name, questionList, choices);
         const index = disagregatedByType.data.responses.indexOf(elementName);
         var numberResponses = 0;
         if (index > -1)
@@ -102,7 +103,7 @@ const ccpm_getResponseGrouped = (q) => {
 }
 
 
-const ccpm_getData = (data) => {
+const ccpm_getData = (data, choices) => {
     const newReport = {};
     const chartData = {};
     const questionResponseGroup = {};
@@ -151,9 +152,9 @@ const ccpm_getData = (data) => {
 
     const finalData = {
         report: newReport, chartData, totalReponses: { numberOfPartner: isNaN(numberOfPartner) ? 0 : numberOfPartner, sum: ccpm_getSumOfQuestions(totalResponseQuestions, data) },
-        totalResponseDisagregatedByPartner: ccpm_getNumberOfParnerResponseByType(totalResponseQuestions, data),
+        totalResponseDisagregatedByPartner: ccpm_getNumberOfParnerResponseByType(totalResponseQuestions, data, choices),
         totalEffectiveResponse: { numberOfPartner: isNaN(numberOfPartner) ? 0 : numberOfPartner, sum: ccpm_getSumOfQuestions(totalEffectiveResponseQuestions, data) },
-        totalEffectiveResponseDisagregatedByPartner: ccpm_getNumberOfParnerResponseByType(totalEffectiveResponseQuestions, data),
+        totalEffectiveResponseDisagregatedByPartner: ccpm_getNumberOfParnerResponseByType(totalEffectiveResponseQuestions, data, choices),
         questionResponseGroup: questionResponseGroup
     }
     return finalData;

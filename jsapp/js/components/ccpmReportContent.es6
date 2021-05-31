@@ -343,6 +343,53 @@ export default class CCPM_ReportContents extends React.Component {
     return opts;
   }
 
+  buildChartOptions2(data, choosenLanguage = 'en') {
+    var chartType = 'pie';
+
+    // TODO: set as default globally in a higher level (PM)
+
+    var baseColor = '#1D6F9C';
+    Chart.defaults.global.elements.rectangle.backgroundColor = baseColor;
+
+    var datasets = [{
+      label: '%',
+      axis: 'y',
+      data: [data, 100 - data ],
+      backgroundColor: [
+        'rgba(29, 110, 156, 0.8)',
+        'rgba(232, 232, 232, 1)',
+      ],
+      borderColor: [
+        'rgba(29, 110, 156, 0.8)',
+        'rgba(232, 232, 232, 1)',
+      ],
+      borderWidth: 1
+    }];
+
+    const labels = {
+      en: ['Total', ''],
+      fr: ['Total', '']
+    }
+
+    var opts = {
+      type: chartType,
+      data: {
+        labels: labels[choosenLanguage],
+        datasets
+      },
+      options: {
+        legend: {
+          display: false
+        },
+        animation: {
+          duration: 500
+        },
+      }
+    };
+
+    return opts;
+  }
+
   loadChart() {
     const { parentState } = this.props;
     const { reportStyles, asset: { content: { translations } } } = parentState;
@@ -363,11 +410,36 @@ export default class CCPM_ReportContents extends React.Component {
         }
       }
     })
+
+    parentState.totalEffectiveResponseDisagregatedByPartner.forEach((v, i) => {
+      var canvas = ReactDOM.findDOMNode(this.refs[`chart2-${i}-canvas`]);
+      var opts = this.buildChartOptions2(Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)) > 100 ? 100 : Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)), choosenLanguage);
+
+      if (this[`itemChart-${i}-chart2`]) {
+        this[`itemChart-${i}-chart2`].destroy();
+        this[`itemChart-${i}-chart2`] = new Chart(canvas, opts);
+      } else {
+        this[`itemChart-${i}-chart2`] = new Chart(canvas, opts);
+      }
+    })
+
+    parentState.totalResponseDisagregatedByPartner.forEach((v, i) => {
+      var canvas = ReactDOM.findDOMNode(this.refs[`chart-${i}-canvas`]);
+      var opts = this.buildChartOptions2(Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)) > 100 ? 100 : Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)), choosenLanguage);
+
+      if (this[`itemChart-${i}-chart`]) {
+        this[`itemChart-${i}-chart`].destroy();
+        this[`itemChart-${i}-chart`] = new Chart(canvas, opts);
+      } else {
+        this[`itemChart-${i}-chart`] = new Chart(canvas, opts);
+      }
+    })
+
   }
 
   renderComment(questionCode, questionName) {
     const data = this.props.reportData.find(q => q.name === questionCode);
-    if (!data) return '';
+    if (!data || data.data.responses.length === 0) return '';
     return <table style={{ width: '95%', marginLeft: '40px', borderCollapse: 'collapse' }}>
       <tbody>
         {questionName && <tr><td style={{ fontSize: '14px', color: 'black', fontWeight: 'bold', paddingTop: '20px', paddingBottom: '10px' }}>{questionName}</td></tr>}
@@ -389,6 +461,22 @@ export default class CCPM_ReportContents extends React.Component {
     if (isNaN(total)) total = 0;
     if (isNaN(sum)) sum = 1;
     return (total / sum) * 100;
+  }
+
+  checkNotesExist(subGroup){
+    let exist = false;
+    if(subGroup.notes){
+;    subGroup.notes.some(v => {
+      const data = this.props.reportData.find(q => q.name === v.code);
+      
+      if(data && data.data.responses.length > 0) {
+        exist = true;
+        return true;
+      }
+    });
+    return exist;
+  }
+    return false;
   }
 
   render() {
@@ -451,10 +539,12 @@ export default class CCPM_ReportContents extends React.Component {
         <h1 className="title">{titleConstants.responseByType[choosenLanguage]}</h1>
         {
           parentState.totalResponseDisagregatedByPartner.map((v, i) => <>
-            <div key={`${i}-disag-11`} style={{ width: '50%', display: 'inline-block', height: '150px' }}>
-              <h1 className="subtitle" style={{ marginLeft: '10px', color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000' }}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
+            <div key={`${i}-disag-11`} style={{ width: '50%', display: 'inline-block', height: '270px' }}>
+
+              <h1 className="subtitle" style={{ marginLeft: '10px', color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000' }}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({v.questionsDisagregatedByPartner} of {v.data.mean} - {Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
               <div ref={`chart-${i}`} id={`chart-${i}`} style={{ height: "80%", width: "95%" }}>
-                <ResponsiveWaffleCanvas
+              <canvas ref={`chart-${i}-canvas`} id={`chart-${i}-canvas`} />
+                {/*<ResponsiveWaffleCanvas
                   data={[
                     {
                       "id": "totalReponse",
@@ -473,7 +563,7 @@ export default class CCPM_ReportContents extends React.Component {
                   colors={["#097ca8", "#dedede"]}
                   borderColor={{ from: 'color', modifiers: [['darker', 0.3]] }}
                   emptyColor="#dedede"
-                />
+                />*/}
               </div>
             </div>
           </>
@@ -526,10 +616,12 @@ export default class CCPM_ReportContents extends React.Component {
         <h1 className="title">{titleConstants.responseByType[choosenLanguage]}</h1>
         {
           parentState.totalEffectiveResponseDisagregatedByPartner.map((v, i) => <>
-            <div key={`${i}-disag`} style={{ width: '50%', display: 'inline-block', height: '150px' }}>
-              <h1 className="subtitle" style={{ marginLeft: '10px', color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000' }}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
+            <div key={`${i}-disag`} style={{ width: '50%', display: 'inline-block', height: '270px' }}>
+              <h1 className="subtitle" style={{ marginLeft: '10px', color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000' }}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ( {v.questionsDisagregatedByPartner} of {v.data.mean} - {Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
+              {
               <div ref={`chart2-${i}`} id={`chart2-${i}`} style={{ height: "80%", width: "95%" }}>
-                <ResponsiveWaffleCanvas
+                <canvas ref={`chart2-${i}-canvas`} id={`chart2-${i}-canvas`} />
+               {/* <ResponsiveWaffleCanvas
                   data={[
                     {
                       "id": "totalReponse",
@@ -548,9 +640,10 @@ export default class CCPM_ReportContents extends React.Component {
                   colors={["#097ca8", "#dedede"]}
                   borderColor={{ from: 'color', modifiers: [['darker', 0.3]] }}
                   emptyColor="#dedede"
-                />
+                />*/}
               </div>
-            </div>
+              }
+           </div>
           </>
           )
         }
@@ -624,7 +717,7 @@ export default class CCPM_ReportContents extends React.Component {
                             <tr style={{ width: '100%', paddingLeft: '40px' }}>
                               {(dataset[group][subGroup].notes && (parentState.ccpmReport[subGroup].questions.length - 1 === index)) && dataset[group][subGroup].notes.map((question, index2) => {
                                 return <>
-                                  {(index2 === 0 && dataset[group][subGroup].noteName) && <h2 className="comment-title">{dataset[group][subGroup].noteName[choosenLanguage]}</h2>}
+                                  {( this.checkNotesExist(dataset[group][subGroup]) && (index2 === 0 && dataset[group][subGroup].noteName)) && <h2 className="comment-title">{dataset[group][subGroup].noteName[choosenLanguage]}</h2>}
                                   {this.renderComment(question.code, ccpm_getLabel(currentLanguageIndex, (this.props.parentState.reportData.find(q => q.name === question.code)) ? this.props.parentState.reportData.find(q => q.name === question.code).row.label : ['']))}
                                 </>
                               })}

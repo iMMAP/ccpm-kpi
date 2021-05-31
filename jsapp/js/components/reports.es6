@@ -996,7 +996,7 @@ class Reports extends React.Component {
         pathP_IS02 = `${pathP_IS02}/P_IS02`;
         pathP_IS03 = `${pathP_IS03}/`;
 
-        console.log(pathP_IS02, pathP_IS03);
+        console.log(asset.content)
 
         const fields = [
           pathP_IS02,
@@ -1029,7 +1029,7 @@ class Reports extends React.Component {
 
           let newReport = {};
 
-          if(dataWithResponses[0].name === 'type_of_survey') newReport = ccpmReport(dataWithResponses);
+          if(dataWithResponses[0].name === 'type_of_survey') newReport = ccpmReport(dataWithResponses, asset.content);
           this.setState({
             asset: asset,
             rowsByKuid: rowsByKuid,

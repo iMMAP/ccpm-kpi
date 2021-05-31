@@ -230,6 +230,22 @@ const getNoteSubTitle = (text) => {
   })
 }
 
+const checkNotesExist = (subGroup, parentState) => {
+  let exist = false;
+  if(subGroup.notes){
+;    subGroup.notes.some(v => {
+    const data = parentState.reportData.find(q => q.name === v.code);
+    
+    if(data && data.data.responses.length > 0) {
+      exist = true;
+      return true;
+    }
+  });
+  return exist;
+}
+  return false;
+}
+
 const renderComment = (questionCode, questionName, parentState) => {
   if(parentState) {
   const data = parentState.reportData.find(q => q.name === questionCode);
@@ -424,10 +440,11 @@ const scoreBreakDownGroup = (parentState, choosenLanguage, languageIndex) => {
       const table = getTable2(tableData, subGroup === 'analysisTopicCovered' ? 3 : 2, true, undefined, undefined, undefined, undefined, false, true);
       if (table) dataToShow.push(table)
       if (dataset[group][subGroup].notes) {
-        dataset[group][subGroup].notes.forEach((question, index2) => {
-          const commentTable = renderComment(question.code, ccpm_getLabel(languageIndex, (parentState.reportData.find(q => q.name === question.code)) ? (parentState.reportData.find(q => q.name === question.code)).row.label : [''], parentState));
+        const showNotes = checkNotesExist(dataset[group][subGroup], parentState)
+        dataset[group][subGroup].notes.forEach((question, index22) => {
+          const commentTable = renderComment(question.code, ccpm_getLabel(languageIndex, (parentState.reportData.find(q => q.name === question.code)) ? (parentState.reportData.find(q => q.name === question.code)).row.label : ['']), parentState);
           if (commentTable) {
-            if (index2 === 0) {
+            if (index22 === 0 && showNotes ) { 
               dataToShow.push(new Paragraph({
                 children: [new TextRun('')],
               }))
@@ -469,7 +486,7 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
             data: Uint8Array.from(atob((document.getElementById(`chart${chartNumber}-${i}`).querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
             transformation: {
               width: 290,
-              height: 100
+              height: 160
             },
           })]
         }),
@@ -483,7 +500,7 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
             data: Uint8Array.from(atob((document.getElementById(`chart${chartNumber}-${i + 1}`).querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
             transformation: {
               width: 290,
-              height: 100
+              height: 160
             },
           })]
         })
@@ -503,7 +520,7 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
             data: Uint8Array.from(atob((document.getElementById(`chart${chartNumber}-${i}`).querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
             transformation: {
               width: 290,
-              height: 100
+              height : 160
             },
           })
           ]
