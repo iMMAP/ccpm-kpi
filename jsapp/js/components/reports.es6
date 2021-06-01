@@ -996,8 +996,6 @@ class Reports extends React.Component {
         pathP_IS02 = `${pathP_IS02}/P_IS02`;
         pathP_IS03 = `${pathP_IS03}/`;
 
-        console.log(asset.content)
-
         const fields = [
           pathP_IS02,
           ...ccpm_getQuestionInRange('informingStrategicDecisions','analysisTopicCovered').map(s => `${pathP_IS03}${s}`)

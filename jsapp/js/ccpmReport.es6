@@ -75,7 +75,6 @@ const ccpm_getElementName = (e, data, content) => {
 }
 
 const ccpm_getNumberOfParnerResponseByType = (questionList, data, choices) => {
-    console.log(data, questionList);
     const questions = data.filter(e => questionList.includes(e.name));
     const disagregatedByType = data.find(e => e.name === 'P_GI03');
     if(disagregatedByType){
