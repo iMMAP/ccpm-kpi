@@ -606,7 +606,7 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
         }
       }
     });
-    result.push(getTable2(table, 2, ''));
+    result.push(getTable2(table, 2, false, null,null,null,null,true, false));
   }
   return result;
 }
