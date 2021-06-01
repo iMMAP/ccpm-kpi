@@ -534,7 +534,7 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
     }
   })
   const result  = [];
-  result.push(getTable2(table, 2, ''));
+  result.push(getTable2(table, 2, false, null,null,null,null,true, false));
   if(data.length > 6){
     result.push(new Paragraph({
     pageBreakBefore: true,

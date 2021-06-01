@@ -343,7 +343,7 @@ export default class CCPM_ReportContents extends React.Component {
     return opts;
   }
 
-  buildChartOptions2(data, choosenLanguage = 'en') {
+  buildChartOptions2(data, choosenLanguage = 'en', name) {
     var chartType = 'pie';
 
     // TODO: set as default globally in a higher level (PM)
@@ -354,7 +354,7 @@ export default class CCPM_ReportContents extends React.Component {
     var datasets = [{
       label: '%',
       axis: 'y',
-      data: [data, 100 - data ],
+      data: [data, (100 - data) < 0 ? 0 : (100 - data)],
       backgroundColor: [
         'rgba(29, 110, 156, 0.8)',
         'rgba(232, 232, 232, 1)',
@@ -374,6 +374,7 @@ export default class CCPM_ReportContents extends React.Component {
     var opts = {
       type: chartType,
       responsive: true,
+      plugins: [ChartDataLabels],
       data: {
         labels: labels[choosenLanguage],
         datasets
@@ -385,7 +386,28 @@ export default class CCPM_ReportContents extends React.Component {
         animation: {
           duration: 500
         },
-      }
+        plugins: {
+          datalabels: {
+            color: '#fff',
+            formatter: function (value, context) {
+              if(context.dataIndex === 1) return '';
+              const percent = Number.parseFloat(value).toFixed(2);
+              return percent > 0 ? `${percent}%` : '';
+            },
+            clamp: true,
+            align: 'center'
+          }
+        },
+        tooltips: {
+          callbacks: {
+            label: function (tooltipItem, data2) {
+              return `${name} (%): ${data}`;
+            },
+            caretSize: 0
+          },
+          displayColors: false
+        }
+        }
     };
 
     return opts;
@@ -414,7 +436,7 @@ export default class CCPM_ReportContents extends React.Component {
 
     parentState.totalEffectiveResponseDisagregatedByPartner.forEach((v, i) => {
       var canvas = ReactDOM.findDOMNode(this.refs[`chart2-${i}-canvas`]);
-      var opts = this.buildChartOptions2(Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)) > 100 ? 100 : Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)), choosenLanguage);
+      var opts = this.buildChartOptions2(Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)), choosenLanguage, ccpm_getLabel(currentLanguageIndex,v.row.label));
 
       if (this[`itemChart-${i}-chart2`]) {
         this[`itemChart-${i}-chart2`].destroy();
@@ -426,7 +448,7 @@ export default class CCPM_ReportContents extends React.Component {
 
     parentState.totalResponseDisagregatedByPartner.forEach((v, i) => {
       var canvas = ReactDOM.findDOMNode(this.refs[`chart-${i}-canvas`]);
-      var opts = this.buildChartOptions2(Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)) > 100 ? 100 : Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)), choosenLanguage);
+      var opts = this.buildChartOptions2(Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)), choosenLanguage, ccpm_getLabel(currentLanguageIndex,v.row.label));
 
       if (this[`itemChart-${i}-chart`]) {
         this[`itemChart-${i}-chart`].destroy();
