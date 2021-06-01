@@ -373,6 +373,7 @@ export default class CCPM_ReportContents extends React.Component {
 
     var opts = {
       type: chartType,
+      responsive: true,
       data: {
         labels: labels[choosenLanguage],
         datasets
@@ -539,11 +540,13 @@ export default class CCPM_ReportContents extends React.Component {
         <h1 className="title">{titleConstants.responseByType[choosenLanguage]}</h1>
         {
           parentState.totalResponseDisagregatedByPartner.map((v, i) => <>
-            <div key={`${i}-disag-11`} style={{ width: '50%', display: 'inline-block', height: '270px' }}>
+            <div key={`${i}-disag-11`} style={{ width: '50%', display: 'inline-block', height: '200px', textAlign: 'center' }}>
 
-              <h1 className="subtitle" style={{ marginLeft: '10px', color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000' }}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({v.questionsDisagregatedByPartner} of {v.data.mean} - {Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
-              <div ref={`chart-${i}`} id={`chart-${i}`} style={{ height: "80%", width: "95%" }}>
+              <h1 className="subtitle" style={{color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000' }}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({v.questionsDisagregatedByPartner} of {v.data.mean} - {Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
+              <div ref={`chart-${i}`} id={`chart-${i}`} style={{ height: "80%", width: "95%"}}>
+              <div style={{ width: '270px',  margin: '0px auto'}}>
               <canvas ref={`chart-${i}-canvas`} id={`chart-${i}-canvas`} />
+              </div>
                 {/*<ResponsiveWaffleCanvas
                   data={[
                     {
@@ -616,11 +619,13 @@ export default class CCPM_ReportContents extends React.Component {
         <h1 className="title">{titleConstants.responseByType[choosenLanguage]}</h1>
         {
           parentState.totalEffectiveResponseDisagregatedByPartner.map((v, i) => <>
-            <div key={`${i}-disag`} style={{ width: '50%', display: 'inline-block', height: '270px' }}>
+            <div key={`${i}-disag`} style={{ width: '50%', display: 'inline-block', height: '200px', textAlign: 'center' }}>
               <h1 className="subtitle" style={{ marginLeft: '10px', color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000' }}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ( {v.questionsDisagregatedByPartner} of {v.data.mean} - {Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
               {
               <div ref={`chart2-${i}`} id={`chart2-${i}`} style={{ height: "80%", width: "95%" }}>
+                <div style={{ width: '270px',  margin: '0px auto'}}>
                 <canvas ref={`chart2-${i}-canvas`} id={`chart2-${i}-canvas`} />
+                </div>
                {/* <ResponsiveWaffleCanvas
                   data={[
                     {
