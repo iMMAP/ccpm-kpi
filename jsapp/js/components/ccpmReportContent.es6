@@ -391,7 +391,7 @@ export default class CCPM_ReportContents extends React.Component {
             color: '#fff',
             formatter: function (value, context) {
               if(context.dataIndex === 1) return '';
-              const percent = Number.parseFloat(value).toFixed(2);
+              const percent = Number.parseInt(value);
               return percent > 0 ? `${percent}%` : '';
             },
             clamp: true,
