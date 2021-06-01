@@ -468,7 +468,7 @@ const scoreBreakDownGroup = (parentState, choosenLanguage, languageIndex) => {
 
 const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
   let table = [];
-  data.slice(0, 6).forEach((v, i) => {
+  data.slice(0, 5).forEach((v, i) => {
     if (i % 2 === 0) {
       if (data[i + 1]) {
         const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
@@ -541,13 +541,12 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
     children: [new TextRun('')]
   }));
   table = [];
-    data.slice(7).forEach((v, i) => {
-      if (i % 2 === 0) {
-        if (data[i + 1]) {
+    data.slice(6).forEach((v, i) => {
+      if (i % 2 === 0 && data[i + 7]) {
           const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
-          const p1 = Math.floor(calculatePercentage(data[i + 8].questionsDisagregatedByPartner, data[i + 8].data.mean));
+          const p1 = Math.floor(calculatePercentage(data[i + 6].questionsDisagregatedByPartner, data[i + 6].data.mean));
           table.push([getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${v.questionsDisagregatedByPartner} of ${v.data.mean} - ${p}%)`, p > 100 ? '#FD625E' : '#000000', AlignmentType.CENTER),
-          getSubTitle(`${ccpm_getLabel(currentLanguageIndex,data[i + 8].row.label)} (${data[i + 8].questionsDisagregatedByPartner} of ${data[i + 1].data.mean} - ${p1}%)`, p1 > 100 ? '#FD625E' : '#000000', AlignmentType.CENTER)
+          getSubTitle(`${ccpm_getLabel(currentLanguageIndex,data[i + 7].row.label)} (${data[i + 7].questionsDisagregatedByPartner} of ${data[i + 7].data.mean} - ${p1}%)`, p1 > 100 ? '#FD625E' : '#000000', AlignmentType.CENTER)
           ]);
           table.push([new Paragraph({
             spacing: {
@@ -557,7 +556,7 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
             alignment: AlignmentType.CENTER,
             pageBreakBefore: i === 5 ? true : false,
             children: [new ImageRun({
-              data: Uint8Array.from(atob((document.getElementById(`chart${chartNumber}-${i}`).querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
+              data: Uint8Array.from(atob((document.getElementById(`chart${chartNumber}-${i + 6}`).querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
               transformation: {
                 width: 200,
                 height: 100
@@ -572,7 +571,7 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
             alignment: AlignmentType.CENTER,
             pageBreakBefore: i === 5 ? true : false,
             children: [new ImageRun({
-              data: Uint8Array.from(atob((document.getElementById(`chart${chartNumber}-${i + 1}`).querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
+              data: Uint8Array.from(atob((document.getElementById(`chart${chartNumber}-${i + 7}`).querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
               transformation: {
                 width: 200,
                 height: 100
@@ -580,7 +579,8 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
             })]
           })
           ])
-        } else {
+        } else if(i === data.slice(6).length - 1) {
+          console.log(v);
           const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
           table.push([
             getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${v.questionsDisagregatedByPartner} of ${v.data.mean} - ${p}%)`, p > 100 ? 'red' : 'black', AlignmentType.CENTER)
@@ -593,7 +593,7 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
             alignment: AlignmentType.CENTER,
             pageBreakBefore: i === 5 ? true : false,
             children: [new ImageRun({
-              data: Uint8Array.from(atob((document.getElementById(`chart${chartNumber}-${i}`).querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
+              data: Uint8Array.from(atob((document.getElementById(`chart${chartNumber}-${i+6}`).querySelector('canvas').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
               transformation: {
                 width: 200,
                 height: 100
@@ -604,7 +604,6 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
           ])
 
         }
-      }
     });
     result.push(getTable2(table, 2, false, null,null,null,null,true, false));
   }
