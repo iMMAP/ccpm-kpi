@@ -56,6 +56,9 @@ class ProjectSettings extends React.Component {
     this.unlisteners = [];
 
     const formAsset = this.props.formAsset;
+    
+    const ccpmData = formAsset && formAsset.settings.ccpmData ? JSON.parse(formAsset.settings.ccpmData): {};
+
 
     this.state = {
       isSessionLoaded: !!stores.session.currentAccount,
@@ -84,13 +87,12 @@ class ProjectSettings extends React.Component {
       // archive flow
       isAwaitingArchiveCompleted: false,
       isAwaitingUnarchiveCompleted: false,
-
       // CCPM Test
-      yearTest: new Date().getFullYear(),
-      regionTest: null,
-      clusterTest: "Somalia",
-      addSubClusterTest: false,
-      subClusterTest: "Somalia Sub-Cluster 1"
+      yearTest: ccpmData.year || new Date().getFullYear(),
+      regionTest: ccpmData.region || null,
+      clusterTest: ccpmData.cluster || '',
+      addSubClusterTest: ccpmData.addSubCluster || false,
+      subClusterTest: ccpmData.subCluster || ''
     };
 
     autoBind(this);
@@ -200,7 +202,7 @@ class ProjectSettings extends React.Component {
   }
 
   onYearChange(evt) {
-    this.setState({yearTest: evt});
+    this.setState({yearTest: evt.target.value});
     this.onAnyDataChange('yearTest', removeInvalidChars(evt.target.value));
   }
 
@@ -210,7 +212,7 @@ class ProjectSettings extends React.Component {
   }
 
   onClusterChange(evt) {
-    this.setState({clusterTest: evt});
+    this.setState({clusterTest: evt.target.value});
     this.onAnyDataChange('clusterTest', removeInvalidChars(evt.target.value));
   }
 
@@ -220,7 +222,7 @@ class ProjectSettings extends React.Component {
   }
 
   onSubClusterChange(evt) {
-    this.setState({subClusterTest: evt});
+    this.setState({subClusterTest: evt.target.value});
     this.onAnyDataChange('subClusterTest', removeInvalidChars(evt.target.value));
   }
 
@@ -452,14 +454,16 @@ class ProjectSettings extends React.Component {
   }
 
   createAssetAndOpenInBuilder() {
+    const settings = JSON.stringify({
+      description: this.state.description,
+      sector: this.state.sector,
+      country: this.state.country,
+      'share-metadata': true,
+      ccpmData: {region: this.state.regionTest,year: this.state.yearTest.toString(), cluster: this.state.clusterTest, addSubCluster: this.state.addSubClusterTest, subCluster: this.state.subClusterTest},
+    });
     dataInterface.createResource({
       name: this.state.name,
-      settings: JSON.stringify({
-        description: this.state.description,
-        sector: this.state.sector,
-        country: this.state.country,
-        'share-metadata': this.state['share-metadata']
-      }),
+      settings,
       asset_type: 'survey',
     }).done((asset) => {
       this.goToFormBuilder(asset.uid);
@@ -477,7 +481,8 @@ class ProjectSettings extends React.Component {
           description: this.state.description,
           sector: this.state.sector,
           country: this.state.country,
-          'share-metadata': this.state['share-metadata']
+          'share-metadata': this.state['share-metadata'],
+          ccpmData: JSON.stringify({region: this.state.regionTest, year: this.state.yearTest.toString(), cluster: this.state.clusterTest, addSubCluster: this.state.addSubClusterTest, subCluster: this.state.subClusterTest}),
         }),
       }
     );
