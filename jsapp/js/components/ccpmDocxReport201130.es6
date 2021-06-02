@@ -612,7 +612,7 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
 
 const calculatePercentage = (total, sum) => {
   if (isNaN(total)) total = 0;
-  if (isNaN(sum)) sum = 1;
+  if (isNaN(sum) || sum === 0) return 0;
   return (total / sum) * 100;
 }
 
