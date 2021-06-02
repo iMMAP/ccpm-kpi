@@ -473,8 +473,8 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
       if (data[i + 1]) {
         const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
         const p1 = Math.floor(calculatePercentage(data[i + 1].questionsDisagregatedByPartner, data[i + 1].data.mean));
-        table.push([getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${v.questionsDisagregatedByPartner} of ${v.data.mean} - ${p}%)`, p > 100 ? '#FD625E' : '#000000',  AlignmentType.CENTER),
-        getSubTitle(`${ccpm_getLabel(currentLanguageIndex,data[i + 1].row.label)} (${data[i + 1].questionsDisagregatedByPartner} of ${data[i + 1].data.mean} - ${p1}%)`, p1 > 100 ? '#FD625E' : '#000000',AlignmentType.CENTER)
+        table.push([getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${v.questionsDisagregatedByPartner} of ${(v.data.mean % 1 !== 0) ? v.data.mean.toFixed(2) : v.data.mean} - ${p}%)`, p > 100 ? '#FD625E' : '#000000',  AlignmentType.CENTER),
+        getSubTitle(`${ccpm_getLabel(currentLanguageIndex,data[i + 1].row.label)} (${data[i + 1].questionsDisagregatedByPartner} of ${(data[i + 1].data.mean % 1 !== 0) ? data[i + 1].data.mean.toFixed(2) : data[i + 1].data.mean} - ${p1}%)`, p1 > 100 ? '#FD625E' : '#000000',AlignmentType.CENTER)
         ]);
         table.push([new Paragraph({
           spacing: {
@@ -510,7 +510,7 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
       } else {
         const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
         table.push([
-          getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${v.questionsDisagregatedByPartner} of ${v.data.mean}  - ${p}%)`, p > 100 ? 'red' : 'black', AlignmentType.CENTER)
+          getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${v.questionsDisagregatedByPartner} of ${(v.data.mean % 1 !== 0) ? v.data.mean.toFixed(2) : v.data.mean}  - ${p}%)`, p > 100 ? 'red' : 'black', AlignmentType.CENTER)
         ]);
         table.push([new Paragraph({
           spacing: {
@@ -545,8 +545,8 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
       if (i % 2 === 0 && data[i + 7]) {
           const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
           const p1 = Math.floor(calculatePercentage(data[i + 6].questionsDisagregatedByPartner, data[i + 6].data.mean));
-          table.push([getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${v.questionsDisagregatedByPartner} of ${v.data.mean} - ${p}%)`, p > 100 ? '#FD625E' : '#000000', AlignmentType.CENTER),
-          getSubTitle(`${ccpm_getLabel(currentLanguageIndex,data[i + 7].row.label)} (${data[i + 7].questionsDisagregatedByPartner} of ${data[i + 7].data.mean} - ${p1}%)`, p1 > 100 ? '#FD625E' : '#000000', AlignmentType.CENTER)
+          table.push([getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${v.questionsDisagregatedByPartner} of ${(v.data.mean % 1 !== 0) ? v.data.mean.toFixed(2) : v.data.mean} - ${p}%)`, p > 100 ? '#FD625E' : '#000000', AlignmentType.CENTER),
+          getSubTitle(`${ccpm_getLabel(currentLanguageIndex,data[i + 7].row.label)} (${data[i + 7].questionsDisagregatedByPartner} of ${(data[i + 7].data.mean % 1 !== 0) ? data[i + 7].data.mean.toFixed(2) : data[i + 7].data.mean} - ${p1}%)`, p1 > 100 ? '#FD625E' : '#000000', AlignmentType.CENTER)
           ]);
           table.push([new Paragraph({
             spacing: {
@@ -583,7 +583,7 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
           console.log(v);
           const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
           table.push([
-            getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${v.questionsDisagregatedByPartner} of ${v.data.mean} - ${p}%)`, p > 100 ? 'red' : 'black', AlignmentType.CENTER)
+            getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${v.questionsDisagregatedByPartner} of ${(v.data.mean % 1 !== 0) ? v.data.mean.toFixed(2) : v.data.mean} - ${p}%)`, p > 100 ? 'red' : 'black', AlignmentType.CENTER)
           ]);
           table.push([new Paragraph({
             spacing: {
@@ -660,8 +660,10 @@ export default class CCPM_ReportContents {
     if(!translations[currentLanguageIndex]) currentLanguageIndex = translations.findIndex(lan => lan && lan.includes('en'));
     const choosenLanguage = translations ? ((translations[currentLanguageIndex]).match(/\(.*?\)/))[0].replace('(', '').replace(')', '') : 'en';
 
-    const overallTotalPercentage = Math.floor(Number.parseFloat(`${calculatePercentage(numberOfPartner, parentState.totalReponses.sum)}`));
-    const effectiveTotalPercentage = Math.floor(Number.parseFloat(`${calculatePercentage(numberOfPartner, parentState.totalEffectiveResponse.sum)}`));
+    const overallTotalResponses = parentState.totalReponses.sum;
+    const effectiveTotalResponses = parentState.totalEffectiveResponse.sum;
+    const overallTotalPercentage = Math.floor(Number.parseFloat(`${calculatePercentage(numberOfPartner, overallTotalResponses)}`));
+    const effectiveTotalPercentage = Math.floor(Number.parseFloat(`${calculatePercentage(numberOfPartner, effectiveTotalResponses)}`));
 
     return new Promise((resolve) => {
       const sections = [
@@ -690,7 +692,7 @@ export default class CCPM_ReportContents {
             getTable2([
               [getSubTitle('Total'), getTableContent(`${overallTotalPercentage}%`, overallTotalPercentage > 100 ? '#FD625E' : '#4e4e4e')],
               [getSubTitle(titleConstants.numberPartnerResponding[choosenLanguage]), getTableContent(`${numberOfPartner}`)],
-              [getSubTitle(titleConstants.totalNumberOfPartner[choosenLanguage]), getTableContent(`${Number.parseFloat(parentState.totalReponses.sum.toString()).toFixed(2)}`)],
+              [getSubTitle(titleConstants.totalNumberOfPartner[choosenLanguage]), getTableContent(`${(overallTotalResponses % 1 !== 0) ? overallTotalResponses.toFixed(2) : overallTotalResponses}`)],
             ], 2, true, undefined, undefined, undefined, 50),
             new Paragraph(''),
             new Paragraph(''),
@@ -723,7 +725,7 @@ export default class CCPM_ReportContents {
             getTable2([
               [getSubTitle('Total'), getTableContent(`${effectiveTotalPercentage}%`, effectiveTotalPercentage > 100 ? '#FD625E' : '#4e4e4e')],
               [getSubTitle(titleConstants.numberPartnerResponding[choosenLanguage]), getTableContent(`${numberOfPartner}`)],
-              [getSubTitle(titleConstants.totalNumberOfPartner[choosenLanguage]), getTableContent(`${Number.parseFloat(parentState.totalEffectiveResponse.sum.toString()).toFixed(2)}`)],
+              [getSubTitle(titleConstants.totalNumberOfPartner[choosenLanguage]), getTableContent(`${(effectiveTotalResponses % 1 !== 0) ? effectiveTotalResponses.toFixed(2) : effectiveTotalResponses}`)],
             ], 2, true, undefined, undefined, undefined, 50),
             new Paragraph(''),
             new Paragraph(''),
