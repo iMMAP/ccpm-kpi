@@ -553,7 +553,7 @@ export default class CCPM_ReportContents extends React.Component {
                 </tr>
                 <tr>
                   <td className='report_tr_left_with_border'>{titleConstants.totalNumberOfPartner[choosenLanguage]}</td>
-                  <td className='report_tr_right_with_border' >{this.props.parentState.totalReponses.sum}</td>
+                  <td className='report_tr_right_with_border' >{(Number.parseFloat(this.props.parentState.totalReponses.sum.toString()).toFixed(2))}</td>
                 </tr>
               </tbody>
             </table>
@@ -633,7 +633,7 @@ export default class CCPM_ReportContents extends React.Component {
               </tr>
               <tr>
                 <td className='report_tr_left_with_border'>{titleConstants.totalNumberOfPartner[choosenLanguage]}</td>
-                <td className='report_tr_right_with_border' >{this.props.parentState.totalEffectiveResponse.sum}</td>
+                <td className='report_tr_right_with_border' >{Number.parseFloat(this.props.parentState.totalEffectiveResponse.sum.toString()).toFixed(2)}</td>
               </tr>
             </tbody>
           </table>

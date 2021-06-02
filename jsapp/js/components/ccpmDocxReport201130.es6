@@ -690,7 +690,7 @@ export default class CCPM_ReportContents {
             getTable2([
               [getSubTitle('Total'), getTableContent(`${overallTotalPercentage}%`, overallTotalPercentage > 100 ? '#FD625E' : '#4e4e4e')],
               [getSubTitle(titleConstants.numberPartnerResponding[choosenLanguage]), getTableContent(`${numberOfPartner}`)],
-              [getSubTitle(titleConstants.totalNumberOfPartner[choosenLanguage]), getTableContent(`${parentState.totalReponses.sum}`)],
+              [getSubTitle(titleConstants.totalNumberOfPartner[choosenLanguage]), getTableContent(`${Number.parseFloat(parentState.totalReponses.sum.toString()).toFixed(2)}`)],
             ], 2, true, undefined, undefined, undefined, 50),
             new Paragraph(''),
             new Paragraph(''),
@@ -723,7 +723,7 @@ export default class CCPM_ReportContents {
             getTable2([
               [getSubTitle('Total'), getTableContent(`${effectiveTotalPercentage}%`, effectiveTotalPercentage > 100 ? '#FD625E' : '#4e4e4e')],
               [getSubTitle(titleConstants.numberPartnerResponding[choosenLanguage]), getTableContent(`${numberOfPartner}`)],
-              [getSubTitle(titleConstants.totalNumberOfPartner[choosenLanguage]), getTableContent(`${parentState.totalEffectiveResponse.sum}`)],
+              [getSubTitle(titleConstants.totalNumberOfPartner[choosenLanguage]), getTableContent(`${Number.parseFloat(parentState.totalEffectiveResponse.sum.toString()).toFixed(2)}`)],
             ], 2, true, undefined, undefined, undefined, 50),
             new Paragraph(''),
             new Paragraph(''),
