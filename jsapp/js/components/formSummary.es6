@@ -352,6 +352,18 @@ class FormSummary extends React.Component {
                 <bem.FormView__cell m={['box']}>
                   {(ccpmData.cluster || ccpmData.subCluster || ccpmData.region ) &&
                     <bem.FormView__group m={['items', 'description-cols']}>
+                      {ccpmData.year &&
+                        <bem.FormView__cell>
+                          <bem.FormView__label m='sector'>{t('Year')}</bem.FormView__label>
+                          {ccpmData.year}
+                        </bem.FormView__cell>
+                      }
+                      {ccpmData.region &&
+                        <bem.FormView__cell>
+                          <bem.FormView__label m='sector'>{t('Region')}</bem.FormView__label>
+                          {ccpmData.region.label}
+                        </bem.FormView__cell>
+                      }
                       {ccpmData.cluster &&
                         <bem.FormView__cell>
                           <bem.FormView__label m='country'>{t('Cluster')}</bem.FormView__label>
@@ -362,18 +374,6 @@ class FormSummary extends React.Component {
                         <bem.FormView__cell>
                           <bem.FormView__label m='sector'>{t('Sub Cluster')}</bem.FormView__label>
                           {ccpmData.subCluster}
-                        </bem.FormView__cell>
-                      }
-                      {ccpmData.region &&
-                        <bem.FormView__cell>
-                          <bem.FormView__label m='sector'>{t('Region')}</bem.FormView__label>
-                          {ccpmData.region.label}
-                        </bem.FormView__cell>
-                      }
-                      {ccpmData.year &&
-                        <bem.FormView__cell>
-                          <bem.FormView__label m='sector'>{t('Year')}</bem.FormView__label>
-                          {ccpmData.year}
                         </bem.FormView__cell>
                       }
                     </bem.FormView__group>

@@ -87,12 +87,12 @@ class ProjectSettings extends React.Component {
       // archive flow
       isAwaitingArchiveCompleted: false,
       isAwaitingUnarchiveCompleted: false,
-      // CCPM Test
-      yearTest: ccpmData.year || new Date().getFullYear(),
-      regionTest: ccpmData.region || null,
-      clusterTest: ccpmData.cluster || '',
-      addSubClusterTest: ccpmData.addSubCluster || false,
-      subClusterTest: ccpmData.subCluster || ''
+      // CCPM project details
+      ccpmYear: ccpmData.year || new Date().getFullYear(),
+      ccpmRegion: ccpmData.region || null,
+      ccpmCluster: ccpmData.cluster || '',
+      ccpmAddSubCluster: ccpmData.addSubCluster || false,
+      ccpmSubCluster: ccpmData.subCluster || ''
     };
 
     autoBind(this);
@@ -201,29 +201,29 @@ class ProjectSettings extends React.Component {
     this.onAnyDataChange('share-metadata', isChecked);
   }
 
-  onYearChange(evt) {
-    this.setState({yearTest: evt.target.value});
-    this.onAnyDataChange('yearTest', removeInvalidChars(evt.target.value));
+  onCCPMYearChange(evt) {
+    this.setState({ccpmYear: evt.target.value});
+    this.onAnyDataChange('ccpmYear', removeInvalidChars(evt.target.value));
   }
 
-  onRegionChange(val) {
-    this.setState({regionTest: val});
-    this.onAnyDataChange('regionTest', val);
+  onCCPMRegionChange(val) {
+    this.setState({ccpmRegion: val});
+    this.onAnyDataChange('ccpmRegion', val);
   }
 
-  onClusterChange(evt) {
-    this.setState({clusterTest: evt.target.value});
-    this.onAnyDataChange('clusterTest', removeInvalidChars(evt.target.value));
+  onCCPMClusterChange(evt) {
+    this.setState({ccpmCluster: evt.target.value});
+    this.onAnyDataChange('ccpmCluster', removeInvalidChars(evt.target.value));
   }
 
-  onAddSubClusterTestChange(isChecked) {
-    this.setState({addSubClusterTest: isChecked});
-    this.onAnyDataChange('addSubClusterTest', isChecked);
+  onCCPMAddSubClusterChange(isChecked) {
+    this.setState({ccpmAddSubCluster: isChecked});
+    this.onAnyDataChange('ccpmAddSubCluster', isChecked);
   }
 
-  onSubClusterChange(evt) {
-    this.setState({subClusterTest: evt.target.value});
-    this.onAnyDataChange('subClusterTest', removeInvalidChars(evt.target.value));
+  onCCPMSubClusterChange(evt) {
+    this.setState({ccpmSubCluster: evt.target.value});
+    this.onAnyDataChange('ccpmSubCluster', removeInvalidChars(evt.target.value));
   }
 
   onImportUrlChange(value) {
@@ -459,7 +459,7 @@ class ProjectSettings extends React.Component {
       sector: this.state.sector,
       country: this.state.country,
       'share-metadata': true,
-      ccpmData: {region: this.state.regionTest,year: this.state.yearTest.toString(), cluster: this.state.clusterTest, addSubCluster: this.state.addSubClusterTest, subCluster: this.state.subClusterTest},
+      ccpmData: {region: this.state.ccpmRegion,year: this.state.ccpmYear.toString(), cluster: this.state.ccpmCluster, addSubCluster: this.state.ccpmAddSubCluster, subCluster: this.state.ccpmSubCluster},
     });
     dataInterface.createResource({
       name: this.state.name,
@@ -482,7 +482,7 @@ class ProjectSettings extends React.Component {
           sector: this.state.sector,
           country: this.state.country,
           'share-metadata': this.state['share-metadata'],
-          ccpmData: JSON.stringify({region: this.state.regionTest, year: this.state.yearTest.toString(), cluster: this.state.clusterTest, addSubCluster: this.state.addSubClusterTest, subCluster: this.state.subClusterTest}),
+          ccpmData: JSON.stringify({region: this.state.ccpmRegion, year: this.state.ccpmYear.toString(), cluster: this.state.ccpmCluster, addSubCluster: this.state.ccpmAddSubCluster, subCluster: this.state.ccpmSubCluster}),
         }),
       }
     );
@@ -922,8 +922,8 @@ class ProjectSettings extends React.Component {
               {t('Year')}
             </label>
             <TextareaAutosize
-              onChange={this.onYearChange}
-              value={this.state.yearTest}
+              onChange={this.onCCPMYearChange}
+              value={this.state.ccpmYear}
               placeholder={t('Year')}
             />
           </bem.FormModal__item>
@@ -934,8 +934,8 @@ class ProjectSettings extends React.Component {
             </label>
             <Select
               id='ccpmRegion'
-              value={this.state.regionTest}
-              onChange={this.onRegionChange}
+              value={this.state.ccpmRegion}
+              onChange={this.onCCPMRegionChange}
               options={ccpmRegions}
               className='kobo-select'
               classNamePrefix='kobo-select'
@@ -949,8 +949,8 @@ class ProjectSettings extends React.Component {
               {t('Country/Cluster')}
             </label>
             <TextareaAutosize
-              onChange={this.onClusterChange}
-              value={this.state.clusterTest}
+              onChange={this.onCCPMClusterChange}
+              value={this.state.ccpmCluster}
               placeholder={t('Country/Cluster')}
             />
           </bem.FormModal__item>
@@ -958,20 +958,20 @@ class ProjectSettings extends React.Component {
           <bem.FormModal__item>
             <bem.FormModal__item>
               <Checkbox
-                checked={this.state.addSubClusterTest}
-                onChange={this.onAddSubClusterTestChange}
+                checked={this.state.ccpmAddSubCluster}
+                onChange={this.onCCPMAddSubClusterChange}
                 label={t('Creating a Sub National CCPM?')}
               />
             </bem.FormModal__item>
 
-            { this.state.addSubClusterTest &&
+            { this.state.ccpmAddSubCluster &&
               <bem.FormModal__item>
                 <label>
                   {t('Sub-Cluster')}
                 </label>
                 <TextareaAutosize
-                  onChange={this.onSubClusterChange}
-                  value={this.state.subClusterTest}
+                  onChange={this.onCCPMSubClusterChange}
+                  value={this.state.ccpmSubCluster}
                   placeholder={t('Sub-Cluster')}
                 />
               </bem.FormModal__item>
