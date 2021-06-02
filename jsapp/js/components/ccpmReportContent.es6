@@ -482,7 +482,7 @@ export default class CCPM_ReportContents extends React.Component {
 
   calculatePercentage(total, sum) {
     if (isNaN(total)) total = 0;
-    if (isNaN(sum)) sum = 1;
+    if (isNaN(sum) || sum === 0) return 0;
     return (total / sum) * 100;
   }
 
@@ -510,7 +510,7 @@ export default class CCPM_ReportContents extends React.Component {
     const choosenLanguage = translations ? ((translations[currentLanguageIndex]).match(/\(.*?\)/))[0].replace('(', '').replace(')', '') : 'en';
     const P_IS02Result = this.getP_IS02Question(choosenLanguage);
     const overallTotalResponsesPercentage = Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalReponses.sum));
-    const efectiveTotalResponsesPercentage = Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalEffectiveResponse.sum));
+    const efectiveTotalResponsesPercentage = Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalEffectiveResponse.sum)); 
     return (
       <div id='document-report' style={{ paddingBottom: '100px' }} >
         <h1 className="bigTitle">{titleConstants.overallResponseRate[choosenLanguage]}</h1>
