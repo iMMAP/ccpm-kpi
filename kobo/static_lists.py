@@ -49,7 +49,6 @@ SECTORS = (
 #         for d in j['data']:
 #             print("({}, _({}))".format(repr(d['iso3']), repr(d['label'])))
 COUNTRIES = (
-    # CCPM: instead of countries, this list represents clusters.
     # (value, human-readable label)
     ('AFG', _('Afghanistan')),
     ('ALA', _('\xc5land Islands')),
@@ -105,11 +104,8 @@ COUNTRIES = (
     ('COD', _('Congo, The Democratic Republic of the')),
     ('COK', _('Cook Islands')),
     ('CRI', _('Costa Rica')),
-    ('COX', _('Cox\'s Bazar')),
     ('CIV', _("C\xf4te d'Ivoire")),
     ('HRV', _('Croatia')),
-    ('SYRCB', _('Cross Border NE Syria')),
-    ('TURCB', _('Cross Border Turkey')),
     ('CUB', _('Cuba')),
     ('CUW', _('Cura\xe7ao')),
     ('CYP', _('Cyprus')),
@@ -224,7 +220,7 @@ COUNTRIES = (
     ('OMN', _('Oman')),
     ('PAK', _('Pakistan')),
     ('PLW', _('Palau')),
-    ('PSE', _('Occupied Palestinian Territory')),
+    ('PSE', _('occupied Palestinian territory')),
     ('PAN', _('Panama')),
     ('PNG', _('Papua New Guinea')),
     ('PRY', _('Paraguay')),
@@ -235,7 +231,6 @@ COUNTRIES = (
     ('PRT', _('Portugal')),
     ('PRI', _('Puerto Rico')),
     ('QAT', _('Qatar')),
-    ('ROP', _('Region Of Pacific (Region)')),
     ('REU', _('R\xe9union')),
     ('ROU', _('Romania')),
     ('RUS', _('Russian Federation')),
@@ -273,7 +268,6 @@ COUNTRIES = (
     ('SWE', _('Sweden')),
     ('CHE', _('Switzerland')),
     ('SYR', _('Syrian Arab Republic')),
-    ('SYRD', _('Syria Damascus')),
     ('TWN', _('Taiwan, Province of China')),
     ('TJK', _('Tajikistan')),
     ('TZA', _('Tanzania, United Republic of')),
@@ -303,7 +297,6 @@ COUNTRIES = (
     ('VIR', _('Virgin Islands, U.S.')),
     ('WLF', _('Wallis and Futuna')),
     ('ESH', _('Western Sahara')),
-    ('SYRW', _('Whole of Syria (Region)')),
     ('YEM', _('Yemen')),
     ('ZMB', _('Zambia')),
     ('ZWE', _('Zimbabwe')),
