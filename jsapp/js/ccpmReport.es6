@@ -61,10 +61,9 @@ const lowerArray = (a) => {
 }
 
 const ccpm_getElementName = (e, data, content) => {
-    const question = content.survey.find(v => v.name === e);
+   /* const question = content.survey.find(v => v.name === e);
     const xmlQuestion = content.choices.find(v => lowerArray(v.label).includes(singulirize(question.label[0].toLowerCase().replace(' ', '-'))))
-    if(xmlQuestion) return xmlQuestion.name;
-/*
+    if(xmlQuestion) return xmlQuestion.name;*/
     switch (e) {
         case "C_CP01_01":
         case "C_CP02_01": return "international_org";
@@ -85,7 +84,7 @@ const ccpm_getElementName = (e, data, content) => {
         case "C_CP01_09":
         case "C_CP02_09": return "other";
         default: return "";
-    }*/
+    }
 }
 
 const ccpm_getNumberOfParnerResponseByType = (questionList, data, choices) => {

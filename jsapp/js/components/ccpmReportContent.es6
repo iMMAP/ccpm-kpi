@@ -716,7 +716,7 @@ export default class CCPM_ReportContents extends React.Component {
                   <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <tbody>
                       {subGroup === 'analysisTopicCovered' ?
-                        parentState.ccpmReport[subGroup].questions.map((question, index) => {
+                        parentState.ccpmReport[subGroup].questions.length > 0 ? parentState.ccpmReport[subGroup].questions.map((question, index) => {
                           const questionYes = P_IS02Result.yesAverage.find(f => f.id.includes(question.name)) || {}
                           const questionNo = P_IS02Result.noAverage.find(f => f.id.includes(question.name)) || {};
                           return <>
@@ -740,8 +740,20 @@ export default class CCPM_ReportContents extends React.Component {
                               })}
                             </tr>
                           </>
-                        }) :
-                        parentState.ccpmReport[subGroup].questions.map((question, index) => {
+                        }) : 
+                        
+                       <>      
+                            <tr style={{ width: '100%', paddingLeft: '40px' }}>
+                              {(dataset[group][subGroup].notes) && dataset[group][subGroup].notes.map((question, index2) => {
+
+                                return <>
+                                  {(index2 === 0 && dataset[group][subGroup].noteName) && <h2 className="comment-title">{ccpm_getName(dataset[group][subGroup].noteName, choosenLanguage)}</h2>}
+                                  {this.renderComment(question.code, ccpm_getLabel(currentLanguageIndex, (parentState.reportData.find(q => q.name === question.code)) ? parentState.reportData.find(q => q.name === question.code).row.label : ['']))}
+                                </>
+                              })}
+                            </tr>
+                        </>:
+                         parentState.ccpmReport[subGroup].questions.length > 0 ? parentState.ccpmReport[subGroup].questions.map((question, index) => {
                           return <>
                             <tr key={question.row.label[0]}>
                               <td className='report_tr_left'>{ccpm_getLabel(currentLanguageIndex, question.row.label)}</td>
@@ -756,7 +768,17 @@ export default class CCPM_ReportContents extends React.Component {
                               })}
                             </tr>
                           </>
-                        })
+                        }) : <> 
+                         <tr style={{ width: '100%', paddingLeft: '40px' }}>
+                              {(dataset[group][subGroup].notes) && dataset[group][subGroup].notes.map((question, index2) => {
+                                return <>
+                                  {(this.checkNotesExist(dataset[group][subGroup]) && (index2 === 0 && dataset[group][subGroup].noteName)) && <h2 className="comment-title">{dataset[group][subGroup].noteName[choosenLanguage]}</h2>}
+                                  {this.renderComment(question.code, ccpm_getLabel(currentLanguageIndex, (this.props.parentState.reportData.find(q => q.name === question.code)) ? this.props.parentState.reportData.find(q => q.name === question.code).row.label : ['']))}
+                                </>
+                              })}
+                          </tr>
+                        </>
+
                       }
                     </tbody>
                   </table>
