@@ -504,21 +504,23 @@ export default class CCPM_ReportContents extends React.Component {
 
   render() {
     const { parentState } = this.props;
-    const { totalReponses: { numberOfPartner }, reportStyles, asset: { content: { translations } } } = parentState;
+    const { totalReponses: { numberOfPartner, sum }, totalEffectiveResponse, totalResponseDisagregatedByPartner, reportStyles, 
+      asset: { content: { translations } }, totalEffectiveResponseDisagregatedByPartner } = parentState;
     let currentLanguageIndex = reportStyles.default.translationIndex;
     if(!translations[currentLanguageIndex]) currentLanguageIndex = translations.findIndex(lan => lan && lan.includes('en'));
     const choosenLanguage = translations ? ((translations[currentLanguageIndex]).match(/\(.*?\)/))[0].replace('(', '').replace(')', '') : 'en';
     const P_IS02Result = this.getP_IS02Question(choosenLanguage);
     const overallTotalResponsesPercentage = Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalReponses.sum));
     const efectiveTotalResponsesPercentage = Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalEffectiveResponse.sum)); 
+    
     return (
-      <div id='document-report' style={{ paddingBottom: '100px' }} >
+      <div id='document-report' style={{ paddingBottom: '100px', width: '100%' }} >
         <h1 className="bigTitle">{titleConstants.overallResponseRate[choosenLanguage]}</h1>
         <h1 className="title" style={{marginTop: '22px' }}>{titleConstants.totalResponse[choosenLanguage]}</h1>
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-            <div style={{ height: '150px', width: "60%" }}>
-              <div style={{ height: '100%', width: '100%', display: 'inline-block' }} ref='totalResponseChart' id='totalResponseChart' >
+            <div className="chartContainer">
+              <div  style={{height: '100%',width: '100%',display: 'inline-block'}} ref='totalResponseChart' id='totalResponseChart' >
                 <ResponsiveWaffleCanvas
                   data={[
                     {
@@ -528,6 +530,7 @@ export default class CCPM_ReportContents extends React.Component {
                       "color": "#097ca8"
                     }
                   ]}
+                  
                   pixelRatio={1}
                   total={100}
                   rows={5}
@@ -549,11 +552,11 @@ export default class CCPM_ReportContents extends React.Component {
                 </tr>
                 <tr>
                   <td className='report_tr_left_with_border'>{titleConstants.numberPartnerResponding[choosenLanguage]}</td>
-                  <td className='report_tr_right_with_border' >{this.props.parentState.totalReponses.numberOfPartner}</td>
+                  <td className='report_tr_right_with_border' >{numberOfPartner}</td>
                 </tr>
                 <tr>
                   <td className='report_tr_left_with_border'>{titleConstants.totalNumberOfPartner[choosenLanguage]}</td>
-                  <td className='report_tr_right_with_border' >{(Number.parseFloat(this.props.parentState.totalReponses.sum.toString()).toFixed(2))}</td>
+                  <td className='report_tr_right_with_border' >{(Number.parseFloat(sum.toString()).toFixed(2))}</td>
                 </tr>
               </tbody>
             </table>
@@ -561,7 +564,7 @@ export default class CCPM_ReportContents extends React.Component {
         </div>
         <h1 className="title">{titleConstants.responseByType[choosenLanguage]}</h1>
         {
-          parentState.totalResponseDisagregatedByPartner.map((v, i) => <>
+          totalResponseDisagregatedByPartner.map((v, i) => <>
             <div key={`${i}-disag-11`} style={{ width: '50%', display: 'inline-block', height: '200px', textAlign: 'center' }}>
 
               <h1 className="subtitle" style={{color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000' }}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({v.questionsDisagregatedByPartner} of {v.data.mean} - {Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
@@ -629,18 +632,18 @@ export default class CCPM_ReportContents extends React.Component {
               </tr>
               <tr>
                 <td className='report_tr_left_with_border'>{titleConstants.numberPartnerResponding[choosenLanguage]}</td>
-                <td className='report_tr_right_with_border' >{this.props.parentState.totalEffectiveResponse.numberOfPartner}</td>
+                <td className='report_tr_right_with_border' >{totalEffectiveResponse.numberOfPartner}</td>
               </tr>
               <tr>
                 <td className='report_tr_left_with_border'>{titleConstants.totalNumberOfPartner[choosenLanguage]}</td>
-                <td className='report_tr_right_with_border' >{Number.parseFloat(this.props.parentState.totalEffectiveResponse.sum.toString()).toFixed(2)}</td>
+                <td className='report_tr_right_with_border' >{Number.parseFloat(totalEffectiveResponse.sum.toString()).toFixed(2)}</td>
               </tr>
             </tbody>
           </table>
         </div>
         <h1 className="title">{titleConstants.responseByType[choosenLanguage]}</h1>
         {
-          parentState.totalEffectiveResponseDisagregatedByPartner.map((v, i) => <>
+          totalEffectiveResponseDisagregatedByPartner.map((v, i) => <>
             <div key={`${i}-disag`} style={{ width: '50%', display: 'inline-block', height: '200px', textAlign: 'center' }}>
               <h1 className="subtitle" style={{ marginLeft: '10px', color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000' }}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({v.questionsDisagregatedByPartner} of {v.data.mean} - {Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
               {

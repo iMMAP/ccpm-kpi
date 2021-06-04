@@ -580,7 +580,6 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
           })
           ])
         } else if(i === data.slice(6).length - 1) {
-          console.log(v);
           const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
           table.push([
             getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${v.questionsDisagregatedByPartner} of ${v.data.mean} - ${p}%)`, p > 100 ? 'red' : 'black', AlignmentType.CENTER)

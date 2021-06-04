@@ -1,3 +1,16 @@
+@media print {
+  body {
+    margin: 10px;
+    width: 120%;
+  }
+}
+
+.chartContainer {
+  height: 150px;
+  width: 60%;
+  display: 'inline-block'
+}
+
 .report_tr_left {
     color : rgb(85, 85, 85);
     font-size: 14px;
