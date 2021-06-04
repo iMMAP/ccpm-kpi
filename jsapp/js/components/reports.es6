@@ -1306,11 +1306,6 @@ class Reports extends React.Component {
                 data-tip={t('Export to Document')}>
           <i className='k-icon-download' />
         </bem.Button>
-        <bem.Button m='icon' className='report-button__print'
-                onClick={launchPrinting}
-                data-tip={t('Print')}>
-          <i className='k-icon-print' />
-        </bem.Button>
         {
           <bem.Button m='icon' className='report-button__settings'
                   onClick={this.toggleReportLanguageSettings}
