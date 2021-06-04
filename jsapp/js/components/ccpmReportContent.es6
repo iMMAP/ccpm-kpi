@@ -510,8 +510,11 @@ export default class CCPM_ReportContents extends React.Component {
     if(!translations[currentLanguageIndex]) currentLanguageIndex = translations.findIndex(lan => lan && lan.includes('en'));
     const choosenLanguage = translations ? ((translations[currentLanguageIndex]).match(/\(.*?\)/))[0].replace('(', '').replace(')', '') : 'en';
     const P_IS02Result = this.getP_IS02Question(choosenLanguage);
-    const overallTotalResponsesPercentage = Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalReponses.sum));
-    const efectiveTotalResponsesPercentage = Math.floor(this.calculatePercentage(numberOfPartner, this.props.parentState.totalEffectiveResponse.sum)); 
+    
+    const overallTotalResponses = this.props.parentState.totalReponses.sum;
+    const effectiveTotalResponses = this.props.parentState.totalEffectiveResponse.sum;
+    const overallTotalResponsesPercentage = Math.floor(this.calculatePercentage(numberOfPartner, overallTotalResponses));
+    const effectiveTotalResponsesPercentage = Math.floor(this.calculatePercentage(numberOfPartner, effectiveTotalResponses));
     
     return (
       <div id='document-report' style={{ paddingBottom: '100px', width: '100%' }} >
@@ -556,7 +559,7 @@ export default class CCPM_ReportContents extends React.Component {
                 </tr>
                 <tr>
                   <td className='report_tr_left_with_border'>{titleConstants.totalNumberOfPartner[choosenLanguage]}</td>
-                  <td className='report_tr_right_with_border' >{(Number.parseFloat(sum.toString()).toFixed(2))}</td>
+                  <td className='report_tr_right_with_border' >{(overallTotalResponses % 1 !== 0) ? overallTotalResponses.toFixed(2) : overallTotalResponses}</td>
                 </tr>
               </tbody>
             </table>
@@ -567,7 +570,7 @@ export default class CCPM_ReportContents extends React.Component {
           totalResponseDisagregatedByPartner.map((v, i) => <>
             <div key={`${i}-disag-11`} style={{ width: '50%', display: 'inline-block', height: '200px', textAlign: 'center' }}>
 
-              <h1 className="subtitle" style={{color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000' }}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({v.questionsDisagregatedByPartner} of {v.data.mean} - {Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
+              <h1 className="subtitle" style={{color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000' }}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({v.questionsDisagregatedByPartner} of {(v.data.mean % 1 !== 0) ? v.data.mean.toFixed(2) : v.data.mean} - {Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
               <div ref={`chart-${i}`} id={`chart-${i}`} style={{ height: "80%", width: "95%"}}>
               <div style={{ width: '270px',  margin: '0px auto'}}>
               <canvas ref={`chart-${i}-canvas`} id={`chart-${i}-canvas`} />
@@ -608,7 +611,7 @@ export default class CCPM_ReportContents extends React.Component {
                 {
                   "id": "totalReponse",
                   "label": "Total Responses (%)",
-                  "value": efectiveTotalResponsesPercentage,
+                  "value": effectiveTotalResponsesPercentage,
                   "color": "#097ca8"
                 }
               ]}
@@ -628,7 +631,7 @@ export default class CCPM_ReportContents extends React.Component {
             <tbody>
               <tr>
                 <td className='report_tr_left_with_border'>Total</td>
-                <td className='report_tr_right_with_border' style={{ color: efectiveTotalResponsesPercentage > 100 ? '#FD625E' : '#000' }}>{efectiveTotalResponsesPercentage}%</td>
+                <td className='report_tr_right_with_border' style={{ color: effectiveTotalResponsesPercentage > 100 ? '#FD625E' : '#000' }}>{effectiveTotalResponsesPercentage}%</td>
               </tr>
               <tr>
                 <td className='report_tr_left_with_border'>{titleConstants.numberPartnerResponding[choosenLanguage]}</td>
@@ -636,7 +639,7 @@ export default class CCPM_ReportContents extends React.Component {
               </tr>
               <tr>
                 <td className='report_tr_left_with_border'>{titleConstants.totalNumberOfPartner[choosenLanguage]}</td>
-                <td className='report_tr_right_with_border' >{Number.parseFloat(totalEffectiveResponse.sum.toString()).toFixed(2)}</td>
+                <td className='report_tr_right_with_border' >{(effectiveTotalResponses % 1 !== 0) ? effectiveTotalResponses.toFixed(2) : effectiveTotalResponses}</td>
               </tr>
             </tbody>
           </table>
@@ -645,7 +648,7 @@ export default class CCPM_ReportContents extends React.Component {
         {
           totalEffectiveResponseDisagregatedByPartner.map((v, i) => <>
             <div key={`${i}-disag`} style={{ width: '50%', display: 'inline-block', height: '200px', textAlign: 'center' }}>
-              <h1 className="subtitle" style={{ marginLeft: '10px', color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000' }}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({v.questionsDisagregatedByPartner} of {v.data.mean} - {Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
+              <h1 className="subtitle" style={{ marginLeft: '10px', color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000' }}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({v.questionsDisagregatedByPartner} of {(v.data.mean % 1 !== 0) ? v.data.mean.toFixed(2) : v.data.mean} - {Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
               {
               <div ref={`chart2-${i}`} id={`chart2-${i}`} style={{ height: "80%", width: "95%" }}>
                 <div style={{ width: '270px',  margin: '0px auto'}}>
