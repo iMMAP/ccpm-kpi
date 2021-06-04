@@ -315,7 +315,7 @@ const renderComment = (questionCode, questionName, parentState) => {
   return '';
 }
 
-const getGroupData = (parentState, choosenLanguage, languageIndex) => {
+const getOverallPerformance = (parentState, choosenLanguage, languageIndex) => {
   const dataToShow = [];
   Object.keys(dataset).forEach(group => {
     dataToShow.push(new Paragraph(''));
@@ -353,7 +353,7 @@ const getGroupData = (parentState, choosenLanguage, languageIndex) => {
   return dataToShow;
 }
 
-const scoreBreakDownGroup = (parentState, choosenLanguage, languageIndex) => {
+const getScoreBreakDownGroup = (parentState, choosenLanguage, languageIndex) => {
   const dataToShow = [];
   const P_IS02Result = getP_IS02Question(parentState);
   dataToShow.push(getBigTitle(titleConstants.scoreBreakdown[choosenLanguage]));
@@ -615,7 +615,7 @@ const calculatePercentage = (total, sum) => {
   return (total / sum) * 100;
 }
 
-const getLastPart = (parentState, choosenLanguage) => {
+const getQuestionByQuestionResult = (parentState, choosenLanguage) => {
   const data = [];
   data.push(getBigTitle(titleConstants.qustionByquestionBreakdown[choosenLanguage]))
   Object.keys(dataset).forEach(element => {
@@ -738,7 +738,7 @@ export default class CCPM_ReportContents {
           },
           children: [
             getBigTitle(titleConstants.overallPerformance[choosenLanguage]),
-            ...getGroupData(parentState, choosenLanguage, currentLanguageIndex),
+            ...getOverallPerformance(parentState, choosenLanguage, currentLanguageIndex),
           ]
         },
         {
@@ -746,14 +746,14 @@ export default class CCPM_ReportContents {
             type: SectionType.NEXT_PAGE,
           },
           children: [
-            ...scoreBreakDownGroup(parentState, choosenLanguage, currentLanguageIndex),
+            ...getScoreBreakDownGroup(parentState, choosenLanguage, currentLanguageIndex),
           ]
         },
         {
           properties: {
             type: SectionType.NEXT_PAGE,
           },
-          children: getLastPart(parentState, choosenLanguage)
+          children: getQuestionByQuestionResult(parentState, choosenLanguage)
         },
         {
           properties: {
