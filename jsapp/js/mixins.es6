@@ -82,7 +82,7 @@ mixins.dmix = {
       sourceUid: sourceUid,
       sourceName: sourceName,
       targetType: ASSET_TYPES.template.id,
-      promptTitle: t('Create new template from this project'),
+      promptTitle: t('Create new template from this CCPM'),
       promptMessage: t('Enter the name of the new template.')
     });
   },
@@ -475,7 +475,7 @@ mixins.clickAssets = {
               ok_button.disabled = false;
               dialog.destroy();
               hashHistory.push(`/forms/${asset.uid}/landing`);
-              notify(t('cloned project created'));
+              notify(t('cloned CCPM created'));
             }
             });
             // keep the dialog open
@@ -492,7 +492,7 @@ mixins.clickAssets = {
           sourceUid: sourceUid,
           sourceName: sourceName,
           targetType: ASSET_TYPES.template.id,
-          promptTitle: t('Create new template from this project'),
+          promptTitle: t('Create new template from this CCPM'),
           promptMessage: t('Enter the name of the new template.')
         });
       },
@@ -501,8 +501,8 @@ mixins.clickAssets = {
           sourceUid: sourceUid,
           sourceName: sourceName,
           targetType: 'survey',
-          promptTitle: t('Create new project from this template'),
-          promptMessage: t('Enter the name of the new project.')
+          promptTitle: t('Create new CCPM from this template'),
+          promptMessage: t('Enter the name of the new CCPM.')
         });
       },
       edit: function (uid) {
@@ -540,8 +540,8 @@ mixins.clickAssets = {
           if (asset.deployment__submission_count !== 0) {
             msg += `${renderCheckbox('dt1', t('All data gathered for this form will be deleted.'))}`;
           }
-          msg += `${renderCheckbox('dt2', t('The form associated with this project will be deleted.'))}
-            ${renderCheckbox('dt3', t('I understand that if I delete this project I will not be able to recover it.'), true)}
+          msg += `${renderCheckbox('dt2', t('The form associated with this CCPM will be deleted.'))}
+            ${renderCheckbox('dt3', t('I understand that if I delete this CCPM I will not be able to recover it.'), true)}
           `;
           onshow = (evt) => {
             let ok_button = dialog.elements.buttons.primary.firstChild;
@@ -584,8 +584,8 @@ mixins.clickAssets = {
         let asset = stores.selectedAsset.asset || stores.allAssets.byUid[uid];
         let dialog = alertify.dialog('confirm');
         let opts = {
-          title: t('Archive Project'),
-          message: `${t('Are you sure you want to archive this project?')} <br/><br/>
+          title: t('Archive CCPM'),
+          message: `${t('Are you sure you want to archive this CCPM?')} <br/><br/>
             <strong>${t('Your form will not accept submissions while it is archived.')}</strong>`,
           labels: {ok: t('Archive'), cancel: t('Cancel')},
           onok: (evt, val) => {
@@ -612,8 +612,8 @@ mixins.clickAssets = {
         }
         let dialog = alertify.dialog('confirm');
         let opts = {
-          title: t('Unarchive Project'),
-          message: `${t('Are you sure you want to unarchive this project?')}`,
+          title: t('Unarchive CCPM'),
+          message: `${t('Are you sure you want to unarchive this CCPM?')}`,
           labels: {ok: t('Unarchive'), cancel: t('Cancel')},
           onok: (evt, val) => {
             actions.resources.setDeploymentActive({

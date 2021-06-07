@@ -4,7 +4,7 @@ from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from kobo.static_lists import COUNTRIES, LANGUAGES, SECTORS
+from kobo.static_lists import COUNTRIES, LANGUAGES, SECTORS, CCPM_REGIONS
 from kobo.apps.hook.constants import SUBMISSION_PLACEHOLDER
 
 
@@ -38,4 +38,5 @@ class EnvironmentView(APIView):
         data['all_languages'] = LANGUAGES
         data['interface_languages'] = settings.LANGUAGES
         data['submission_placeholder'] = SUBMISSION_PLACEHOLDER
+        data['ccpm_available_regions'] = CCPM_REGIONS
         return Response(data)

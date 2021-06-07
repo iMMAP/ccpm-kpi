@@ -91,6 +91,9 @@
   "bugs": "https://github.com/kobotoolbox/kpi/issues",
   "homepage": "https://github.com/kobotoolbox/kpi",
   "dependencies": {
+    "@nivo/core": "^0.69.0",
+    "@nivo/waffle": "^0.69.0",
+    "chartjs-plugin-datalabels": "^1.0.0",
     "docx": "^6.0.2",
     "save-as": "^0.1.8"
   }

@@ -512,3 +512,12 @@ EXTRA_LANG_INFO = {
         'name_local': 'كوردی',
     },
 }
+
+CCPM_REGIONS = (
+    ('afro', _('AFRO')),
+    ('amro', _('AMRO')),
+    ('searo', _('SEARO')),
+    ('euro', _('EURO')),
+    ('emro', _('EMRO')),
+    ('wpro', _('WPRO')),
+)

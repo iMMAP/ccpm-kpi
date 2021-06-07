@@ -1,0 +1,117 @@
+@media print {
+  body {
+    margin: 10px;
+    width: 110%;
+  }
+}
+
+.chartContainer {
+  height: 150px;
+  width: 60%;
+  display: 'inline-block'
+}
+
+.report_tr_left {
+    color : rgb(85, 85, 85);
+    font-size: 14px;
+    width: 70%;
+    border-right: grey solid 1px;
+    border-top: 1px solid grey;
+    border-bottom: 1px solid grey;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .report_tr_left_1 {
+    color : rgb(85, 85, 85);
+    font-size: 14px;
+    width: 50%;
+    border-right: grey solid 1px;
+    border-top: 1px solid grey;
+    border-bottom: 1px solid grey;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+  
+  .report_tr_right {
+    border-top: solid 1px #808080;
+    border-bottom: solid 1px #808080;
+    padding: 10px;
+  }
+
+  .report_tr_right_1 {
+    border-top: solid 1px #808080;
+    border-bottom: solid 1px #808080;
+    padding: 10px;
+  }
+
+  .report_tr_middle {
+    border-top: solid 1px #808080;
+    border-bottom: solid 1px #808080;
+    padding: 10px;
+    width: 25%;
+    border-right: grey solid 1px;
+  }
+  
+  .report_tr_right_with_border  {
+    border: solid 1px grey;
+    padding: 10px;
+  }
+  
+  .report_tr_left_with_border {
+    color : rgb(85, 85, 85);
+    font-size: 14px;
+    width: 70%;
+    border: grey solid 1px;
+    border-top: 1px solid grey;
+    padding-left: 10px;
+  }
+  
+  .bordered-td {
+    color : rgb(85, 85, 85);
+    font-size: 14px;
+    border: grey solid 1px;
+    padding: 10px;
+  }
+  
+  .title {
+    color: #4e4e4e;
+    font-size: 18px;
+    margin-bottom: 10px;
+    font-weight: 400;
+    margin-top: 30px;
+    margin-bottom: 20px;
+  }
+  
+  .subtitle {
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .subtitleScore {
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 35px;
+  }
+  
+  .bigTitle {
+    color: black;
+    font-size: 20px;
+    font-weight: bold;
+    border-top: solid rgb(0, 110, 138) 5px;
+    padding-top: 15px;
+    margin-top: 50px;
+    width: fit-content
+  }
+  
+  .comment-title {
+    color: black;
+    font-size: 15px;
+    font-weight: inherit;
+    border-bottom: solid rgb(0, 110, 138) 2px;
+    padding-top: 10px;
+    width: fit-content;
+    margin-left: 40px;
+  }

@@ -338,28 +338,42 @@ class FormSummary extends React.Component {
       return (<ui.AccessDeniedMessage/>);
     }
 
+    const ccpmData = this.state.settings.ccpmData ? JSON.parse(this.state.settings.ccpmData): {}; 
+
     return (
       <DocumentTitle title={`${docTitle} | Health Cluster`}>
         <bem.FormView m='summary'>
           <bem.FormView__column m='left'>
-            {(this.state.settings && (this.state.settings.country || this.state.settings.sector || this.state.settings.description)) &&
+            {(this.state.settings  &&
               <bem.FormView__row m='summary-description'>
                 <bem.FormView__cell m='label'>
                   {t('Description')}
                 </bem.FormView__cell>
                 <bem.FormView__cell m={['box']}>
-                  {(this.state.settings.country || this.state.settings.sector) &&
+                  {(ccpmData.cluster || ccpmData.subCluster || ccpmData.region ) &&
                     <bem.FormView__group m={['items', 'description-cols']}>
-                      {this.state.settings.country &&
+                      {ccpmData.year &&
                         <bem.FormView__cell>
-                          <bem.FormView__label m='country'>{t('Project country')}</bem.FormView__label>
-                          {this.state.settings.country.label}
+                          <bem.FormView__label m='sector'>{t('Year')}</bem.FormView__label>
+                          {ccpmData.year}
                         </bem.FormView__cell>
                       }
-                      {this.state.settings.sector &&
+                      {ccpmData.region &&
                         <bem.FormView__cell>
-                          <bem.FormView__label m='sector'>{t('Sector')}</bem.FormView__label>
-                          {this.state.settings.sector.label}
+                          <bem.FormView__label m='sector'>{t('Region')}</bem.FormView__label>
+                          {ccpmData.region.label}
+                        </bem.FormView__cell>
+                      }
+                      {ccpmData.cluster &&
+                        <bem.FormView__cell>
+                          <bem.FormView__label m='country'>{t('Cluster')}</bem.FormView__label>
+                          {ccpmData.cluster}
+                        </bem.FormView__cell>
+                      }
+                      {ccpmData.subCluster &&
+                        <bem.FormView__cell>
+                          <bem.FormView__label m='sector'>{t('Sub Cluster')}</bem.FormView__label>
+                          {ccpmData.subCluster}
                         </bem.FormView__cell>
                       }
                     </bem.FormView__group>
@@ -371,7 +385,7 @@ class FormSummary extends React.Component {
                   }
                 </bem.FormView__cell>
               </bem.FormView__row>
-            }
+            )}
             {this.renderSubmissionsGraph()}
             <bem.FormView__row m='summary-details'>
               <bem.FormView__cell m='label'>

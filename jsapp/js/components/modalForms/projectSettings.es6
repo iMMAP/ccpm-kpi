@@ -56,6 +56,9 @@ class ProjectSettings extends React.Component {
     this.unlisteners = [];
 
     const formAsset = this.props.formAsset;
+    
+    const ccpmData = formAsset && formAsset.settings.ccpmData ? JSON.parse(formAsset.settings.ccpmData): {};
+
 
     this.state = {
       isSessionLoaded: !!stores.session.currentAccount,
@@ -83,7 +86,13 @@ class ProjectSettings extends React.Component {
       isUploadFilePending: false,
       // archive flow
       isAwaitingArchiveCompleted: false,
-      isAwaitingUnarchiveCompleted: false
+      isAwaitingUnarchiveCompleted: false,
+      // CCPM project details
+      ccpmYear: ccpmData.year || new Date().getFullYear(),
+      ccpmRegion: ccpmData.region || null,
+      ccpmCluster: ccpmData.cluster || '',
+      ccpmAddSubCluster: ccpmData.addSubCluster || false,
+      ccpmSubCluster: ccpmData.subCluster || ''
     };
 
     autoBind(this);
@@ -132,13 +141,13 @@ class ProjectSettings extends React.Component {
   getBaseTitle() {
     switch (this.props.context) {
       case PROJECT_SETTINGS_CONTEXTS.NEW:
-        return t('Create project');
+        return t('New CCPM');
       case PROJECT_SETTINGS_CONTEXTS.REPLACE:
         return t('Replace form');
       case PROJECT_SETTINGS_CONTEXTS.EXISTING:
       case PROJECT_SETTINGS_CONTEXTS.BUILDER:
       default:
-        return t('Project settings');
+        return t('CCPM settings');
     }
   }
 
@@ -148,7 +157,7 @@ class ProjectSettings extends React.Component {
       case this.STEPS.CHOOSE_TEMPLATE: return t('Choose template');
       case this.STEPS.UPLOAD_FILE: return t('Upload XLSForm');
       case this.STEPS.IMPORT_URL: return t('Import XLSForm');
-      case this.STEPS.PROJECT_DETAILS: return t('Project details');
+      case this.STEPS.PROJECT_DETAILS: return t('CCPM details');
       default: return '';
     }
   }
@@ -190,6 +199,31 @@ class ProjectSettings extends React.Component {
   onShareMetadataChange(isChecked) {
     this.setState({'share-metadata': isChecked});
     this.onAnyDataChange('share-metadata', isChecked);
+  }
+
+  onCCPMYearChange(evt) {
+    this.setState({ccpmYear: evt.target.value});
+    this.onAnyDataChange('ccpmYear', removeInvalidChars(evt.target.value));
+  }
+
+  onCCPMRegionChange(val) {
+    this.setState({ccpmRegion: val});
+    this.onAnyDataChange('ccpmRegion', val);
+  }
+
+  onCCPMClusterChange(evt) {
+    this.setState({ccpmCluster: evt.target.value});
+    this.onAnyDataChange('ccpmCluster', removeInvalidChars(evt.target.value));
+  }
+
+  onCCPMAddSubClusterChange(isChecked) {
+    this.setState({ccpmAddSubCluster: isChecked});
+    this.onAnyDataChange('ccpmAddSubCluster', isChecked);
+  }
+
+  onCCPMSubClusterChange(evt) {
+    this.setState({ccpmSubCluster: evt.target.value});
+    this.onAnyDataChange('ccpmSubCluster', removeInvalidChars(evt.target.value));
   }
 
   onImportUrlChange(value) {
@@ -420,19 +454,21 @@ class ProjectSettings extends React.Component {
   }
 
   createAssetAndOpenInBuilder() {
+    const settings = JSON.stringify({
+      description: this.state.description,
+      sector: this.state.sector,
+      country: this.state.country,
+      'share-metadata': true,
+      ccpmData: {region: this.state.ccpmRegion,year: this.state.ccpmYear.toString(), cluster: this.state.ccpmCluster, addSubCluster: this.state.ccpmAddSubCluster, subCluster: this.state.ccpmSubCluster},
+    });
     dataInterface.createResource({
       name: this.state.name,
-      settings: JSON.stringify({
-        description: this.state.description,
-        sector: this.state.sector,
-        country: this.state.country,
-        'share-metadata': this.state['share-metadata']
-      }),
+      settings,
       asset_type: 'survey',
     }).done((asset) => {
       this.goToFormBuilder(asset.uid);
     }).fail(function(r){
-      alertify.error(t('Error: new project could not be created.') + ` (code: ${r.statusText})`);
+      alertify.error(t('Error: new CCPM could not be created.') + ` (code: ${r.statusText})`);
     });
   }
 
@@ -445,7 +481,8 @@ class ProjectSettings extends React.Component {
           description: this.state.description,
           sector: this.state.sector,
           country: this.state.country,
-          'share-metadata': this.state['share-metadata']
+          'share-metadata': this.state['share-metadata'],
+          ccpmData: JSON.stringify({region: this.state.ccpmRegion, year: this.state.ccpmYear.toString(), cluster: this.state.ccpmCluster, addSubCluster: this.state.ccpmAddSubCluster, subCluster: this.state.ccpmSubCluster}),
         }),
       }
     );
@@ -516,7 +553,7 @@ class ProjectSettings extends React.Component {
                 }
               }).fail(() => {
                 this.resetImportUrlButton();
-                alertify.error(t('Failed to reload project after import!'));
+                alertify.error(t('Failed to reload CCPM after import!'));
               });
             },
             (response) => {
@@ -579,7 +616,7 @@ class ProjectSettings extends React.Component {
                 }
               }).fail(() => {
                 this.setState({isUploadFilePending: false});
-                alertify.error(t('Failed to reload project after upload!'));
+                alertify.error(t('Failed to reload CCPM after upload!'));
               });
             },
             (response) => {
@@ -609,7 +646,7 @@ class ProjectSettings extends React.Component {
 
     // simple non-empty name validation
     if (!this.state.name.trim()) {
-      alertify.error(t('Please enter a title for your project!'));
+      alertify.error(t('Please enter a title for your CCPM!'));
       return;
     }
 
@@ -627,7 +664,7 @@ class ProjectSettings extends React.Component {
    */
 
   getNameInputLabel(nameVal) {
-    let label = t('Project Name');
+    let label = t('CCPM Name');
     if (nameVal.length >= NAME_MAX_LENGTH - 99) {
       label += ` (${t('##count## characters left').replace('##count##', NAME_MAX_LENGTH - nameVal.length)})`;
     }
@@ -779,6 +816,7 @@ class ProjectSettings extends React.Component {
   renderStepProjectDetails() {
     const sectors = stores.session.environment.available_sectors;
     const countries = stores.session.environment.available_countries;
+    const ccpmRegions = stores.session.environment.ccpm_available_regions;
     const isSelfOwned = this.userIsOwner(this.state.formAsset);
 
     return (
@@ -814,7 +852,7 @@ class ProjectSettings extends React.Component {
                 type='text'
                 maxLength={NAME_MAX_LENGTH}
                 id='name'
-                placeholder={t('Enter title of project here')}
+                placeholder={t('Enter title of CCPM here')}
                 value={this.state.name}
                 onChange={this.onNameChange}
               />
@@ -832,12 +870,12 @@ class ProjectSettings extends React.Component {
             />
           </bem.FormModal__item>
 
-          <bem.FormModal__item>
+          {/* <bem.FormModal__item>
             <label className='long'>
-              {t('Please specify the country where this project will be deployed. ')}
-              {/*t('This information will be used to help you filter results on the project list page.')*/}
+              {t('Please specify the country and the sector where this project will be deployed. ')}
+              {t('This information will be used to help you filter results on the project list page.')}
             </label>
-          </bem.FormModal__item>
+          </bem.FormModal__item> */}
 
           {/* <bem.FormModal__item m='sector'>
             <label htmlFor='sector'>
@@ -855,7 +893,7 @@ class ProjectSettings extends React.Component {
             />
           </bem.FormModal__item> */}
 
-          <bem.FormModal__item m='country'>
+          {/* <bem.FormModal__item m='country'>
             <label htmlFor='country'>
               {t('Country')}
             </label>
@@ -869,7 +907,7 @@ class ProjectSettings extends React.Component {
               menuPlacement='auto'
               isClearable
             />
-          </bem.FormModal__item>
+          </bem.FormModal__item> */}
 
           {/* <bem.FormModal__item m='metadata-share'>
             <Checkbox
@@ -878,6 +916,67 @@ class ProjectSettings extends React.Component {
               label={t('Help KoboToolbox improve this product by sharing the sector and country where this project will be deployed.') + ' ' + t('All the information is submitted anonymously, and will not include the project name or description listed above.')}
             />
           </bem.FormModal__item> */}
+
+          <bem.FormModal__item>
+            <label>
+              {t('Year')}
+            </label>
+            <TextareaAutosize
+              onChange={this.onCCPMYearChange}
+              value={this.state.ccpmYear}
+              placeholder={t('Year')}
+            />
+          </bem.FormModal__item>
+
+          <bem.FormModal__item>
+            <label>
+              {t('Region')}
+            </label>
+            <Select
+              id='ccpmRegion'
+              value={this.state.ccpmRegion}
+              onChange={this.onCCPMRegionChange}
+              options={ccpmRegions}
+              className='kobo-select'
+              classNamePrefix='kobo-select'
+              menuPlacement='auto'
+              isClearable
+            />
+          </bem.FormModal__item>
+
+          <bem.FormModal__item>
+            <label>
+              {t('Country/Cluster')}
+            </label>
+            <TextareaAutosize
+              onChange={this.onCCPMClusterChange}
+              value={this.state.ccpmCluster}
+              placeholder={t('Country/Cluster')}
+            />
+          </bem.FormModal__item>
+
+          <bem.FormModal__item>
+            <bem.FormModal__item>
+              <Checkbox
+                checked={this.state.ccpmAddSubCluster}
+                onChange={this.onCCPMAddSubClusterChange}
+                label={t('Creating a Sub National CCPM?')}
+              />
+            </bem.FormModal__item>
+
+            { this.state.ccpmAddSubCluster &&
+              <bem.FormModal__item>
+                <label>
+                  {t('Sub-Cluster')}
+                </label>
+                <TextareaAutosize
+                  onChange={this.onCCPMSubClusterChange}
+                  value={this.state.ccpmSubCluster}
+                  placeholder={t('Sub-Cluster')}
+                />
+              </bem.FormModal__item>
+            }
+          </bem.FormModal__item>
 
           <bem.FormModal__item m='ccpm-metadata-share' />
 
@@ -895,7 +994,7 @@ class ProjectSettings extends React.Component {
                 disabled={this.state.isSubmitPending}
               >
                 {this.state.isSubmitPending && t('Please wait…')}
-                {!this.state.isSubmitPending && this.props.context === PROJECT_SETTINGS_CONTEXTS.NEW && t('Create project')}
+                {!this.state.isSubmitPending && this.props.context === PROJECT_SETTINGS_CONTEXTS.NEW && t('New CCPM')}
                 {!this.state.isSubmitPending && this.props.context === PROJECT_SETTINGS_CONTEXTS.REPLACE && t('Save')}
               </bem.KoboButton>
             </bem.Modal__footer>
@@ -909,7 +1008,7 @@ class ProjectSettings extends React.Component {
                     m='blue'
                     onClick={this.unarchiveProject}
                   >
-                    {t('Unarchive Project')}
+                    {t('Unarchive CCPM')}
                   </bem.KoboButton>
                 }
 
@@ -918,13 +1017,13 @@ class ProjectSettings extends React.Component {
                     m='orange'
                     onClick={this.archiveProject}
                   >
-                    {t('Archive Project')}
+                    {t('Archive CCPM')}
                   </bem.KoboButton>
                 }
               </bem.FormModal__item>
 
               <bem.FormModal__item m='inline'>
-                {this.isArchived() ? t('Unarchive project to resume accepting submissions.') : t('Archive project to stop accepting submissions.')}
+                {this.isArchived() ? t('Unarchive CCPM to resume accepting submissions.') : t('Archive CCPM to stop accepting submissions.')}
               </bem.FormModal__item>
             </bem.FormModal__item>
           }
@@ -932,7 +1031,7 @@ class ProjectSettings extends React.Component {
           {isSelfOwned && this.props.context === PROJECT_SETTINGS_CONTEXTS.EXISTING &&
             <bem.FormModal__item>
               <bem.KoboButton m='red' onClick={this.deleteProject}>
-                {t('Delete Project and Data')}
+                {t('Delete CCPM and Data')}
               </bem.KoboButton>
             </bem.FormModal__item>
           }

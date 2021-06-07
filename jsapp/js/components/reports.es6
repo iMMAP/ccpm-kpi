@@ -15,8 +15,11 @@ import DocumentTitle from 'react-document-title';
 import { txtid } from '../../xlform/src/model.utils';
 import alertify from 'alertifyjs';
 import { Packer } from "docx";
-import { DocumentCreator } from "./ccpm-docxReport";
+import DocumentCreator  from "./ccpmDocxReport201130";
 import saveAs from 'save-as';
+import ccpmReport from '../ccpmReport';
+import CCPM_ReportContents from './ccpmReportContent';
+import {ccpm_getQuestionInRange} from '../ccpmDataset';
 
 import ReportViewItem from './reportViewItem';
 
@@ -703,7 +706,7 @@ class ReportStyleSettings extends React.Component {
 
     const selectedTranslationOptions = [];
     if (translations) {
-      tabs.push(t('Translation'));
+      tabs.push(t('PickerTranslation'));
       this.props.parentState.asset.content.translations.map((row, i) => {
         selectedTranslationOptions.push({
           value: i,
@@ -778,6 +781,122 @@ class ReportStyleSettings extends React.Component {
   }
 };
 
+class ReportLanguageSettings extends React.Component {
+  constructor(props) {
+    super(props);
+    autoBind(this);
+    this.state = {
+      activeModalTab: 0,
+      reportStyle: props.parentState.reportStyles.default
+    };
+
+    if (props.parentState.currentCustomReport && props.parentState.currentCustomReport.reportStyle) {
+      this.state.reportStyle = props.parentState.currentCustomReport.reportStyle;
+    }
+  }
+  toggleTab(evt) {
+    var i = evt.target.getAttribute('data-index');
+    this.setState({
+      activeModalTab: parseInt(i),
+    });
+  }
+  translationIndexChange (name, value) {
+    let styles = this.state.reportStyle;
+    styles.translationIndex = parseInt(value);
+    this.setState({reportStyle: styles});
+  }
+
+  saveReportStyles() {
+    let currentCustomReport = this.props.parentState.currentCustomReport;
+    let assetUid = this.props.parentState.asset.uid;
+    if (currentCustomReport) {
+      let report_custom = this.props.parentState.asset.report_custom;
+      report_custom[currentCustomReport.crid].reportStyle = this.state.reportStyle;
+      actions.reports.setCustom(assetUid, report_custom);
+    } else {
+      let sett_ = this.props.parentState.reportStyles;
+      assign(sett_.default, this.state.ReportStyle);
+      actions.reports.setStyle(assetUid, sett_);
+    }
+    this.props.toggleReportGraphSettings();
+  }
+  render () {
+    let rows = this.props.parentState.rowsByIdentifier || {},
+        translations = this.props.parentState.translations,
+        reportStyle = this.state.reportStyle;
+
+    const groupByOptions = [];
+    groupByOptions.push({
+      value: '',
+      label: t('No grouping')
+    });
+    for (let key in rows) {
+      if (
+        rows.hasOwnProperty(key) &&
+        rows[key].hasOwnProperty('type') &&
+        rows[key].type == 'select_one'
+      ) {
+        const row = rows[key];
+        const val = row.name || row.$autoname;
+        const label = translations ? row.label[reportStyle.translationIndex] : row.label;
+        groupByOptions.push({
+          value: val,
+          label: label
+        });
+      }
+    }
+
+    var tabs = [];
+      const selectedTranslationOptions = [];
+      tabs.push(t('Language'));
+      this.props.parentState.asset.content.translations.map((row, i) => {
+        selectedTranslationOptions.push({
+          value: i,
+          label: row || t('Unnamed language')
+        });
+      })
+
+    var modalTabs = tabs.map(function(tab, i){
+      return (
+        <button className={`mdl-button mdl-button--tab ${this.state.activeModalTab === i ? 'active' : ''}`}
+                onClick={this.toggleTab}
+                data-index={i}
+                key={i}>
+          {tab}
+        </button>
+      );
+    }, this);
+
+    return (
+      <bem.GraphSettings>
+        <ui.Modal.Tabs>
+          {modalTabs}
+        </ui.Modal.Tabs>
+        <ui.Modal.Body>
+          <div className='tabs-content'>
+            {selectedTranslationOptions.length > 1 &&
+              <div className='graph-tab__translation' id='graph-labels'>
+                <Radio
+                  name='reports-selected-translation'
+                  options={selectedTranslationOptions}
+                  onChange={this.translationIndexChange}
+                  selected={reportStyle.translationIndex}
+                />
+              </div>
+            }
+          </div>
+          <ui.Modal.Footer>
+            <bem.KoboButton m='blue' onClick={this.saveReportStyles}>
+              {t('Save')}
+            </bem.KoboButton>
+          </ui.Modal.Footer>
+        </ui.Modal.Body>
+      </bem.GraphSettings>
+    );
+
+  }
+};
+
 class Reports extends React.Component {
   constructor(props) {
     super(props);
@@ -795,7 +914,10 @@ class Reports extends React.Component {
       currentCustomReport: false,
       currentQuestionGraph: false,
       groupBy: '',
-      readyReport: []
+      readyReport: [],
+      ccpmReport: {},
+      P_IS02Result: [],
+      showChangeLanguage: false
     };
     autoBind(this);
   }
@@ -853,6 +975,40 @@ class Reports extends React.Component {
           rowsByIdentifier[$identifier] = r;
         });
 
+
+        const end = asset.content.survey.findIndex(v => v.name === 'P_IS03_01');
+        const firstSet = asset.content.survey.slice(0, end).filter(v => v.type === 'begin_group' || v.type === 'end_group');
+
+        const secondSet = [];
+        firstSet.filter(v => v.type === 'begin_group').forEach(v => {
+          if(!firstSet.find(r => r.type === 'end_group' && r['$kuid'] === `/${v['$kuid']}`)) secondSet.push(v);
+        })
+
+        let path  = '';
+        let pathP_IS02 = '';
+        let pathP_IS03 = '';
+        secondSet.forEach((s,i) => {
+          path = `${path}${i > 0 ? '/' : ''}${s.name}`;
+          if(i === secondSet.length - 2) pathP_IS02 = path;
+          if(i === secondSet.length - 1) pathP_IS03 = path;
+        })
+
+        pathP_IS02 = `${pathP_IS02}/P_IS02`;
+        pathP_IS03 = `${pathP_IS03}/`;
+
+        const fields = [
+          pathP_IS02,
+          ...ccpm_getQuestionInRange('informingStrategicDecisions','analysisTopicCovered').map(s => `${pathP_IS03}${s}`)
+        ];
+        
+        dataInterface.getSubmissions(uid, 1000,0, [],fields).done((data2) => {
+          this.setState({
+            P_IS02Result : data2.results,
+            pathP_IS03,
+            pathP_IS02
+          })
+        })
+
         dataInterface.getReportData({uid: uid, identifiers: [], group_by: groupBy}).done((data)=> {
           var dataWithResponses = [];
 
@@ -869,16 +1025,26 @@ class Reports extends React.Component {
             }
           });
 
+          let newReport = {};
+
+          if(dataWithResponses[0].name === 'type_of_survey') newReport = ccpmReport(dataWithResponses, asset.content);
           this.setState({
             asset: asset,
             rowsByKuid: rowsByKuid,
             rowsByIdentifier: rowsByIdentifier,
             reportStyles: reportStyles,
-            reportData: dataWithResponses,
+            reportData: dataWithResponses || [],
             reportCustom: reportCustom,
             translations: asset.content.translations.length > 1 ? true : false,
             groupBy: groupBy,
-            error: false
+            error: false,
+            ccpmReport: newReport.report,
+            chartData:  newReport.chartData,
+            totalReponses : newReport.totalReponses,
+            totalResponseDisagregatedByPartner: newReport.totalResponseDisagregatedByPartner,
+            totalEffectiveResponse: newReport.totalEffectiveResponse,
+            totalEffectiveResponseDisagregatedByPartner : newReport.totalEffectiveResponseDisagregatedByPartner,
+            questionResponseGroup: newReport.questionResponseGroup
           });
         }).fail((err)=> {
           if (groupBy && groupBy.length > 0 && !this.state.currentCustomReport && reportStyles.default.groupDataBy !== undefined) {
@@ -976,6 +1142,13 @@ class Reports extends React.Component {
       showReportGraphSettings: !this.state.showReportGraphSettings,
     });
   }
+
+  toggleReportLanguageSettings () {
+    this.setState({
+      showChangeLanguage : !this.state.showChangeLanguage,
+    });
+  }
+
   hasAnyProvidedData (reportData) {
     let hasAny = false;
     reportData.map((rowContent, i)=>{
@@ -1030,12 +1203,14 @@ class Reports extends React.Component {
     this.setState({isFullscreen: !this.state.isFullscreen});
   }
 
-  exportToDocx () {
-    const documentCreator = new DocumentCreator();
-    const doc = documentCreator.create(this.state.readyReport);
-    Packer.toBlob(doc).then(blob => {
-      saveAs(blob, `${this.state.asset.name}.docx`);
-    });
+  exportToDocx(data) {
+      const documentCreator = new DocumentCreator();
+      const newReport = documentCreator.create(data);
+      newReport.then(doc => {
+         Packer.toBlob(doc).then(blob => {
+          saveAs(blob, `${this.state.asset.name}.docx`);
+        });
+      });
 }
 
   renderReportButtons () {
@@ -1104,12 +1279,6 @@ class Reports extends React.Component {
           <i className='k-icon-print' />
         </bem.Button>
 
-        <bem.Button m='icon' className='report-button__print'
-                onClick={this.exportToDocx}
-                data-tip={t('Export to Document')}>
-          <i className='k-icon-download' />
-        </bem.Button>
-
         {this.userCan('change_asset', this.state.asset) &&
           <bem.Button m='icon' className='report-button__settings'
                   onClick={this.toggleReportGraphSettings}
@@ -1120,6 +1289,34 @@ class Reports extends React.Component {
       </bem.FormView__reportButtons>
     );
   }
+
+  renderCCPMReportButtons () {
+    return (
+      <bem.FormView__reportButtons>
+        <bem.Button
+          m='icon' className='report-button__expand right-tooltip'
+          onClick={this.toggleFullscreen}
+          data-tip={t('Toggle fullscreen')}
+        >
+          <i className='k-icon-expand' />
+        </bem.Button>
+
+        <bem.Button m='icon' className='report-button__print'
+                onClick={e => {this.exportToDocx(this.state)}}
+                data-tip={t('Export to Document')}>
+          <i className='k-icon-download' />
+        </bem.Button>
+        {
+          <bem.Button m='icon' className='report-button__settings'
+                  onClick={this.toggleReportLanguageSettings}
+                  data-tip={t('Settings')}>
+            <i className='k-icon-settings' />
+          </bem.Button>
+        }
+      </bem.FormView__reportButtons>
+    );
+  }
+
   renderCustomReportModal () {
     return (
       <bem.GraphSettings>
@@ -1230,7 +1427,7 @@ class Reports extends React.Component {
       <DocumentTitle title={`${docTitle} | Health Cluster`}>
         <bem.FormView m={formViewModifiers}>
           <bem.ReportView>
-            {this.renderReportButtons()}
+            {this.state.ccpmReport ? this.renderCCPMReportButtons() : this.renderReportButtons()}
 
             {!hasAnyProvidedData &&
               <bem.ReportView__wrap>
@@ -1265,13 +1462,20 @@ class Reports extends React.Component {
                   <p>{t('This is an automated report based on raw data submitted to this project. Please conduct proper data cleaning prior to using the graphs and figures used on this page. ')}</p>
                 </bem.FormView__cell> */}
 
-                <ReportContents parentState={this.state} setReadyReportData={(reportData)=>{this.setState({readyReport: reportData})}} reportData={reportData} triggerQuestionSettings={this.triggerQuestionSettings} />
+                {!this.state.ccpmReport && <ReportContents parentState={this.state}  exportToDocx={this.exportToDocx} setReadyReportData={(reportData)=>{this.setState({readyReport: reportData})}} reportData={reportData} triggerQuestionSettings={this.triggerQuestionSettings} />}
+                {this.state.ccpmReport && <CCPM_ReportContents parentState={this.state}  exportToDocx={this.exportToDocx} setReadyReportData={(reportData)=>{this.setState({readyReport: reportData})}} reportData={reportData} triggerQuestionSettings={this.triggerQuestionSettings} />}
               </bem.ReportView__wrap>
             }
 
             {this.state.showReportGraphSettings &&
               <ui.Modal open onClose={this.toggleReportGraphSettings} title={t('Edit Report Style')}>
                 <ReportStyleSettings parentState={this.state} />
+              </ui.Modal>
+            }
+
+            {this.state.showChangeLanguage &&
+              <ui.Modal open onClose={this.toggleReportLanguageSettings} title={t('Settings')}>
+                <ReportLanguageSettings parentState={this.state} toggleReportGraphSettings = {this.toggleReportLanguageSettings} />
               </ui.Modal>
             }
 
