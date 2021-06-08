@@ -432,7 +432,7 @@ const getScoreBreakDownGroup = (parentState, choosenLanguage, languageIndex) => 
           })
         ]
       })
-      if (subGroup === 'analysisTopicCovered') tableData.unshift([
+      if (subGroup === 'analysisTopicCovered' && parentState.ccpmReport[subGroup].questions.length > 0) tableData.unshift([
         getSubTitle(titleConstants.topic[choosenLanguage]),
         getSubTitle(titleConstants.haveDoneSituationAnalysis[choosenLanguage]),
         getSubTitle(titleConstants.haveNotDoneSituationAnalysis[choosenLanguage])
