@@ -101,7 +101,7 @@ const ccpm_getNumberOfParnerResponseByType = (questionList, data, choices) => {
         result.push({ ...element, questionsDisagregatedByPartner: numberResponses });
     })
     return result;}
-    return [];
+    return questions.map(element => ({...element, questionsDisagregatedByPartner: 0}));
 }
 
 const ccpm_getResponseGrouped = (q) => {
