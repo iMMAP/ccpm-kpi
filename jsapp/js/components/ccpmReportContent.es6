@@ -570,7 +570,7 @@ export default class CCPM_ReportContents extends React.Component {
           totalResponseDisagregatedByPartner.map((v, i) => <>
             <div key={`${i}-disag-11`} style={{ width: '50%', display: 'inline-block', height: '200px', textAlign: 'center' }}>
 
-              <h1 className="subtitle" style={{color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000' }}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({v.questionsDisagregatedByPartner} of {(v.data.mean % 1 !== 0) ? v.data.mean.toFixed(2) : v.data.mean} - {Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
+              <h1 className="subtitle" style={{color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000' }}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({v.questionsDisagregatedByPartner} of {(v.data.mean % 1 !== 0) ? (!isNaN(v.data.mean) ? Number.parseFloat(v.data.mean).toFixed(2) : 0) : v.data.mean} - {Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
               <div ref={`chart-${i}`} id={`chart-${i}`} style={{ height: "80%", width: "95%"}}>
               <div style={{ width: '270px',  margin: '0px auto'}}>
               <canvas ref={`chart-${i}-canvas`} id={`chart-${i}-canvas`} />
@@ -648,7 +648,7 @@ export default class CCPM_ReportContents extends React.Component {
         {
           totalEffectiveResponseDisagregatedByPartner.map((v, i) => <>
             <div key={`${i}-disag`} style={{ width: '50%', display: 'inline-block', height: '200px', textAlign: 'center' }}>
-              <h1 className="subtitle" style={{ marginLeft: '10px', color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000' }}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({v.questionsDisagregatedByPartner} of {(v.data.mean % 1 !== 0) ? v.data.mean.toFixed(2) : v.data.mean} - {Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
+              <h1 className="subtitle" style={{ marginLeft: '10px', color: this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean) > 100 ? '#FD625E' : '#000' }}> {ccpm_getLabel(currentLanguageIndex, v.row.label)} ({v.questionsDisagregatedByPartner} of {(v.data.mean % 1 !== 0) ? ( !isNaN(v.data.mean) ? Number.parseFloat(v.data.mean).toFixed(2) : 0) : v.data.mean} - {Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean))}%)</h1>
               {
               <div ref={`chart2-${i}`} id={`chart2-${i}`} style={{ height: "80%", width: "95%" }}>
                 <div style={{ width: '270px',  margin: '0px auto'}}>
@@ -745,7 +745,6 @@ export default class CCPM_ReportContents extends React.Component {
                        <>      
                             <tr style={{ width: '100%', paddingLeft: '40px' }}>
                               {(dataset[group][subGroup].notes) && dataset[group][subGroup].notes.map((question, index2) => {
-
                                 return <>
                                   {(index2 === 0 && dataset[group][subGroup].noteName) && <h2 className="comment-title">{ccpm_getName(dataset[group][subGroup].noteName, choosenLanguage)}</h2>}
                                   {this.renderComment(question.code, ccpm_getLabel(currentLanguageIndex, (parentState.reportData.find(q => q.name === question.code)) ? parentState.reportData.find(q => q.name === question.code).row.label : ['']))}

@@ -470,11 +470,13 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
   let table = [];
   data.slice(0, 5).forEach((v, i) => {
     if (i % 2 === 0) {
+      const meanV = v.data.mean ? v.data.mean.toFixed(2) : 0;
       if (data[i + 1]) {
+        const meanI1 =  data[i + 1].data.mean ? data[i + 1].data.mean.toFixed(2) : 0;
         const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
         const p1 = Math.floor(calculatePercentage(data[i + 1].questionsDisagregatedByPartner, data[i + 1].data.mean));
-        table.push([getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${v.questionsDisagregatedByPartner} of ${(v.data.mean % 1 !== 0) ? v.data.mean.toFixed(2) : v.data.mean} - ${p}%)`, p > 100 ? '#FD625E' : '#000000',  AlignmentType.CENTER),
-        getSubTitle(`${ccpm_getLabel(currentLanguageIndex,data[i + 1].row.label)} (${data[i + 1].questionsDisagregatedByPartner} of ${(data[i + 1].data.mean % 1 !== 0) ? data[i + 1].data.mean.toFixed(2) : data[i + 1].data.mean} - ${p1}%)`, p1 > 100 ? '#FD625E' : '#000000',AlignmentType.CENTER)
+        table.push([getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${v.questionsDisagregatedByPartner} of ${(v.data.mean % 1 !== 0) ? meanV : v.data.mean} - ${p}%)`, p > 100 ? '#FD625E' : '#000000',  AlignmentType.CENTER),
+        getSubTitle(`${ccpm_getLabel(currentLanguageIndex,data[i + 1].row.label)} (${data[i + 1].questionsDisagregatedByPartner} of ${(data[i + 1].data.mean % 1 !== 0) ? meanI1 : data[i + 1].data.mean} - ${p1}%)`, p1 > 100 ? '#FD625E' : '#000000',AlignmentType.CENTER)
         ]);
         table.push([new Paragraph({
           spacing: {
@@ -510,7 +512,7 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
       } else {
         const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
         table.push([
-          getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${v.questionsDisagregatedByPartner} of ${(v.data.mean % 1 !== 0) ? v.data.mean.toFixed(2) : v.data.mean}  - ${p}%)`, p > 100 ? 'red' : 'black', AlignmentType.CENTER)
+          getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${v.questionsDisagregatedByPartner} of ${(v.data.mean % 1 !== 0) ? meanV : v.data.mean}  - ${p}%)`, p > 100 ? 'red' : 'black', AlignmentType.CENTER)
         ]);
         table.push([new Paragraph({
           spacing: {
@@ -542,11 +544,13 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
   }));
   table = [];
     data.slice(6).forEach((v, i) => {
+      const meanV = v.data.mean ? v.data.mean.toFixed(2) : 0;
       if (i % 2 === 0 && data[i + 7]) {
+        const meanI1 =  data[i + 1].data.mean ? data[i + 1].data.mean.toFixed(2) : 0;
           const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
           const p1 = Math.floor(calculatePercentage(data[i + 6].questionsDisagregatedByPartner, data[i + 6].data.mean));
-          table.push([getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${v.questionsDisagregatedByPartner} of ${(v.data.mean % 1 !== 0) ? v.data.mean.toFixed(2) : v.data.mean} - ${p}%)`, p > 100 ? '#FD625E' : '#000000', AlignmentType.CENTER),
-          getSubTitle(`${ccpm_getLabel(currentLanguageIndex,data[i + 7].row.label)} (${data[i + 7].questionsDisagregatedByPartner} of ${(data[i + 7].data.mean % 1 !== 0) ? data[i + 7].data.mean.toFixed(2) : data[i + 7].data.mean} - ${p1}%)`, p1 > 100 ? '#FD625E' : '#000000', AlignmentType.CENTER)
+          table.push([getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${v.questionsDisagregatedByPartner} of ${(v.data.mean % 1 !== 0) ? meanV : v.data.mean} - ${p}%)`, p > 100 ? '#FD625E' : '#000000', AlignmentType.CENTER),
+          getSubTitle(`${ccpm_getLabel(currentLanguageIndex,data[i + 7].row.label)} (${data[i + 7].questionsDisagregatedByPartner} of ${(data[i + 7].data.mean % 1 !== 0) ? meanI1 : data[i + 7].data.mean} - ${p1}%)`, p1 > 100 ? '#FD625E' : '#000000', AlignmentType.CENTER)
           ]);
           table.push([new Paragraph({
             spacing: {
@@ -582,7 +586,7 @@ const getImages = (imageData, data, chartNumber = '', currentLanguageIndex) => {
         } else if(i === data.slice(6).length - 1) {
           const p = Math.floor(calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean));
           table.push([
-            getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${v.questionsDisagregatedByPartner} of ${(v.data.mean % 1 !== 0) ? v.data.mean.toFixed(2) : v.data.mean} - ${p}%)`, p > 100 ? 'red' : 'black', AlignmentType.CENTER)
+            getSubTitle(`${ccpm_getLabel(currentLanguageIndex, v.row.label)} (${v.questionsDisagregatedByPartner} of ${(v.data.mean % 1 !== 0) ? meanV : v.data.mean} - ${p}%)`, p > 100 ? 'red' : 'black', AlignmentType.CENTER)
           ]);
           table.push([new Paragraph({
             spacing: {
