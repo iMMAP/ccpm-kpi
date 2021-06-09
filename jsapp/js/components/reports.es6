@@ -975,22 +975,22 @@ class Reports extends React.Component {
           rowsByIdentifier[$identifier] = r;
         });
 
+        // Get the questions' paths automatically from the survey content
+        const P_IS03_01Index  = asset.content.survey.findIndex(v => v.name === 'P_IS03_01');
+        const groupsBoundaries = asset.content.survey.slice(0, P_IS03_01Index).filter(v => v.type === 'begin_group' || v.type === 'end_group');
 
-        const end = asset.content.survey.findIndex(v => v.name === 'P_IS03_01');
-        const firstSet = asset.content.survey.slice(0, end).filter(v => v.type === 'begin_group' || v.type === 'end_group');
-
-        const secondSet = [];
-        firstSet.filter(v => v.type === 'begin_group').forEach(v => {
-          if(!firstSet.find(r => r.type === 'end_group' && r['$kuid'] === `/${v['$kuid']}`)) secondSet.push(v);
+        const unClosedBoundaries = [];
+        groupsBoundaries.filter(v => v.type === 'begin_group').forEach(v => {
+          if(!groupsBoundaries.find(r => r.type === 'end_group' && r['$kuid'] === `/${v['$kuid']}`)) unClosedBoundaries.push(v);
         })
 
         let path  = '';
         let pathP_IS02 = '';
         let pathP_IS03 = '';
-        secondSet.forEach((s,i) => {
+        unClosedBoundaries.forEach((s,i) => {
           path = `${path}${i > 0 ? '/' : ''}${s.name}`;
-          if(i === secondSet.length - 2) pathP_IS02 = path;
-          if(i === secondSet.length - 1) pathP_IS03 = path;
+          if(i === unClosedBoundaries.length - 2) pathP_IS02 = path;
+          if(i === unClosedBoundaries.length - 1) pathP_IS03 = path;
         })
 
         pathP_IS02 = `${pathP_IS02}/P_IS02`;

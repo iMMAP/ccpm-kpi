@@ -371,6 +371,7 @@ export var dataInterface;
       });
     },
     searchAssets (searchData) {
+      console.log('search', searchData)
       // override limit
       searchData.limit = 200;
       return $.ajax({

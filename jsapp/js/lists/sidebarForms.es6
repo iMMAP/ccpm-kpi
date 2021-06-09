@@ -105,6 +105,7 @@ class SidebarFormsList extends Reflux.Component {
                 </bem.Loading>
               );
             } else if (s.defaultQueryState === 'done') {
+              console.log(this.state);
               return ['Deployed', 'Draft', 'Archived' /*, 'Deleted'*/].map(
                 (category) => {
                   var categoryVisible = this.state.selectedCategories[category];

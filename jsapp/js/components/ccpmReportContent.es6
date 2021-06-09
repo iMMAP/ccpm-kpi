@@ -21,7 +21,7 @@ export default class CCPM_ReportContents extends React.Component {
     this.getGroupStatus = this.getGroupStatus.bind(this);
     this.getStatusColor = this.getStatusColor.bind(this);
     this.getStatusLabel = this.getStatusLabel.bind(this);
-    this.buildChartOptions = this.buildChartOptions.bind(this);
+    this.buildQByQBreakdownChartOptions = this.buildQByQBreakdownChartOptions.bind(this);
     this.loadChart = this.loadChart.bind(this);
   }
   shouldComponentUpdate(nextProps, nextState) {
@@ -122,8 +122,7 @@ export default class CCPM_ReportContents extends React.Component {
 
   setReportData(reportData) {
     var tnslIndex = 0;
-    let customReport = this.props.parentState.currentCustomReport,
-      defaultRS = this.props.parentState.reportStyles,
+    let defaultRS = this.props.parentState.reportStyles,
       asset = this.props.parentState.asset,
       groupBy = this.props.parentState.groupBy;
 
@@ -253,10 +252,8 @@ export default class CCPM_ReportContents extends React.Component {
     return ccpm_getAverageInQuestion(data);
   }
 
-  buildChartOptions(data, choosenLanguage = 'en') {
+  buildQByQBreakdownChartOptions(data, choosenLanguage = 'en') {
     var chartType = 'horizontalBar';
-
-    // TODO: set as default globally in a higher level (PM)
 
     var baseColor = '#1D6F9C';
     Chart.defaults.global.elements.rectangle.backgroundColor = baseColor;
@@ -343,7 +340,7 @@ export default class CCPM_ReportContents extends React.Component {
     return opts;
   }
 
-  buildChartOptions2(data, choosenLanguage = 'en', name) {
+  buildResponseByTypeChartOptions(data, choosenLanguage = 'en', name) {
     var chartType = 'pie';
 
     // TODO: set as default globally in a higher level (PM)
@@ -400,7 +397,7 @@ export default class CCPM_ReportContents extends React.Component {
         },
         tooltips: {
           callbacks: {
-            label: function (tooltipItem, data2) {
+            label: function () {
               return `${name} (%): ${data}`;
             },
             caretSize: 0
@@ -420,10 +417,12 @@ export default class CCPM_ReportContents extends React.Component {
     if(!translations[currentLanguageIndex]) currentLanguageIndex = translations.findIndex(lan => lan && lan.includes('en'));
     const choosenLanguage = translations ? ((translations[currentLanguageIndex]).match(/\(.*?\)/))[0].replace('(', '').replace(')', '') : 'en';
 
+    // Build question by question breakdown charts 
+
     Object.keys(dataset).forEach(element => {
       if (element !== 'code') {
         var canvas = ReactDOM.findDOMNode(this.refs[`canvas${element}`]);
-        var opts = this.buildChartOptions(this.props.parentState.questionResponseGroup[element], choosenLanguage);
+        var opts = this.buildQByQBreakdownChartOptions(this.props.parentState.questionResponseGroup[element], choosenLanguage);
 
         if (this[`itemChart-${element}`]) {
           this[`itemChart-${element}`].destroy();
@@ -434,9 +433,11 @@ export default class CCPM_ReportContents extends React.Component {
       }
     })
 
+    // Build response by type charts
+
     parentState.totalEffectiveResponseDisagregatedByPartner.forEach((v, i) => {
       var canvas = ReactDOM.findDOMNode(this.refs[`chart2-${i}-canvas`]);
-      var opts = this.buildChartOptions2(Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)), choosenLanguage, ccpm_getLabel(currentLanguageIndex,v.row.label));
+      var opts = this.buildResponseByTypeChartOptions(Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)), choosenLanguage, ccpm_getLabel(currentLanguageIndex,v.row.label));
 
       if (this[`itemChart-${i}-chart2`]) {
         this[`itemChart-${i}-chart2`].destroy();
@@ -448,7 +449,7 @@ export default class CCPM_ReportContents extends React.Component {
 
     parentState.totalResponseDisagregatedByPartner.forEach((v, i) => {
       var canvas = ReactDOM.findDOMNode(this.refs[`chart-${i}-canvas`]);
-      var opts = this.buildChartOptions2(Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)), choosenLanguage, ccpm_getLabel(currentLanguageIndex,v.row.label));
+      var opts = this.buildResponseByTypeChartOptions(Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)), choosenLanguage, ccpm_getLabel(currentLanguageIndex,v.row.label));
 
       if (this[`itemChart-${i}-chart`]) {
         this[`itemChart-${i}-chart`].destroy();
@@ -575,26 +576,6 @@ export default class CCPM_ReportContents extends React.Component {
               <div style={{ width: '270px',  margin: '0px auto'}}>
               <canvas ref={`chart-${i}-canvas`} id={`chart-${i}-canvas`} />
               </div>
-                {/*<ResponsiveWaffleCanvas
-                  data={[
-                    {
-                      "id": "totalReponse",
-                      "label": v.row.label[0] + " (%)",
-                      "value": Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)) > 100 ? 100 : Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)),
-                      "color": "#097ca8"
-                    }
-                  ]}
-                  pixelRatio={1}
-                  total={100}
-                  rows={5}
-                  fillDirection="left"
-                  columns={20}
-                  padding={2}
-                  margin={{ top: 0, right: 0, bottom: 10, left: 0 }}
-                  colors={["#097ca8", "#dedede"]}
-                  borderColor={{ from: 'color', modifiers: [['darker', 0.3]] }}
-                  emptyColor="#dedede"
-                />*/}
               </div>
             </div>
           </>
@@ -654,26 +635,6 @@ export default class CCPM_ReportContents extends React.Component {
                 <div style={{ width: '270px',  margin: '0px auto'}}>
                 <canvas ref={`chart2-${i}-canvas`} id={`chart2-${i}-canvas`} />
                 </div>
-               {/* <ResponsiveWaffleCanvas
-                  data={[
-                    {
-                      "id": "totalReponse",
-                      "label": v.row.label[0] + " (%)",
-                      "value": Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)) > 100 ? 100 : Math.floor(this.calculatePercentage(v.questionsDisagregatedByPartner, v.data.mean)),
-                      "color": "#097ca8"
-                    }
-                  ]}
-                  pixelRatio={1}
-                  total={100}
-                  rows={5}
-                  fillDirection="left"
-                  columns={20}
-                  padding={2}
-                  margin={{ top: 0, right: 10, bottom: 10, left: -5 }}
-                  colors={["#097ca8", "#dedede"]}
-                  borderColor={{ from: 'color', modifiers: [['darker', 0.3]] }}
-                  emptyColor="#dedede"
-                />*/}
               </div>
               }
            </div>
