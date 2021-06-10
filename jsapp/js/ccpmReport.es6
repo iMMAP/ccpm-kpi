@@ -50,20 +50,7 @@ const ccpm_getSumOfQuestions = (questions, data) => {
     return sum;
 }
 
-const singulirize = (a = '') => {
-    if(a.substring(a.length - 3) === "ies") return `${a.substring(0, a.length - 3 )}y`;
-    if(a[a.length - 1] === 's') return a.substring(0, a.length - 1);
-    return a; 
-}
-
-const lowerArray = (a) => {
-    return a.map(v => v ?  singulirize(v.toLowerCase().replace(' ', '-')) : '');
-}
-
 const ccpm_getElementName = (e, data, content) => {
-   /* const question = content.survey.find(v => v.name === e);
-    const xmlQuestion = content.choices.find(v => lowerArray(v.label).includes(singulirize(question.label[0].toLowerCase().replace(' ', '-'))))
-    if(xmlQuestion) return xmlQuestion.name;*/
     switch (e) {
         case "C_CP01_01":
         case "C_CP02_01": return "international_org";
@@ -101,7 +88,7 @@ const ccpm_getNumberOfParnerResponseByType = (questionList, data, choices) => {
         result.push({ ...element, questionsDisagregatedByPartner: numberResponses });
     })
     return result;}
-    return [];
+    return questions.map(element => ({...element, questionsDisagregatedByPartner: 0}));
 }
 
 const ccpm_getResponseGrouped = (q) => {
