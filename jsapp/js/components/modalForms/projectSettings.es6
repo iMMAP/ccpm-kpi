@@ -650,6 +650,27 @@ class ProjectSettings extends React.Component {
       return;
     }
 
+    if (!this.state.ccpmRegion) {
+      console.log('region');
+      alertify.error(t('Please select a region for your CCPM!'));
+      return;
+    }
+
+    if (!this.state.ccpmCluster.trim()) {
+      alertify.error(t('Please enter a cluster for your CCPM!'));
+      return;
+    }
+
+    if (!this.state.ccpmYear.trim()) {
+      alertify.error(t('Please enter a year for your CCPM!'));
+      return;
+    }
+
+    if (!this.state.ccpmSubCluster.trim() && this.state.ccpmAddSubCluster) {
+      alertify.error(t('Please enter a sub cluster for your CCPM!'));
+      return;
+    }
+
     this.setState({isSubmitPending: true});
 
     if (this.state.formAsset) {
