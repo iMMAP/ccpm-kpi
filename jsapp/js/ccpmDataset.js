@@ -156,11 +156,11 @@ export const titleConstants = {
     unsatisfactory: { en: 'Unsatisfactory', fr: 'Non satisfaisant' },
     satifactory: { en: 'Satisfactory', fr: 'Satisfaisant' },
     good: { en: 'Good', fr: 'Bon' },
-    overallCompletionRate: {en: 'Overall Completion rate', fr: 'Taux de completion total'},
-    completionAndResponseRate: {en: 'Taux de de reponse et completion'},
-    responseRateByRegionAndType: {en: 'Response Rate of Partners by Type of Organization and Region', fr: 'Taux de réponse des partenaires par type d\'organisation et par région'},
-    partnerByRegion: {en: 'Partners by region', fr: 'Partenaire par region'},
-    reponseRateByCOuntry: {en: 'Response rate by country', fr: 'Taux de reponse par pays'}
+    completionAndResponseRate: {en: 'Completion and Response Rate', fr: 'Taux de Reponse et Completion'},
+    overallCompletionRate: {en: 'Overall Completion Rate', fr: 'Taux de Completion Total'},
+    responseRateByRegionAndType: {en: 'Response Rate of Partners by Type of Organization and Region', fr: 'Taux de Réponse des Partenaires par Type d\'Organisation et par Région'},
+    partnerByRegion: {en: 'Partners by Region', fr: 'Partenaire par Region'},
+    reponseRateByCOuntry: {en: 'Response Rate by Country', fr: 'Taux de Reponse par Pays'}
 }
 
 export default dataset;
