@@ -36,7 +36,6 @@ class AgregatedReportContents extends React.Component {
   }
 
   getOverallCompletionRateRegion(){
-    console.log('props',this.props)
     const regions  = [];
     this.props.parentState.reports.forEach(rep => {
       const ccpmData = JSON.parse(rep.asset.settings.ccpmData);
@@ -45,7 +44,6 @@ class AgregatedReportContents extends React.Component {
         regions[regionIndex].reports.push({...rep, ccpmData});
       } else if(ccpmData.region) regions.push({name: ccpmData.region.label, reports: [{...rep, ccpmData}]});
     })
-    console.log(regions);
     return regions;
   }
 
@@ -171,6 +169,15 @@ class AgregatedReportContents extends React.Component {
     return opts;
   }
 
+  getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+
   buildPartnerByTypeAndRegionOptions() {
 
     const data = {};
@@ -271,15 +278,18 @@ class AgregatedReportContents extends React.Component {
 
   buildPartnerByClusterOptions() {
     const data = {};
+    const colors = {};
 
     this.props.parentState.reports.forEach(rep => {
       const { totalReponses: { numberOfPartner, sum } } = rep;
       const ccpmData = JSON.parse(rep.asset.settings.ccpmData);
       if(ccpmData.region){
+        if(!colors[ccpmData.region.label]) colors[ccpmData.region.label] = this.getRandomColor();
         if(ccpmData.cluster){
          if(!data[ccpmData.cluster])data[ccpmData.cluster] = {total: 0, expected: 0};
          data[ccpmData.cluster].total += sum;
          data[ccpmData.cluster].expected += numberOfPartner;
+         data[ccpmData.cluster].color = colors[ccpmData.region.label];
       }}
     });
 
@@ -298,7 +308,8 @@ class AgregatedReportContents extends React.Component {
       data: Object.keys(data).map(key=>{
         return this.calculatePercentage(data[key].total, data[key].expected );
       }),
-      borderWidth: 1
+      borderWidth: 1,
+      backgroundColor: Object.keys(data).map(e => data[e].color)
     });
 
     let labels = Object.keys(data);
@@ -319,9 +330,26 @@ class AgregatedReportContents extends React.Component {
               }
           }]
         },
+        
         legend: {
-          display: true
+          display: false,
+          position: 'bottom'
         },
+        legendCallback: function(chart) { 
+          var text = []; 
+          text.push('<class="' + chart.id + '-legend">'); 
+          for (var i = 0; i < Object.keys(colors).length; i++) { 
+              text.push('<li style="display:inline-block; margin-left: 10px"><span style="height:10px;width:10px;margin-right:8px;display:inline-block;background-color:' + 
+                         colors[Object.keys(colors)[i]] + 
+                         '"></span>'); 
+              if (Object.keys(colors)[i]) { 
+                  text.push(Object.keys(colors)[i]); 
+              } 
+              text.push('</li>'); 
+          } 
+          text.push('</ul>'); 
+          return text.join(''); 
+      },
         animation: {
           duration: 500
         },
@@ -379,8 +407,10 @@ class AgregatedReportContents extends React.Component {
    if (this[`itemChart-chartbyCluster`]) {
      this[`itemChart-chartbyCluster`].destroy();
      this[`itemChart-chartbyCluster`] = new Chart(canvas, opts);
+     document.getElementById('custom-legend').innerHTML = this[`itemChart-chartbyCluster`].generateLegend();
    } else {
      this[`itemChart-chartbyCluster`] = new Chart(canvas, opts);
+     document.getElementById('custom-legend').innerHTML = this[`itemChart-chartbyCluster`].generateLegend();
    }
 
   }
@@ -424,6 +454,7 @@ class AgregatedReportContents extends React.Component {
             <h1 className="title" style={{paddingTop: '22px', paddingBottom: '10px' }}>Response Rate by Country</h1>
             <div style={{ width: '75%', margin: '20px auto', border: "1px #000 solid", padding: '20px'}}>
               <canvas ref={`chartbyCluster`} id={`chartbyCluster`} />
+              <div style={{margin: '0px auto', textAlign:'center', alignContent: 'center'}} id="custom-legend"/>
             </div>
          
       </div>
@@ -599,7 +630,6 @@ class Reports extends React.Component {
   }
 
   render () {
-      console.log(this.state.reports, this.store.state.selectedAssetUids)
     if (this.state.reports.length === 0) {
       return (
           <bem.Loading>

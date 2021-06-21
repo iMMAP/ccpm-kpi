@@ -651,7 +651,6 @@ class ProjectSettings extends React.Component {
     }
 
     if (!this.state.ccpmRegion) {
-      console.log('region');
       alertify.error(t('Please select a region for your CCPM!'));
       return;
     }
