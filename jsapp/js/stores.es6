@@ -113,6 +113,26 @@ const translationsStore = Reflux.createStore({
   },
 });
 
+const aggreagetedStore = Reflux.createStore({
+  init() {
+    this.state = {
+      selectedAssetUids: []
+    }
+  },
+  setState (change) {
+    const changed = changes(this.state, change);
+    if (changed) {
+      assign(this.state, changed);
+      this.trigger(changed);
+    }
+  },
+  setTranslationTableUnsaved (uids) {
+    this.setState({
+      selectedAssetUids: uids
+    });
+  },
+});
+
 var pageStateStore = Reflux.createStore({
   init () {
     this.state = {
@@ -308,6 +328,7 @@ var allAssetsStore = Reflux.createStore({
     this.listenTo(actions.resources.loadAsset.completed, this.onLoadAssetCompleted);
   },
   whenLoaded (uid, cb) {
+    console.log(this.byUid)
     if (typeof uid !== 'string' || typeof cb !== 'function') {
       return;
     }
@@ -493,4 +514,5 @@ assign(stores, {
   userExists: userExistsStore,
   surveyState: surveyStateStore,
   serverEnvironment: serverEnvironmentStore,
+  aggregatedReport: aggreagetedStore
 });

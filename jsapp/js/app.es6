@@ -49,6 +49,7 @@ import {
 } from 'utils';
 import LibrarySearchableList from './lists/library';
 import FormsSearchableList from './lists/forms';
+import CcpmAggregatedReport from './components/ccpmAggregatedReport';
 
 class App extends React.Component {
   constructor(props) {
@@ -261,6 +262,9 @@ export var routes = (
       <IndexRoute component={LibrarySearchableList} />
     </Route>
 
+    <Route path='report' >
+      <IndexRoute component={CcpmAggregatedReport} />
+    </Route>
     <IndexRedirect to='forms' />
     <Route path='forms' >
       <IndexRoute component={FormsSearchableList} />
