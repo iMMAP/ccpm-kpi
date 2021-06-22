@@ -709,7 +709,7 @@ mixins.contextRouter = {
     return this.context.router.isActive('library');
   },
   isReport () {
-    return this.context.router.isActive('report');
+    return this.context.router.isActive('global-reports');
   },
   isFormSingle () {
     return this.context.router.isActive('forms') && this.context.router.params.assetid != undefined;
