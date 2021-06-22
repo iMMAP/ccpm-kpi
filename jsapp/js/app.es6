@@ -262,7 +262,7 @@ export var routes = (
       <IndexRoute component={LibrarySearchableList} />
     </Route>
 
-    <Route path='report' >
+    <Route path='global-reports' >
       <IndexRoute component={CcpmAggregatedReport} />
     </Route>
     <IndexRedirect to='forms' />
