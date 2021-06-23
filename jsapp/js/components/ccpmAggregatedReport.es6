@@ -26,13 +26,30 @@ class AgregatedReportContents extends React.Component {
     super(props);
     this.state= {
       reportData: [], 
-      tnslIndex:0
+      tnslIndex:0,
+      isLoading: false
     }
   }
 
 
   componentDidMount(){
     this.loadChart();
+  }
+
+  compareString(a, b, property){
+      var propertyA = property ?  a[property].toUpperCase() : a.toUpperCase();
+      var propertyB = property ?  b[property].toUpperCase() : b.toUpperCase();
+      if (propertyA < propertyB) {
+        return -1;
+      }
+      if (propertyA > propertyB) {
+        return 1;
+      }
+      return 0;
+  }
+
+  compareNumbers(a, b) {
+    return a - b;
   }
 
   getOverallCompletionRateRegion(){
@@ -44,7 +61,7 @@ class AgregatedReportContents extends React.Component {
         regions[regionIndex].reports.push({...rep, ccpmData});
       } else if(ccpmData.region) regions.push({name: ccpmData.region.label, reports: [{...rep, ccpmData}]});
     })
-    return regions;
+    return regions.sort((a,b) => this.compareString(a, b, 'name'));
   }
 
   getNationalLevel(reports){
@@ -105,11 +122,15 @@ class AgregatedReportContents extends React.Component {
     var baseColor = '#1f5782';
     Chart.defaults.global.elements.rectangle.backgroundColor = baseColor;
 
+    const d = Object.keys(data).map(e => ({label: e, value: data[e]}));
+    const sorted = d.sort((a,b) => b.value - a.value);
+    console.log(sorted);
+
     var datasets = [{
       label: '%',
       axis: 'y',
-      data: Object.keys(data).map(e=>{
-        return (data[e] / (Object.values(data).reduce((a,b)=>a+b) || 1)) * 100;
+      data: sorted.map(e=>{
+        return (e.value / (Object.values(data).reduce((a,b)=>a+b) || 1)) * 100;
       }),
       backgroundColor: [
         'rgb(31,87,130)',
@@ -120,7 +141,9 @@ class AgregatedReportContents extends React.Component {
       borderWidth: 0
     }];
 
-    const labels = Object.keys(data);
+    console.log(datasets);
+
+    const labels = sorted.map(l => l.label);
 
     var opts = {
       type: chartType,
@@ -156,13 +179,22 @@ class AgregatedReportContents extends React.Component {
           datalabels: {
             color: '#fff',
             formatter: function (value, context) {
-              const percent = Number.parseInt(value);
-              return percent > 0 ? `${percent}%` : '';
+              const percent = Number.parseFloat(value);
+              return percent > 0 ? `${Math.round(percent)}%` : '';
             },
             clamp: true,
             align: 'center'
           }
         },
+        tooltips: {
+          callbacks: {
+            label: function (a, b) {
+              return `${a.yLabel} (%): ${Math.round(a.xLabel)}`;
+            },
+            caretSize: 0
+          },
+          displayColors: false
+        }
         }
     };
 
@@ -187,6 +219,7 @@ class AgregatedReportContents extends React.Component {
       const languageIndex = this.getLanguageIndex(rep);
       const ccpmData = JSON.parse(rep.asset.settings.ccpmData);
       if(ccpmData.region){
+        console.log(rep.totalResponseDisagregatedByPartner)
       rep.totalResponseDisagregatedByPartner.forEach(element=>{
         const label = element.row.label[languageIndex] || element.row.label[1];
         if(!data[label]) data[label] = {};
@@ -198,7 +231,6 @@ class AgregatedReportContents extends React.Component {
         }
       })}
     });
-
     
     var chartType = 'bar';
 
@@ -210,10 +242,11 @@ class AgregatedReportContents extends React.Component {
 
     const set = [];
 
+    console.log(Object.keys(data));
     Object.keys(data).forEach((key, index) => {
       set.push({
       label: key,
-      data: Object.keys(data[key]).map(e=>{
+      data: Object.keys(data[key]).sort((a,b) => this.compareString(a, b)).map(e=>{
         return (data[key][e] / (totalRegion[e])) * 100;
       }),
       borderWidth: 1,
@@ -222,8 +255,7 @@ class AgregatedReportContents extends React.Component {
     })});
 
     let labels = [];
-    if(Object.keys(data).length > 0) 
-    labels = Object.keys(data[Object.keys(data)[0]]);
+    labels = Object.keys(totalRegion).sort((a,b) => this.compareString(a, b))
 
     var opts = {
       type: chartType,
@@ -257,6 +289,15 @@ class AgregatedReportContents extends React.Component {
         },
         animation: {
           duration: 500
+        },
+        tooltips: {
+          callbacks: {
+            label: function () {
+              return null;
+            },
+            caretSize: 0
+          },
+          displayColors: false
         },
         plugins: {
           datalabels: {
@@ -306,7 +347,7 @@ class AgregatedReportContents extends React.Component {
     set.push({
       label: 'By country',
       data: Object.keys(data).map(key=>{
-        return this.calculatePercentage(data[key].total, data[key].expected );
+        return this.calculatePercentage(data[key].expected, data[key].total );
       }),
       borderWidth: 1,
       backgroundColor: Object.keys(data).map(e => data[e].color)
@@ -366,8 +407,8 @@ class AgregatedReportContents extends React.Component {
         },
         tooltips: {
           callbacks: {
-            label: function () {
-              return `${name} (%): ${data}`;
+            label: function (a, b) {
+              return `${a.yLabel} (%): ${Math.round(a.xLabel)}`;
             },
             caretSize: 0
           },
@@ -483,7 +524,8 @@ class Reports extends React.Component {
       ccpmReport: {},
       P_IS02Result: [],
       showChangeLanguage: false,
-      reports: []
+      reports: [],
+      isLoading: false
     };
     this.store = stores.aggregatedReport;
     autoBind(this);
@@ -494,8 +536,36 @@ class Reports extends React.Component {
         this.loadReportData(e);
     });
   }
+
+  renderCCPMReportButtons () {
+    return (
+      <bem.FormView__reportButtons>
+        <bem.Button
+          m='icon' className='report-button__expand right-tooltip'
+          onClick={this.toggleFullscreen}
+          data-tip={t('Toggle fullscreen')}
+        >
+          <i className='k-icon-expand' />
+        </bem.Button>
+
+        <bem.Button m='icon' className='report-button__print'
+                onClick={e => {this.exportToDocx(this.state)}}
+                data-tip={t('Export to Document')}>
+          <i className='k-icon-download' />
+        </bem.Button>
+        {
+          <bem.Button m='icon' className='report-button__settings'
+                  onClick={this.toggleReportLanguageSettings}
+                  data-tip={t('Settings')}>
+            <i className='k-icon-settings' />
+          </bem.Button>
+        }
+      </bem.FormView__reportButtons>
+    );
+  }
   loadReportData(items) {
       if(items){
+        this.setState({isLoading: true, reports: []});
        items.selectedAssetUids.forEach(uid => {
         stores.allAssets.whenLoaded(uid, (asset)=>{
             let rowsByKuid = {};
@@ -587,7 +657,9 @@ class Reports extends React.Component {
                 let newReport = {};
       
                 if(dataWithResponses[0].name === 'type_of_survey') newReport = ccpmReport(dataWithResponses, asset.content);
-                this.setState({reports : [...this.state.reports, {
+                this.setState({
+                  isLoading: this.state.reports.length +1 < this.store.state.selectedAssetUids.length,
+                  reports : [...this.state.reports, {
                   asset: asset,
                   rowsByKuid: rowsByKuid,
                   rowsByIdentifier: rowsByIdentifier,
@@ -625,13 +697,16 @@ class Reports extends React.Component {
               // Redundant?
               console.error('Survey not defined.');
             }
-          });
+      });
     })}
   }
 
   render () {
-    if (this.state.reports.length === 0) {
+    const docTitle = 'Global Report'
+
+    if (this.state.isLoading) {
       return (
+        <DocumentTitle title={`${docTitle} | Health Cluster`}>
           <bem.Loading>
             {this.state.error ?
               <bem.Loading__inner>
@@ -648,33 +723,40 @@ class Reports extends React.Component {
               </bem.Loading__inner>
             }
           </bem.Loading>
+         </DocumentTitle>
       );
     }
 
-    let asset = this.state.asset,
-        docTitle;
-
-    if (asset && asset.content)
-      docTitle = asset.name || t('Untitled');
-
-    if (this.state.reports.length < this.store.state.selectedAssetUids.length) {
+    if (!this.state.isLoading && this.state.reports.length === 0) {
       return (
-        <bem.Loading>
-          {this.state.error ?
-            <bem.Loading__inner>
-              {t('This report cannot be loaded.')}
-              <br/>
-              <code>
-                {this.state.error.statusText + ': ' + this.state.error.responseText}
-              </code>
-            </bem.Loading__inner>
-          :
-            <bem.Loading__inner>
-              <i />
-              {t('loading...')}
-            </bem.Loading__inner>
-          }
-        </bem.Loading>
+        <DocumentTitle title={`${docTitle} | Health Cluster`}>
+          <div style={{width: '100%', height: '100%', padding: '100px'}}>
+            <p style={{textAlign: 'center', fontSize: 16, margin: 'auto 0px'}}>Please Select a year and at least two clusters</p>
+          </div>
+        </DocumentTitle>
+      );
+    }
+      
+    if (this.state.isLoading ) {
+      return (
+        <DocumentTitle title={`${docTitle} | Health Cluster`}>
+          <bem.Loading>
+            {this.state.error ?
+              <bem.Loading__inner>
+                {t('This report cannot be loaded.')}
+                <br/>
+                <code>
+                  {this.state.error.statusText + ': ' + this.state.error.responseText}
+                </code>
+              </bem.Loading__inner>
+            :
+              <bem.Loading__inner>
+                <i />
+                {t('loading...')}
+              </bem.Loading__inner>
+            }
+          </bem.Loading>
+        </DocumentTitle>
       );
     }
 
@@ -687,6 +769,7 @@ class Reports extends React.Component {
       <DocumentTitle title={`${docTitle} | Health Cluster`}>
         <bem.FormView m={formViewModifiers}>
           <bem.ReportView>
+          {this.renderCCPMReportButtons()}
               <bem.ReportView__wrap>
                 <bem.PrintOnly>
                   <h3>Aggregated Report</h3>

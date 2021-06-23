@@ -69,7 +69,7 @@ class SidebarAgregatedCCPM extends Reflux.Component {
     }.bind(this);
   }
 
-  getYears(deployedReports) {
+  getYears(deployedReports, year) {
     const reportByYear = [];
     const years = [];
     const clusters = [];
@@ -77,7 +77,9 @@ class SidebarAgregatedCCPM extends Reflux.Component {
       const ccpmData = JSON.parse(report.settings.ccpmData);
       if(ccpmData && ccpmData.year && !years.includes(ccpmData.year)) years.push(ccpmData.year); 
       if(ccpmData && ccpmData.year ) reportByYear.push({year: ccpmData.year, cluster: ccpmData.cluster,report }); 
-      if(ccpmData && ccpmData.cluster && !clusters.includes(ccpmData.cluster)) clusters.push(ccpmData.cluster); 
+      if(ccpmData.year === year){
+        if(ccpmData && ccpmData.cluster && !clusters.includes(ccpmData.cluster)) clusters.push(ccpmData.cluster);
+      } 
     })
 
     return {reportByYear, years, clusters};
@@ -104,7 +106,7 @@ class SidebarAgregatedCCPM extends Reflux.Component {
       activeItems = 'searchResultsCategorizedResultsLists';
     }
 
-    const ccpmData = s[activeItems] ? this.getYears(s[activeItems]['Deployed']):  {reportByYear: [], years: [], clusters: []}
+    const ccpmData = s[activeItems] ? this.getYears(s[activeItems]['Deployed'], this.state.selectedYear):  {reportByYear: [], years: [], clusters: []}
 
     if (s.searchState === 'loading' && s.searchString === false) {
       return (
@@ -134,7 +136,6 @@ class SidebarAgregatedCCPM extends Reflux.Component {
               return <>
                 <p>Select a Year</p>
                 <select onChange={(e)=>{
-                  console.log(e.target.value);
                   this.setState({selectedYear: e.target.value})
                 }} style={{width: '100%', height: '50px'}}>
                   <option>Select</option>
@@ -142,13 +143,14 @@ class SidebarAgregatedCCPM extends Reflux.Component {
                 </select>
                 {this.state.selectedYear && <> <p>Select a Cluster </p>
                   <Select onChange={(e)=>{
-                    this.setState({selectedCluster:e});
-                  }}  options={ccpmData.clusters.map(y => ({value: y, label: y}))} isMulti/>
+                    if(e.find(v => v.value === 'all')) this.setState({selectedCluster: ccpmData.clusters.map(y => ({value: y, label: y}))});
+                    else this.setState({selectedCluster:e});
+                  }} value={this.state.selectedCluster} options={[{value: 'all', label: 'Select All'},...ccpmData.clusters.map(y => ({value: y, label: y}))]} isMulti/>
                   </>}
-                {(this.state.selectedCluster && this.state.selectedCluster.length) && 
+                {(this.state.selectedCluster && this.state.selectedCluster.length > 1) && 
                 <div style={{marginTop: '30px'}}>
                   <bem.KoboButton onClick={()=>{this.generateReport(ccpmData.reportByYear)}}  m={['blue', 'fullwidth']}>
-                    Generate
+                    Generate Report
                   </bem.KoboButton>
                 </div>
                 }
