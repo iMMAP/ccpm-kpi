@@ -141,7 +141,7 @@ class SidebarAgregatedCCPM extends Reflux.Component {
                   <option>Select</option>
                   {ccpmData.years.map(y => <option key={y} value={y}>{y.toString()}</option>)}
                 </select>
-                {this.state.selectedYear && <> <p>Select a Cluster </p>
+                {this.state.selectedYear && <> <p>Select the Clusters</p>
                   <Select onChange={(e)=>{
                     if(e.find(v => v.value === 'all')) this.setState({selectedCluster: ccpmData.clusters.map(y => ({value: y, label: y}))});
                     else this.setState({selectedCluster:e});
