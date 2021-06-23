@@ -702,7 +702,7 @@ class Reports extends React.Component {
   }
 
   render () {
-    const docTitle = 'Global Report'
+    const docTitle = 'Global Reports'
 
     if (this.state.isLoading) {
       return (
