@@ -807,7 +807,7 @@ class Reports extends React.Component {
   }
 
   render () {
-    const docTitle = 'Global Report'
+    const docTitle = 'Global Reports'
 
     if (this.state.isLoading) {
       return (
@@ -836,7 +836,7 @@ class Reports extends React.Component {
       return (
         <DocumentTitle title={`${docTitle} | Health Cluster`}>
           <div style={{width: '100%', height: '100%', padding: '100px'}}>
-            <p style={{textAlign: 'center', fontSize: 16, margin: 'auto 0px'}}>Please Select a year and at least two clusters</p>
+            <p style={{textAlign: 'center', fontSize: 16, margin: 'auto 0px'}}>Please select a Year and at least two Clusters</p>
           </div>
         </DocumentTitle>
       );
