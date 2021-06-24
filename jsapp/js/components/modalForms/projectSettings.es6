@@ -88,7 +88,7 @@ class ProjectSettings extends React.Component {
       isAwaitingArchiveCompleted: false,
       isAwaitingUnarchiveCompleted: false,
       // CCPM project details
-      ccpmYear: ccpmData.year.toString() || new Date().getFullYear().toString(),
+      ccpmYear: ccpmData.year ? ccpmData.year.toString() : new Date().getFullYear().toString(),
       ccpmRegion: ccpmData.region || null,
       ccpmCluster: ccpmData.cluster || '',
       ccpmAddSubCluster: ccpmData.addSubCluster || false,

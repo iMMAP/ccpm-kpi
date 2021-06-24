@@ -118,6 +118,15 @@ class SidebarAgregatedCCPM extends Reflux.Component {
         </bem.Loading>
       );
     }
+    const customStyles = {
+      option: (provided, state) => {
+        return {
+        ...provided,
+        backgroundColor: state.data.value === 'all' ? '#e2e2e2' : 'transparent',
+        ":active": { backgroundColor: "#B2D4FF" },
+        ":hover": { backgroundColor: "#B2D4FF" },
+      }},
+    }
 
     return (
       <bem.FormSidebar>
@@ -135,17 +144,15 @@ class SidebarAgregatedCCPM extends Reflux.Component {
             } else if (s.defaultQueryState === 'done') {
               return <>
                 <p>Select a Year</p>
-                <select onChange={(e)=>{
-                  this.setState({selectedYear: e.target.value})
-                }} style={{width: '100%', height: '50px'}}>
-                  <option>Select</option>
-                  {ccpmData.years.map(y => <option key={y} value={y}>{y.toString()}</option>)}
-                </select>
+                <Select onChange={(e)=>{
+                  this.setState({selectedYear: e.value, selectedCluster: []})
+                }} options={ccpmData.years.map(y =>({value: y, label: y.toString()}))}/>
+
                 {this.state.selectedYear && <> <p>Select a Cluster </p>
                   <Select onChange={(e)=>{
                     if(e.find(v => v.value === 'all')) this.setState({selectedCluster: ccpmData.clusters.map(y => ({value: y, label: y}))});
                     else this.setState({selectedCluster:e});
-                  }} value={this.state.selectedCluster} options={[{value: 'all', label: 'Select All'},...ccpmData.clusters.map(y => ({value: y, label: y}))]} isMulti/>
+                  }} value={this.state.selectedCluster} styles={customStyles} options={[{value: 'all', label: 'Select All'},...ccpmData.clusters.map(y => ({value: y, label: y}))]} isMulti/>
                   </>}
                 {(this.state.selectedCluster && this.state.selectedCluster.length > 1) && 
                 <div style={{marginTop: '30px'}}>

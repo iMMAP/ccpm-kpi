@@ -13,6 +13,8 @@ import alertify from 'alertifyjs';
 import ccpmReport from '../ccpmReport';
 import {ccpm_getQuestionInRange} from '../ccpmDataset';
 import {titleConstants } from '../ccpmDataset';
+import ui from '../ui';
+import Radio from './radio';
 
 
 import Chart from 'chart.js';
@@ -31,9 +33,11 @@ class AgregatedReportContents extends React.Component {
     }
   }
 
-
   componentDidMount(){
     this.loadChart();
+  }
+  componentWillReceiveProps(props, b){
+    this.loadChart(props.parentState.languageIndex);
   }
 
   compareString(a, b, property){
@@ -87,9 +91,8 @@ class AgregatedReportContents extends React.Component {
   }
 
   getLanguageIndex(report){
-    const { reportStyles, asset: { content: { translations } }} = report;
-    let currentLanguageIndex = currentLanguageIndex = translations.findIndex(lan => lan && lan.includes('en')); // reportStyles.default.translationIndex;
-    //if(!translations[currentLanguageIndex]) currentLanguageIndex = translations.findIndex(lan => lan && lan.includes('en'));
+    const { asset: { content: { translations } }} = report;
+    let currentLanguageIndex = currentLanguageIndex = translations.findIndex(lan => lan && lan.includes('en'));
     return currentLanguageIndex;
   }
 
@@ -99,9 +102,16 @@ class AgregatedReportContents extends React.Component {
     return (total / sum) * 100;
   }
 
-  buildPartnerByTypeOptions() {
+  getTranslation(labels, code, languageIndex){
+    const language = labels.find(l => l.code === code);
+    if(language) return language.translations[languageIndex];
+    return '';
+  }
+
+  buildPartnerByTypeOptions(language) {
 
     const data = {};
+    const labelData = [];
 
     this.props.parentState.reports.forEach(rep => {
       const languageIndex = this.getLanguageIndex(rep);
@@ -109,6 +119,7 @@ class AgregatedReportContents extends React.Component {
         const label = element.row.label[languageIndex] || element.row.label[1];
 
         if(element.data.provided > 0){
+        labelData.push({code: label, translations: element.row.label});
         if(data[label])data[label]+=element.questionsDisagregatedByPartner;
         else data[label] = element.questionsDisagregatedByPartner;
         }
@@ -122,9 +133,8 @@ class AgregatedReportContents extends React.Component {
     var baseColor = '#1f5782';
     Chart.defaults.global.elements.rectangle.backgroundColor = baseColor;
 
-    const d = Object.keys(data).map(e => ({label: e, value: data[e]}));
+    const d = Object.keys(data).map(e => ({label: this.getTranslation(labelData, e, language) || e, value: data[e]}));
     const sorted = d.sort((a,b) => b.value - a.value);
-    console.log(sorted);
 
     var datasets = [{
       label: '%',
@@ -140,8 +150,6 @@ class AgregatedReportContents extends React.Component {
       ],
       borderWidth: 0
     }];
-
-    console.log(datasets);
 
     const labels = sorted.map(l => l.label);
 
@@ -191,6 +199,9 @@ class AgregatedReportContents extends React.Component {
             label: function (a, b) {
               return `${a.yLabel} (%): ${Math.round(a.xLabel)}`;
             },
+            title: function(){
+              return ''
+            },
             caretSize: 0
           },
           displayColors: false
@@ -210,22 +221,26 @@ class AgregatedReportContents extends React.Component {
     return color;
   }
 
-  buildPartnerByTypeAndRegionOptions() {
+  buildPartnerByTypeAndRegionOptions(language) {
 
     const data = {};
     const totalRegion = {};
+    const labelData = [];
 
     this.props.parentState.reports.forEach(rep => {
       const languageIndex = this.getLanguageIndex(rep);
       const ccpmData = JSON.parse(rep.asset.settings.ccpmData);
       if(ccpmData.region){
-        console.log(rep.totalResponseDisagregatedByPartner)
-      rep.totalResponseDisagregatedByPartner.forEach(element=>{
+      rep.totalResponseDisagregatedByPartner.forEach((element, index)=>{
+        const elementEffective = rep.totalEffectiveResponseDisagregatedByPartner[index];
         const label = element.row.label[languageIndex] || element.row.label[1];
         if(!data[label]) data[label] = {};
         if(element.data.provided > 0){
-        if(data[label][ccpmData.region.label])data[label][ccpmData.region.label]+=element.questionsDisagregatedByPartner;
-        else data[label][ccpmData.region.label] = element.questionsDisagregatedByPartner;
+          labelData.push({code: label, translations: element.row.label});
+          if(!data[label][ccpmData.region.label]) data[label][ccpmData.region.label] = {total: 0, effective:0};
+          data[label][ccpmData.region.label].total+=element.questionsDisagregatedByPartner;
+          data[label][ccpmData.region.label].effective+=element.data.mean;
+
         if(totalRegion[ccpmData.region.label]) totalRegion[ccpmData.region.label] += element.questionsDisagregatedByPartner;
         else totalRegion[ccpmData.region.label] = element.questionsDisagregatedByPartner;
         }
@@ -242,16 +257,14 @@ class AgregatedReportContents extends React.Component {
 
     const set = [];
 
-    console.log(Object.keys(data));
     Object.keys(data).forEach((key, index) => {
       set.push({
-      label: key,
+      label: this.getTranslation(labelData, key, language) || key,
       data: Object.keys(data[key]).sort((a,b) => this.compareString(a, b)).map(e=>{
-        return (data[key][e] / (totalRegion[e])) * 100;
+        return this.calculatePercentage(data[key][e].total,data[key][e].effective)
       }),
       borderWidth: 1,
       backgroundColor: colors[index]
-
     })});
 
     let labels = [];
@@ -320,6 +333,7 @@ class AgregatedReportContents extends React.Component {
   buildPartnerByClusterOptions() {
     const data = {};
     const colors = {};
+    const regions  = []
 
     this.props.parentState.reports.forEach(rep => {
       const { totalReponses: { numberOfPartner, sum } } = rep;
@@ -327,6 +341,7 @@ class AgregatedReportContents extends React.Component {
       if(ccpmData.region){
         if(!colors[ccpmData.region.label]) colors[ccpmData.region.label] = this.getRandomColor();
         if(ccpmData.cluster){
+         regions.push({cluster: ccpmData.cluster, region: ccpmData.region});
          if(!data[ccpmData.cluster])data[ccpmData.cluster] = {total: 0, expected: 0};
          data[ccpmData.cluster].total += sum;
          data[ccpmData.cluster].expected += numberOfPartner;
@@ -355,6 +370,8 @@ class AgregatedReportContents extends React.Component {
 
     let labels = Object.keys(data);
 
+    const colorArray = Object.keys(colors).map(c => ({color: colors[c], region: c})).sort((a,b) => this.compareString(a,b,'region'));
+
     var opts = {
       type: chartType,
       responsive: true,
@@ -379,12 +396,12 @@ class AgregatedReportContents extends React.Component {
         legendCallback: function(chart) { 
           var text = []; 
           text.push('<class="' + chart.id + '-legend">'); 
-          for (var i = 0; i < Object.keys(colors).length; i++) { 
+          for (var i = 0; i < colorArray.length; i++) { 
               text.push('<li style="display:inline-block; margin-left: 10px"><span style="height:10px;width:10px;margin-right:8px;display:inline-block;background-color:' + 
-                         colors[Object.keys(colors)[i]] + 
+                         colorArray[i].color + 
                          '"></span>'); 
               if (Object.keys(colors)[i]) { 
-                  text.push(Object.keys(colors)[i]); 
+                  text.push(colorArray[i].region); 
               } 
               text.push('</li>'); 
           } 
@@ -410,6 +427,10 @@ class AgregatedReportContents extends React.Component {
             label: function (a, b) {
               return `${a.yLabel} (%): ${Math.round(a.xLabel)}`;
             },
+            title: function (a,b){
+              const regionEntry = regions.find(v => v.cluster === a[0].yLabel);
+              return regionEntry ? regionEntry.region.label : ''
+            },
             caretSize: 0
           },
           displayColors: false
@@ -420,10 +441,10 @@ class AgregatedReportContents extends React.Component {
     return opts;
   }
 
-  loadChart() {
+  loadChart(languageIndex = 0) {
 
     var canvas = ReactDOM.findDOMNode(this.refs[`chartbyType`]);
-    var opts = this.buildPartnerByTypeOptions([], 'en');
+    var opts = this.buildPartnerByTypeOptions(languageIndex);
 
     if (this[`itemChart-chartByType`]) {
       this[`itemChart-chartByType`].destroy();
@@ -433,7 +454,7 @@ class AgregatedReportContents extends React.Component {
     }
 
      canvas = ReactDOM.findDOMNode(this.refs[`chartbyTypeAndRegion`]);
-     opts = this.buildPartnerByTypeAndRegionOptions([], 'en');
+     opts = this.buildPartnerByTypeAndRegionOptions(languageIndex);
 
     if (this[`itemChart-chartbyTypeAndRegion`]) {
       this[`itemChart-chartbyTypeAndRegion`].destroy();
@@ -460,22 +481,23 @@ class AgregatedReportContents extends React.Component {
   render () {
     const {tnslIndex, reportData} = this.state;
     const completionRateRegions = this.getOverallCompletionRateRegion();
-  
+    const {languageIndex, languages} = this.props.parentState;
+    const lcode = languages[languageIndex].code;
     return (
       <div id='document-report'>
-        <h1 className="bigTitle">{titleConstants.completionAndResponseRate['en']}</h1>
-        <h1 className="title" style={{marginTop: '22px' }}>{titleConstants.overallCompletionRate['en']}</h1>
+        <h1 className="bigTitle">{titleConstants.completionAndResponseRate[lcode]}</h1>
+        <h1 className="title" style={{marginTop: '22px' }}>{titleConstants.overallCompletionRate[lcode]}</h1>
         <table style={{ borderCollapse: 'collapse', width: '75%', margin: '30px auto' }}>
           <thead>
-            <th style={{color: '#ffffff', minWidth: '100px'}}>region</th>
-            <th className="agregatedTableTitle">National Level</th>
-            <th className="agregatedTableTitle">Sub National</th>
-            <th className="agregatedTableTitle">Coordinator responses</th>
-            <th className="agregatedTableTitle">Partners responses</th>
+            <th style={{color: '#ffffff', minWidth: '100px'}}>{titleConstants.region[lcode]}</th>
+            <th className="agregatedTableTitle">{titleConstants.nationalLevel[lcode]}</th>
+            <th className="agregatedTableTitle">{titleConstants.subNational[lcode]}</th>
+            <th className="agregatedTableTitle">{titleConstants.coortinatorResponse[lcode]}</th>
+            <th className="agregatedTableTitle">{titleConstants.partnerResponse[lcode]}</th>
           </thead>
               <tbody>
               {completionRateRegions.map(rg => <tr>
-                  <td className="agregatedTableTitle">{rg.name}</td>
+                  <td className="agregatedTableTitle" style={{textAlign: 'center'}}>{rg.name}</td>
                   <td className="agregatedTableContent">{this.getNationalLevel(rg.reports)}</td>
                   <td className="agregatedTableContent">{this.getSubNationalLevel(rg.reports)}</td>
                   <td className="agregatedTableContent">{this.getCoordinatorOrPartnerResponses(rg.reports, 'coordinator')}</td>
@@ -484,15 +506,15 @@ class AgregatedReportContents extends React.Component {
               )}
               </tbody>
             </table>
-            <h1 className="title" style={{paddingTop: '20px', paddingBottom: '10px' }}>{titleConstants.responseRateByRegionAndType['en']}</h1>
+            <h1 className="title" style={{paddingTop: '20px', paddingBottom: '10px' }}>{titleConstants.responseRateByRegionAndType[lcode]}</h1>
             <div style={{ width: '75%', margin: '20px auto', border: "1px #000 solid", padding: '20px'}}>
               <canvas ref={`chartbyType`} id={`chartbyType`} />
             </div>
-            <h1 className="title" style={{paddingTop: '22px', paddingBottom: '10px' }}>{titleConstants.partnerByRegion['en']}</h1>
+            <h1 className="title" style={{paddingTop: '22px', paddingBottom: '10px' }}>{titleConstants.partnerByRegion[lcode]}</h1>
             <div style={{ width: '75%', margin: '20px auto', border: "1px #000 solid", padding: '20px'}}>
               <canvas ref={`chartbyTypeAndRegion`} id={`chartbyTypeAndRegion`} />
             </div>
-            <h1 className="title" style={{paddingTop: '22px', paddingBottom: '10px' }}>Response Rate by Country</h1>
+            <h1 className="title" style={{paddingTop: '22px', paddingBottom: '10px' }}>{titleConstants.reponseRateByCOuntry[lcode]}</h1>
             <div style={{ width: '75%', margin: '20px auto', border: "1px #000 solid", padding: '20px'}}>
               <canvas ref={`chartbyCluster`} id={`chartbyCluster`} />
               <div style={{margin: '0px auto', textAlign:'center', alignContent: 'center'}} id="custom-legend"/>
@@ -500,6 +522,81 @@ class AgregatedReportContents extends React.Component {
          
       </div>
     );
+  }
+};
+
+class ReportLanguageSettings extends React.Component {
+  constructor(props) {
+    super(props);
+    autoBind(this);
+    this.state = {
+      activeModalTab: 0,
+      languageIndex: this.props.parentState.languageIndex || 0
+    };
+  }
+  toggleTab(evt) {
+    var i = evt.target.getAttribute('data-index');
+    this.setState({
+      activeModalTab: parseInt(i),
+    });
+  }
+  translationIndexChange (name, value) {
+    this.setState({languageIndex: parseInt(value)});
+  }
+
+  saveReportStyles() {
+     this.props.changeLanguage(this.state.languageIndex);
+     this.props.toggleReportGraphSettings()
+  }
+  render () {
+    var tabs = [];
+      const selectedTranslationOptions = [];
+      tabs.push(t('Language'));
+      ['English','French'].map((row, i) => {
+        selectedTranslationOptions.push({
+          value: i,
+          label: row || t('Unnamed language')
+        });
+      })
+
+    var modalTabs = tabs.map(function(tab, i){
+      return (
+        <button className={`mdl-button mdl-button--tab ${this.state.activeModalTab === i ? 'active' : ''}`}
+                onClick={this.toggleTab}
+                data-index={i}
+                key={i}>
+          {tab}
+        </button>
+      );
+    }, this);
+
+    return (
+      <bem.GraphSettings>
+        <ui.Modal.Tabs>
+          {modalTabs}
+        </ui.Modal.Tabs>
+        <ui.Modal.Body>
+          <div className='tabs-content'>
+            {selectedTranslationOptions.length > 1 &&
+              <div className='graph-tab__translation' id='graph-labels'>
+                <Radio
+                  name='reports-selected-translation'
+                  options={selectedTranslationOptions}
+                  onChange={this.translationIndexChange}
+                  selected={this.state.languageIndex}
+                />
+              </div>
+            }
+          </div>
+          <ui.Modal.Footer>
+            <bem.KoboButton m='blue' onClick={this.saveReportStyles}>
+              {t('Save')}
+            </bem.KoboButton>
+          </ui.Modal.Footer>
+        </ui.Modal.Body>
+      </bem.GraphSettings>
+    );
+
   }
 };
 
@@ -525,7 +622,9 @@ class Reports extends React.Component {
       P_IS02Result: [],
       showChangeLanguage: false,
       reports: [],
-      isLoading: false
+      isLoading: false,
+      languages: [{code: 'en', label: 'English'}, {code: 'fr', label: 'French'}],
+      languageIndex: 0
     };
     this.store = stores.aggregatedReport;
     autoBind(this);
@@ -534,6 +633,12 @@ class Reports extends React.Component {
     //this.loadReportData();
     this.listenTo(this.store, (e)=>{
         this.loadReportData(e);
+    });
+  }
+
+  toggleReportLanguageSettings () {
+    this.setState({
+      showChangeLanguage : !this.state.showChangeLanguage,
     });
   }
 
@@ -778,6 +883,13 @@ class Reports extends React.Component {
                 {this.state.reports && <AgregatedReportContents parentState={this.state}  />}
               </bem.ReportView__wrap>
           </bem.ReportView>
+          {this.state.showChangeLanguage &&
+              <ui.Modal open onClose={this.toggleReportLanguageSettings} title={t('Settings')}>
+                <ReportLanguageSettings parentState={this.state} changeLanguage={(index)=>{
+                  this.setState({languageIndex: index});
+                }} toggleReportGraphSettings = {this.toggleReportLanguageSettings} />
+              </ui.Modal>
+            }
         </bem.FormView>
       </DocumentTitle>
       );

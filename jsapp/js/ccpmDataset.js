@@ -160,7 +160,12 @@ export const titleConstants = {
     overallCompletionRate: {en: 'Overall Completion Rate', fr: 'Taux de Completion Total'},
     responseRateByRegionAndType: {en: 'Response Rate of Partners by Type of Organization and Region', fr: 'Taux de Réponse des Partenaires par Type d\'Organisation et par Région'},
     partnerByRegion: {en: 'Partners by Region', fr: 'Partenaire par Region'},
-    reponseRateByCOuntry: {en: 'Response Rate by Country', fr: 'Taux de Reponse par Pays'}
+    reponseRateByCOuntry: {en: 'Response Rate by Country', fr: 'Taux de Reponse par Pays'},
+    region: {en:'Region', fr:'Region'},
+    nationalLevel: {en:'National Level', fr: 'Niveau National'},
+    subNational: {en: 'Sub National', fr: 'Interieur'},
+    coortinatorResponse: {en: 'Coordinator Response', fr: 'Reponse du coordinateur'},
+    partnerResponse: {en: 'Partner Responses', fr: 'Reponses des partenaires'}
 }
 
 export default dataset;
