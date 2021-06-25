@@ -136,7 +136,7 @@ export const ccpm_getAverageInSubGroup = (data) => {
 export const titleConstants = {
     overallResponseRate: { en: 'Overall Response Rate', fr: 'Taux de Réponse Global' },
     overallActivePartner: { en: 'Total Response', fr: 'Total des Réponses' },
-    responseByType: { en: 'Response By Type', fr: 'Reponse par Type' },
+    responseByType: { en: 'Response By Type', fr: 'Réponse par Type' },
     effectiveResponseRate: { en: 'Effective Response Rate', fr: 'Taux de Réponse Effective' },
     totalResponse: { en: 'Total Response', fr: 'Total des Réponses' },
     overallPerformance: { en: 'Overall Performance', fr: 'Performance Global' },
@@ -156,16 +156,16 @@ export const titleConstants = {
     unsatisfactory: { en: 'Unsatisfactory', fr: 'Non satisfaisant' },
     satifactory: { en: 'Satisfactory', fr: 'Satisfaisant' },
     good: { en: 'Good', fr: 'Bon' },
-    completionAndResponseRate: {en: 'Completion and Response Rate', fr: 'Taux de Reponse et Completion'},
+    completionAndResponseRate: {en: 'Completion and Response Rate', fr: 'Taux de Réponse et Completion'},
     overallCompletionRate: {en: 'Overall Completion Rate', fr: 'Taux de Completion Total'},
     responseRateByRegionAndType: {en: 'Response Rate of Partners by Type of Organization and Region', fr: 'Taux de Réponse des Partenaires par Type d\'Organisation et par Région'},
-    partnerByRegion: {en: 'Partners by Region', fr: 'Partenaire par Region'},
-    reponseRateByCOuntry: {en: 'Response Rate by Country', fr: 'Taux de Reponse par Pays'},
-    region: {en:'Region', fr:'Region'},
+    partnerByRegion: {en: 'Partners by Region', fr: 'Partenaires par Région'},
+    reponseRateByCOuntry: {en: 'Response Rate by Country', fr: 'Taux de Réponse par Pays'},
+    region: {en:'Region', fr:'Région'},
     nationalLevel: {en:'National Level', fr: 'Niveau National'},
     subNational: {en: 'Sub National', fr: 'Interieur'},
-    coortinatorResponse: {en: 'Coordinator Response', fr: 'Reponse du coordinateur'},
-    partnerResponse: {en: 'Partner Responses', fr: 'Reponses des partenaires'}
+    coortinatorResponse: {en: 'Coordinators Responses', fr: 'Réponses des Coordinateurs'},
+    partnerResponse: {en: 'Partner Responses', fr: 'Réponses des Partenaires'}
 }
 
 export default dataset;
