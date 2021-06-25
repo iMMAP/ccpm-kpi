@@ -232,11 +232,11 @@ class AgregatedReportContents extends React.Component {
       const ccpmData = JSON.parse(rep.asset.settings.ccpmData);
       if(ccpmData.region){
       rep.totalResponseDisagregatedByPartner.forEach((element, index)=>{
-        const elementEffective = rep.totalEffectiveResponseDisagregatedByPartner[index];
-        const label = element.row.label[languageIndex] || element.row.label[1];
+        const label = element.name;
         if(!data[label]) data[label] = {};
         if(element.data.provided > 0){
-          labelData.push({code: label, translations: element.row.label});
+          if(!labelData.find(a =>a.name === element.name))
+          labelData.push({code: label, translations: element.row.label, name: element.name});
           if(!data[label][ccpmData.region.label]) data[label][ccpmData.region.label] = {total: 0, effective:0};
           data[label][ccpmData.region.label].total+=element.questionsDisagregatedByPartner;
           data[label][ccpmData.region.label].effective+=element.data.mean;
@@ -257,11 +257,13 @@ class AgregatedReportContents extends React.Component {
 
     const set = [];
 
-    Object.keys(data).forEach((key, index) => {
+    const sorted = Object.keys(data).sort((a,b) => this.compareString(a, b));
+
+    sorted.forEach((key, index) => {
       set.push({
       label: this.getTranslation(labelData, key, language) || key,
       data: Object.keys(data[key]).sort((a,b) => this.compareString(a, b)).map(e=>{
-        return this.calculatePercentage(data[key][e].total,data[key][e].effective)
+        return Math.round(this.calculatePercentage(data[key][e].total,data[key][e].effective))
       }),
       borderWidth: 1,
       backgroundColor: colors[index]
@@ -333,13 +335,15 @@ class AgregatedReportContents extends React.Component {
   buildPartnerByClusterOptions() {
     const data = {};
     const colors = {};
-    const regions  = []
+    const regions  = [];
+    const chartColors  = ['#1f5782', '#007899', '#009898', '#48b484', '#9fc96f', '#f8d871', '#f87571', '#95069c', '#073691']
 
-    this.props.parentState.reports.forEach(rep => {
+
+    this.props.parentState.reports.forEach((rep, index) => {
       const { totalReponses: { numberOfPartner, sum } } = rep;
       const ccpmData = JSON.parse(rep.asset.settings.ccpmData);
       if(ccpmData.region){
-        if(!colors[ccpmData.region.label]) colors[ccpmData.region.label] = this.getRandomColor();
+        if(!colors[ccpmData.region.label]) colors[ccpmData.region.label] = chartColors[index];
         if(ccpmData.cluster){
          regions.push({cluster: ccpmData.cluster, region: ccpmData.region});
          if(!data[ccpmData.cluster])data[ccpmData.cluster] = {total: 0, expected: 0};
@@ -349,7 +353,7 @@ class AgregatedReportContents extends React.Component {
       }}
     });
 
-    
+
     var chartType = 'horizontalBar';
 
     // TODO: set as default globally in a higher level (PM)
@@ -362,7 +366,7 @@ class AgregatedReportContents extends React.Component {
     set.push({
       label: 'By country',
       data: Object.keys(data).map(key=>{
-        return this.calculatePercentage(data[key].expected, data[key].total );
+        return Math.round(this.calculatePercentage(data[key].expected, data[key].total));
       }),
       borderWidth: 1,
       backgroundColor: Object.keys(data).map(e => data[e].color)
@@ -623,7 +627,7 @@ class Reports extends React.Component {
       showChangeLanguage: false,
       reports: [],
       isLoading: false,
-      languages: [{code: 'en', label: 'English'}, {code: 'fr', label: 'French'}],
+      languages: [{code: 'en', label: 'English(en)'}, {code: 'fr', label: 'French(fr)'}],
       languageIndex: 0
     };
     this.store = stores.aggregatedReport;
@@ -634,6 +638,10 @@ class Reports extends React.Component {
     this.listenTo(this.store, (e)=>{
         this.loadReportData(e);
     });
+  }
+
+  toggleFullscreen () {
+    this.setState({isFullscreen: !this.state.isFullscreen});
   }
 
   toggleReportLanguageSettings () {
