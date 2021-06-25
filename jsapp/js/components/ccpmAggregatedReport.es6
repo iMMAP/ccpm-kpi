@@ -253,7 +253,7 @@ class AgregatedReportContents extends React.Component {
 
     var baseColor = '#1D6F9C';
     Chart.defaults.global.elements.rectangle.backgroundColor = baseColor;
-    const colors  = ['#1f5782', '#007899', '#009898', '#48b484', '#9fc96f', '#f8d871', '#f87571', '#e6b3ca', '#b3b3ff']
+    const colors  = ['#1f5782', '#007899', '#009898', '#48b484', '#9fc96f', '#f8d871', '#f87571', '#df9fbe', '#b3b3ff']
 
     const set = [];
 
