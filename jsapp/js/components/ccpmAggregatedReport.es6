@@ -627,7 +627,7 @@ class Reports extends React.Component {
       showChangeLanguage: false,
       reports: [],
       isLoading: false,
-      languages: [{code: 'en', label: 'English(en)'}, {code: 'fr', label: 'French(fr)'}],
+      languages: [{code: 'en', label: 'English (en)'}, {code: 'fr', label: 'Français (fr)'}],
       languageIndex: 0
     };
     this.store = stores.aggregatedReport;
