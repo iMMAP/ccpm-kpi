@@ -253,7 +253,7 @@ class AgregatedReportContents extends React.Component {
 
     var baseColor = '#1D6F9C';
     Chart.defaults.global.elements.rectangle.backgroundColor = baseColor;
-    const colors  = ['#1f5782', '#007899', '#009898', '#48b484', '#9fc96f', '#f8d871']
+    const colors  = ['#1f5782', '#007899', '#009898', '#48b484', '#9fc96f', '#f8d871', '#f87571', '#df9fbe', '#b3b3ff']
 
     const set = [];
 
@@ -332,7 +332,7 @@ class AgregatedReportContents extends React.Component {
     const data = {};
     const colors = {};
     const regions  = [];
-    const chartColors  = ['#1f5782', '#007899', '#009898', '#48b484', '#9fc96f', '#f8d871', '#f87571', '#95069c', '#073691']
+    const chartColors  = ['#1f5782', '#48b484', '#9fc96f', '#f8d871', '#f87571', '#b3b3ff']
 
 
     this.props.parentState.reports.forEach((rep, index) => {
@@ -623,7 +623,7 @@ class Reports extends React.Component {
       showChangeLanguage: false,
       reports: [],
       isLoading: false,
-      languages: [{code: 'en', label: 'English(en)'}, {code: 'fr', label: 'French(fr)'}],
+      languages: [{code: 'en', label: 'English (en)'}, {code: 'fr', label: 'Français (fr)'}],
       languageIndex: 0
     };
     this.store = stores.aggregatedReport;
