@@ -332,7 +332,7 @@ class AgregatedReportContents extends React.Component {
     const data = {};
     const colors = {};
     const regions  = [];
-    const chartColors  = ['#1f5782', '#48b484', '#9fc96f', '#f8d871', '#f87571', '#b3b3ff']
+    const chartColors  = ['#1f5782', '#48b484', '#9fc96f', '#f8d871', '#f87571', '#b3b3ff', '#007899', '#009898', '#df9fbe']
 
 
     this.props.parentState.reports.forEach((rep, index) => {
@@ -552,7 +552,7 @@ class ReportLanguageSettings extends React.Component {
     var tabs = [];
       const selectedTranslationOptions = [];
       tabs.push(t('Language'));
-      ['English(en)','French(fr)'].map((row, i) => {
+      ['English (en)','Français (fr)'].map((row, i) => {
         selectedTranslationOptions.push({
           value: i,
           label: row || t('Unnamed language')
