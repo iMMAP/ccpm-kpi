@@ -253,7 +253,7 @@ class AgregatedReportContents extends React.Component {
 
     var baseColor = '#1D6F9C';
     Chart.defaults.global.elements.rectangle.backgroundColor = baseColor;
-    const colors  = ['#1f5782', '#007899', '#009898', '#48b484', '#9fc96f', '#f8d871', '#f87571', '#95069c', '#073691']
+    const colors  = ['#1f5782', '#007899', '#009898', '#48b484', '#9fc96f', '#f8d871']
 
     const set = [];
 
@@ -307,12 +307,8 @@ class AgregatedReportContents extends React.Component {
         },
         tooltips: {
           callbacks: {
-            label: function () {
-              return null;
-            },
             caretSize: 0
           },
-          displayColors: false
         },
         plugins: {
           datalabels: {
@@ -556,7 +552,7 @@ class ReportLanguageSettings extends React.Component {
     var tabs = [];
       const selectedTranslationOptions = [];
       tabs.push(t('Language'));
-      ['English','French'].map((row, i) => {
+      ['English(en)','French(fr)'].map((row, i) => {
         selectedTranslationOptions.push({
           value: i,
           label: row || t('Unnamed language')
