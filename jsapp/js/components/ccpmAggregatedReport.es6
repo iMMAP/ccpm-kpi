@@ -52,6 +52,8 @@ class AgregatedReportContents extends React.Component {
       return 0;
   }
 
+
+
   compareNumbers(a, b) {
     return a - b;
   }
@@ -328,6 +330,21 @@ class AgregatedReportContents extends React.Component {
     return opts;
   }
 
+  compareStringAndPercentage(a, b, property, percentageA, percentageB){
+    var propertyA = property ?  a[property].toUpperCase() : a.toUpperCase();
+    var propertyB = property ?  b[property].toUpperCase() : b.toUpperCase();
+    if(propertyA < propertyB ) return -1;
+    if(propertyA > propertyB) return 1 ;
+    
+    if (percentageA < percentageB) {
+      return -1;
+    }
+    if (percentageA > percentageB) {
+      return 1;
+    }
+    return 0;
+}
+
   buildPartnerByClusterOptions() {
     const data = {};
     const colors = {};
@@ -339,16 +356,20 @@ class AgregatedReportContents extends React.Component {
       const { totalReponses: { numberOfPartner, sum } } = rep;
       const ccpmData = JSON.parse(rep.asset.settings.ccpmData);
       if(ccpmData.region){
-        if(!colors[ccpmData.region.label]) colors[ccpmData.region.label] = chartColors[index];
+        //if(!colors[ccpmData.region.label]) colors[ccpmData.region.label] = chartColors[index];
         if(ccpmData.cluster){
          regions.push({cluster: ccpmData.cluster, region: ccpmData.region});
          if(!data[ccpmData.cluster])data[ccpmData.cluster] = {total: 0, expected: 0};
          data[ccpmData.cluster].total += sum;
          data[ccpmData.cluster].expected += numberOfPartner;
-         data[ccpmData.cluster].color = colors[ccpmData.region.label];
+         data[ccpmData.cluster].region = ccpmData.region.label;
       }}
     });
 
+    const dataPerCountry = Object.keys(data).map(key=>{
+      return {value: Math.round(this.calculatePercentage(data[key].expected, data[key].total)),
+      key, ...data[key]};
+    })
 
     var chartType = 'horizontalBar';
 
@@ -359,16 +380,20 @@ class AgregatedReportContents extends React.Component {
 
     const set = [];
 
+
+
+    const dataPerCountrySorted = dataPerCountry.sort((a,b) => this.compareStringAndPercentage(a,b,'region',a.value,b.value));
+    dataPerCountrySorted.forEach(v => {
+      if(!Object.keys(colors).find(e => e === v.region)) colors[v.region] = chartColors[Object.keys(colors).length];
+    })
     set.push({
       label: 'By country',
-      data: Object.keys(data).map(key=>{
-        return Math.round(this.calculatePercentage(data[key].expected, data[key].total));
-      }),
+      data: dataPerCountrySorted.map(e => e.value),
       borderWidth: 1,
-      backgroundColor: Object.keys(data).map(e => data[e].color)
+      backgroundColor: dataPerCountrySorted.map(e => colors[data[e.key].region])
     });
 
-    let labels = Object.keys(data);
+    let labels = dataPerCountrySorted.map(e => e.key);
 
     const colorArray = Object.keys(colors).map(c => ({color: colors[c], region: c})).sort((a,b) => this.compareString(a,b,'region'));
 
