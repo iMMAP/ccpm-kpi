@@ -311,7 +311,7 @@ class AgregatedReportContents extends React.Component {
           callbacks: {
             label: (a,b)=>{
               const title  = b.datasets[a.index];
-              return `${title.label}(%): ${title.data[a.datasetIndex]}`;
+              return `${title.label} (%): ${title.data[a.datasetIndex]}`;
             }
           },
         },
