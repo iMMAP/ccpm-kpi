@@ -15,7 +15,9 @@ import {ccpm_getQuestionInRange} from '../ccpmDataset';
 import {titleConstants } from '../ccpmDataset';
 import ui from '../ui';
 import Radio from './radio';
-
+import DocumentCreator  from "./ccpmDocxAggregatedReport";
+import { Packer } from "docx";
+import saveAs from 'save-as';
 
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -51,8 +53,6 @@ class AgregatedReportContents extends React.Component {
       }
       return 0;
   }
-
-
 
   compareNumbers(a, b) {
     return a - b;
@@ -310,8 +310,8 @@ class AgregatedReportContents extends React.Component {
         tooltips: {
           callbacks: {
             label: (a,b)=>{
-              const title  = b.datasets[a.index];
-              return `${title.label}(%): ${title.data[a.datasetIndex]}`;
+              const title  = b.datasets[a.datasetIndex];
+              return `${title.label}(%): ${title.data[a.index]}`;
             }
           },
         },
@@ -672,6 +672,16 @@ class Reports extends React.Component {
       showChangeLanguage : !this.state.showChangeLanguage,
     });
   }
+
+  exportToDocx(data) {
+    const documentCreator = new DocumentCreator();
+    const newReport = documentCreator.create(data);
+    newReport.then(doc => {
+       Packer.toBlob(doc).then(blob => {
+        saveAs(blob, `globalReport.docx`);
+      });
+    });
+}
 
   renderCCPMReportButtons () {
     return (
