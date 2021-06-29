@@ -73,7 +73,9 @@ class SidebarAgregatedCCPM extends Reflux.Component {
     const reportByYear = [];
     const years = [];
     const clusters = [];
-    deployedReports.filter(report => report.settings && report.settings.ccpmData).forEach(report => {
+
+    deployedReports.filter(report => (report.summary.labels.includes('Partner_or_Coordinator_GROUP') || report.summary.labels.includes('Partner or Coordinator?')) &&
+      report.settings && report.settings.ccpmData).forEach(report => {
       const ccpmData = JSON.parse(report.settings.ccpmData);
       if(ccpmData && ccpmData.year && !years.includes(ccpmData.year)) years.push(ccpmData.year); 
       if(ccpmData && ccpmData.year ) reportByYear.push({year: ccpmData.year, cluster: ccpmData.cluster,report }); 

@@ -309,7 +309,10 @@ class AgregatedReportContents extends React.Component {
         },
         tooltips: {
           callbacks: {
-            caretSize: 0
+            label: (a,b)=>{
+              const title  = b.datasets[a.index];
+              return `${title.label}(%): ${title.data[a.datasetIndex]}`;
+            }
           },
         },
         plugins: {
@@ -336,10 +339,10 @@ class AgregatedReportContents extends React.Component {
     if(propertyA < propertyB ) return -1;
     if(propertyA > propertyB) return 1 ;
     
-    if (percentageA < percentageB) {
+    if (percentageA > percentageB) {
       return -1;
     }
-    if (percentageA > percentageB) {
+    if (percentageA < percentageB) {
       return 1;
     }
     return 0;
@@ -356,7 +359,6 @@ class AgregatedReportContents extends React.Component {
       const { totalReponses: { numberOfPartner, sum } } = rep;
       const ccpmData = JSON.parse(rep.asset.settings.ccpmData);
       if(ccpmData.region){
-        //if(!colors[ccpmData.region.label]) colors[ccpmData.region.label] = chartColors[index];
         if(ccpmData.cluster){
          regions.push({cluster: ccpmData.cluster, region: ccpmData.region});
          if(!data[ccpmData.cluster])data[ccpmData.cluster] = {total: 0, expected: 0};
@@ -413,7 +415,7 @@ class AgregatedReportContents extends React.Component {
               }
           }]
         },
-        
+
         legend: {
           display: false,
           position: 'bottom'
