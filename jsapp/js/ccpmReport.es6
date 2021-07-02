@@ -1,4 +1,4 @@
-import datasetCcpm, { ccpm_getQuestionInRange, ccpm_getAverageInSubGroup, ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion, titleConstants, datasetGroup } from './ccpmDataset';
+import datasetCcpm, { ccpm_getQuestionInRange, ccpm_getAverageInSubGroup, ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion, titleConstants } from './ccpmDataset';
 
 
 // Get label based on the average 
@@ -113,7 +113,7 @@ const ccpm_getDataGlobalReport = (data, choices, dataSetGroup) => {
             if (subGroup !== 'code' && subGroup !== 'name' && subGroup !== 'names') {
                 newReport[subGroup] = {};
                 // Find all the question of a report subgroup, calculate the average and populate the charts
-                newReport[subGroup].questions = data.filter(e => ccpm_getQuestionInRange(group, subGroup, datasetGroup).includes(e.name)).map(q => {
+                newReport[subGroup].questions = data.filter(e => ccpm_getQuestionInRange(group, subGroup, dataSetGroup).includes(e.name)).map(q => {
                     q.average = ccpm_getAverageInquestion(q);
                     if (q.data.responses.includes('Yes') || q.data.responses.includes('No')) {
                         q.averageLabel = ccpm_getStatusLabelBoolean(q.average);
@@ -187,7 +187,7 @@ const ccpm_getData = (data, choices, dataSetGroup) => {
         totalEffectiveResponse: { numberOfPartner: isNaN(numberOfPartner) ? 0 : numberOfPartner, sum: ccpm_getSumOfQuestions(totalEffectiveResponseQuestions, data) },
         totalEffectiveResponseDisagregatedByPartner: ccpm_getNumberOfParnerResponseByType(totalEffectiveResponseQuestions, data, choices),
         questionResponseGroup: questionResponseGroup,
-        globalReport: datasetGroup ? ccpm_getDataGlobalReport(data, choices, dataSetGroup) : {}
+        globalReport: dataSetGroup ? ccpm_getDataGlobalReport(data, choices, dataSetGroup) : {}
     }
     return finalData;
 }
