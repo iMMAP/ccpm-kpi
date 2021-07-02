@@ -64,24 +64,44 @@ const dataset = {
     }
 }
 
+export const datasetGroup = {
+    supportServiceDelivery: {
+        name: 'Support to Service Delivery',
+        names: { en: 'Support to Service Delivery', fr: 'Appui à la Prestation de Services' },
+        code: 'P_SS',
+        partnerSatisfaction : {names: {en: 'partner satisfaction'}, code: '01a_01' },
+        organizationAbility: {names: {en: 'Organization ability'}, code: '01a', starting: 2, end: 4},
+        clusterMeetingAbility: {names: {en: 'Cluster Meeting Ability'}, code: '04', starting: 1, end: 3},
+        clusterAbilityStrategic: {names: {en: 'cluster ability to make strategic decisions'}, code: '02', starting: 1, end: 3},
+        frequencyPartnerContribution: {names: {en: 'Frequency partner contribution'}, code: '03', starting: 1, end: 2},
+        partnerContribution: {names: {en: 'Partner contribution'}, code: '03_03'},
+        useOfClusterAnalysis: {names: {en : 'Use of cluster analysis'}, code: '03', starting: 4, end: 5}
+    }
+}
+
 // Get Questions code list in a subgroup
 
-export const ccpm_getQuestionInRange = (groupIdentifier, subgroupIdentifier) => {
-    const group = dataset[groupIdentifier];
+export const ccpm_getQuestionInRange = (groupIdentifier, subgroupIdentifier, datasetGroup) => {
+    let group = {};
+    if(datasetGroup) group = datasetGroup[groupIdentifier];
+    else group = dataset[groupIdentifier]
+    
     const subgroup = group[subgroupIdentifier]
-    const code = `${group.code}${subgroup.code}`;
+
     const questions = [];
-    if (!subgroup.starting)
-        questions.push(code);
-    else {
-        for (let i = subgroup.starting; i <= subgroup.end; i++) {
-            if (i >= 10) {
-                questions.push(`${code}_${i}`);
-            } else {
-                questions.push(`${code}_0${i}`);
+    if(subgroup){
+        const code = `${group.code}${subgroup.code}`;
+        if (!subgroup.starting)
+            questions.push(code);
+        else {
+            for (let i = subgroup.starting; i <= subgroup.end; i++) {
+                if (i >= 10) {
+                    questions.push(`${code}_${i}`);
+                } else {
+                    questions.push(`${code}_0${i}`);
+                }
             }
-        }
-    }
+        }}
     return questions;
 }
 
@@ -121,14 +141,14 @@ export const ccpm_getAverageInBoolQuestion = (question) => {
 
 // Get average in a subgroup (Check wheither que question contains numeric response or boolean and return the result)
 
-export const ccpm_getAverageInSubGroup = (data) => {
+export const ccpm_getAverageInSubGroup = (data, datasetGroup) => {
     if (data.length === 0 || !data[0]) return 0;
     if (data[0].data.responses.includes('yes') || data[0].data.responses.includes('no')) {
-        const d = data.map(e => ccpm_getAverageInBoolQuestion(e));
+        const d = data.map(e => ccpm_getAverageInBoolQuestion(e, datasetGroup));
         return (d.reduce((a, b) => a + b)) / d.length;
     }
     const questionsAverage = data.map(e => {
-        return ccpm_getAverageInQuestion(e)
+        return ccpm_getAverageInQuestion(e, datasetGroup)
     });
     return questionsAverage.reduce((a, b) => a + b, 0) / data.length;
 }

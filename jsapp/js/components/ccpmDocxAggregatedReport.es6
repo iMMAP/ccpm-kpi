@@ -1,5 +1,6 @@
 import { AlignmentType, BorderStyle, Document } from "docx";
 import { titleConstants} from '../ccpmDataset';
+
 import { TextRun, Paragraph, ImageRun, SectionType, Table, TableRow, TableCell, WidthType} from 'docx';
 
 const getTable = (data, length, border = false, marginBottom = 150, leftMargin = 40, top = 0, size = 100, comment = false, omitHorizintalBorder = false) => {

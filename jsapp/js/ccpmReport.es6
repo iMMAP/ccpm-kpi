@@ -1,4 +1,4 @@
-import dataset, { ccpm_getQuestionInRange, ccpm_getAverageInSubGroup, ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion, titleConstants } from './ccpmDataset';
+import datasetCcpm, { ccpm_getQuestionInRange, ccpm_getAverageInSubGroup, ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion, titleConstants, datasetGroup } from './ccpmDataset';
 
 
 // Get label based on the average 
@@ -101,19 +101,51 @@ const ccpm_getResponseGrouped = (q) => {
     return result;
 }
 
-
-const ccpm_getData = (data, choices) => {
+const ccpm_getDataGlobalReport = (data, choices, dataSetGroup) => {
     const newReport = {};
     const chartData = {};
+    let dataset = dataSetGroup;
     const questionResponseGroup = {};
     Object.keys(dataset).forEach(group => {
         const groupedByLabel = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 };
+
+        Object.keys(dataset[group]).forEach(subGroup => {
+            if (subGroup !== 'code' && subGroup !== 'name' && subGroup !== 'names') {
+                newReport[subGroup] = {};
+                // Find all the question of a report subgroup, calculate the average and populate the charts
+                newReport[subGroup].questions = data.filter(e => ccpm_getQuestionInRange(group, subGroup, datasetGroup).includes(e.name)).map(q => {
+                    q.average = ccpm_getAverageInquestion(q);
+                    if (q.data.responses.includes('Yes') || q.data.responses.includes('No')) {
+                        q.averageLabel = ccpm_getStatusLabelBoolean(q.average);
+                    } else
+                        q.averageLabel = ccpm_getStatusLabel(q.average);
+                    return q;
+                });
+                newReport[subGroup].averageInGroup = ccpm_getAverageInSubGroup(newReport[subGroup].questions);
+                newReport[subGroup].group = group;
+            }
+        })
+        questionResponseGroup[group] = groupedByLabel;
+    })
+
+    return newReport;
+}
+
+
+const ccpm_getData = (data, choices, dataSetGroup) => {
+    const newReport = {};
+    const chartData = {};
+    let dataset = datasetCcpm;
+    const questionResponseGroup = {};
+    Object.keys(dataset).forEach(group => {
+        const groupedByLabel = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 };
+
         Object.keys(dataset[group]).forEach(subGroup => {
             if (subGroup !== 'code' || subGroup !== 'name') {
                 newReport[subGroup] = {};
                 // Find all the question of a report subgroup, calculate the average and populate the charts
                 newReport[subGroup].questions = data.filter(e => ccpm_getQuestionInRange(group, subGroup).includes(e.name)).map(q => {
-                    q.average = ccpm_getAverageInquestion(q);
+                    q.average = ccpm_getAverageInquestion(q, dataSetGroup);
                     if (q.data.responses.includes('Yes') || q.data.responses.includes('No')) {
                         q.averageLabel = ccpm_getStatusLabelBoolean(q.average);
                     } else
@@ -129,7 +161,7 @@ const ccpm_getData = (data, choices) => {
                     else chartData[group][q.averageLabel] = 1;
                     return q;
                 });
-                newReport[subGroup].averageInGroup = ccpm_getAverageInSubGroup(newReport[subGroup].questions);
+                newReport[subGroup].averageInGroup = ccpm_getAverageInSubGroup(newReport[subGroup].questions, dataSetGroup);
                 newReport[subGroup].group = group;
             }
         })
@@ -154,7 +186,8 @@ const ccpm_getData = (data, choices) => {
         totalResponseDisagregatedByPartner: ccpm_getNumberOfParnerResponseByType(totalResponseQuestions, data, choices),
         totalEffectiveResponse: { numberOfPartner: isNaN(numberOfPartner) ? 0 : numberOfPartner, sum: ccpm_getSumOfQuestions(totalEffectiveResponseQuestions, data) },
         totalEffectiveResponseDisagregatedByPartner: ccpm_getNumberOfParnerResponseByType(totalEffectiveResponseQuestions, data, choices),
-        questionResponseGroup: questionResponseGroup
+        questionResponseGroup: questionResponseGroup,
+        globalReport: datasetGroup ? ccpm_getDataGlobalReport(data, choices, dataSetGroup) : {}
     }
     return finalData;
 }

@@ -21,6 +21,8 @@ import saveAs from 'save-as';
 
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import dataset, { datasetGroup, ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion, ccpm_parseNumber} from '../ccpmDataset';
+import { ccpm_getLabel, ccpm_getStatusLabelBoolean } from '../ccpmReport';
 
 Chart.plugins.register(ChartDataLabels);
 
@@ -68,6 +70,31 @@ class AgregatedReportContents extends React.Component {
       } else if(ccpmData.region) regions.push({name: ccpmData.region.label, reports: [{...rep, ccpmData}]});
     })
     return regions.sort((a,b) => this.compareString(a, b, 'name'));
+  }
+
+
+  getSupportingServiceDelivery(reports, groupName){
+    let result = {};
+    reports.map((region, index) => {
+      let reduced = 0;
+      result[region.name] = {};
+      region.reports.forEach((report)=>{
+        const subGroups = Object.keys(report.globalReport).filter(key => report.globalReport[key].group === groupName);
+        subGroups.forEach((sg => {
+          const data  =  report.globalReport[sg].averageInGroup;
+          if(!result[region.name][sg]) result[region.name][sg] = data;
+          else result[region.name][sg] += data;
+        }))
+      })
+    })
+    const result2 = Object.keys(result).map(key => {
+      const data  = {name: key, data: {}}
+      Object.keys(result[key]).forEach(key2 => {
+        data.data[key2] = Math.round(100 * (result[key][key2] / (5 * reports.find(val => val.name === key).reports.length)))
+      })
+      return data;
+    })
+    return {result: result2, columns: Object.keys(datasetGroup[groupName]).filter(c => (c !== 'name' && c !== 'names' && c !== 'code'))}
   }
 
   getNationalLevel(reports){
@@ -510,6 +537,8 @@ class AgregatedReportContents extends React.Component {
     const completionRateRegions = this.getOverallCompletionRateRegion();
     const {languageIndex, languages} = this.props.parentState;
     const lcode = languages[languageIndex].code;
+    const supportServiceDelievery = this.getSupportingServiceDelivery(completionRateRegions, 'supportServiceDelivery');
+
     return (
       <div id='document-report'>
         <h1 className="bigTitle">{titleConstants.completionAndResponseRate[lcode]}</h1>
@@ -546,7 +575,21 @@ class AgregatedReportContents extends React.Component {
               <canvas ref={`chartbyCluster`} id={`chartbyCluster`} />
               <div style={{margin: '0px auto', textAlign:'center', alignContent: 'center'}} id="custom-legend"/>
             </div>
-         
+
+        <h1 className="title" style={{marginTop: '22px' }}>Support Service delivery</h1>
+        <table style={{ borderCollapse: 'collapse', width: '75%', margin: '30px auto' }}>
+          <thead>
+            <th style={{color: '#ffffff', minWidth: '100px'}}>{titleConstants.region[lcode]}</th>
+            {supportServiceDelievery.columns.map(c =>  <th className="agregatedTableTitle">{datasetGroup.supportServiceDelivery[c].names['en']}</th>)}
+          </thead>
+          <tbody>
+              {supportServiceDelievery.result.map((rg, index) => <tr>
+                  <td className="agregatedTableTitle" style={{textAlign: 'center'}}>{rg.name}</td>
+                  {supportServiceDelievery.columns.map(c => <td className="agregatedTableContent">{rg.data[c]}%</td>)}
+                </tr>
+              )}
+          </tbody>
+        </table>
       </div>
     );
   }
@@ -802,7 +845,7 @@ class Reports extends React.Component {
       
                 let newReport = {};
       
-                if(dataWithResponses[0].name === 'type_of_survey') newReport = ccpmReport(dataWithResponses, asset.content);
+                if(dataWithResponses[0].name === 'type_of_survey') newReport = ccpmReport(dataWithResponses, asset.content, datasetGroup);
                 this.setState({
                   isLoading: this.state.reports.length +1 < this.store.state.selectedAssetUids.length,
                   reports : [...this.state.reports, {
@@ -816,6 +859,7 @@ class Reports extends React.Component {
                   groupBy: groupBy,
                   error: false,
                   ccpmReport: newReport.report,
+                  globalReport: newReport.globalReport,
                   chartData:  newReport.chartData,
                   totalReponses : newReport.totalReponses,
                   totalResponseDisagregatedByPartner: newReport.totalResponseDisagregatedByPartner,
