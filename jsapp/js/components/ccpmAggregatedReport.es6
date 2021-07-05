@@ -73,7 +73,7 @@ class AgregatedReportContents extends React.Component {
   }
 
 
-  getSupportingServiceDelivery(reports, groupName){
+  getGroupTableByRegion(reports, groupName){
     let result = {};
     reports.map((region, index) => {
       let reduced = 0;
@@ -95,6 +95,39 @@ class AgregatedReportContents extends React.Component {
       return data;
     })
     return {result: result2, columns: Object.keys(datasetGroup[groupName]).filter(c => (c !== 'name' && c !== 'names' && c !== 'code'))}
+  }
+
+  getGroupTableByCluster(reports, groupName){
+    let result = {};
+    reports.map((region, index) => {
+      let reduced = 0;
+      result[region.name] = {};
+      region.reports.forEach((report)=>{
+        if(!result[region.name][report.ccpmData.cluster]) result[region.name][report.ccpmData.cluster] = {}
+        const subGroups = Object.keys(report.globalReport).filter(key => report.globalReport[key].group === groupName);
+        subGroups.forEach((sg => {
+          const data  =  report.globalReport[sg].averageInGroup;
+          if(!result[region.name][report.ccpmData.cluster][sg]) result[region.name][report.ccpmData.cluster][sg] = data;
+          else result[region.name][report.ccpmData.cluster][sg] += data;
+        }))
+      })
+    });
+    const regions = {};
+    const result2 =[];
+    Object.keys(result).forEach(region => {
+      Object.keys(result[region]).forEach(cluster => {
+        const totalCluster  = reports.find(reg => reg.name === region).reports.filter(r => r.ccpmData.cluster === cluster).length || 1;
+        const data = {};
+        Object.keys(result[region][cluster]).forEach(key => {
+          data[key] = Math.round(100 * result[region][cluster][key] / (5 * totalCluster))
+        })
+        result2.push({name: cluster, region, data})
+        if(!regions[region]) regions[region] = 1;
+        else regions[region]++;
+      })
+    })
+
+    return {result: result2.sort((a,b) => this.compareString(a, b, 'name')), regions}
   }
 
   getNationalLevel(reports){
@@ -531,14 +564,14 @@ class AgregatedReportContents extends React.Component {
 
   }
 
-
   render () {
     const {tnslIndex, reportData} = this.state;
     const completionRateRegions = this.getOverallCompletionRateRegion();
     const {languageIndex, languages} = this.props.parentState;
     const lcode = languages[languageIndex].code;
-    const supportServiceDelievery = this.getSupportingServiceDelivery(completionRateRegions, 'supportServiceDelivery');
-
+    const supportServiceDelievery = this.getGroupTableByRegion(completionRateRegions, 'supportServiceDelivery');
+    const supportServicedeliveryByCountry = this.getGroupTableByCluster(completionRateRegions, 'supportServiceDelivery');
+    let region = {};
     return (
       <div id='document-report'>
         <h1 className="bigTitle">{titleConstants.completionAndResponseRate[lcode]}</h1>
@@ -590,6 +623,25 @@ class AgregatedReportContents extends React.Component {
               )}
           </tbody>
         </table>
+        <table style={{ borderCollapse: 'collapse', width: '75%', margin: '30px auto' }}>
+          <thead>
+            <th style={{color: '#ffffff', minWidth: '100px'}}>{titleConstants.region[lcode]}</th>
+            <th style={{color: '#ffffff', minWidth: '100px'}}>Cluster</th>
+            {supportServiceDelievery.columns.map(c =>  <th className="agregatedTableTitle">{datasetGroup.supportServiceDelivery[c].names['en']}</th>)}
+          </thead>
+          <tbody>
+              {supportServicedeliveryByCountry.result.map((rg, index) => {
+                 const t = <tr>
+                 {!region[rg.region] && <td className="agregatedTableTitle" rowSpan={supportServicedeliveryByCountry.regions[rg.region]} style={{textAlign: 'center'}}>{rg.region}</td>}
+                  <td className="agregatedTableTitle" style={{textAlign: 'center'}}>{rg.name}</td>
+                  {supportServiceDelievery.columns.map(c => <td className="agregatedTableContent">{rg.data[c]}%</td>)}
+                </tr>
+                region[rg.region] = true;
+                return t;
+              })}
+          </tbody>
+        </table>
+      
       </div>
     );
   }
