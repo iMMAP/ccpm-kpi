@@ -1,5 +1,6 @@
 import { AlignmentType, BorderStyle, Document } from "docx";
-import { titleConstants} from '../ccpmDataset';
+import { titleConstants, datasetGroup} from '../ccpmDataset';
+import { getGroupTableByCluster, getGroupTableByRegion } from '../ccpmReport';
 
 import { TextRun, Paragraph, ImageRun, SectionType, Table, TableRow, TableCell, WidthType} from 'docx';
 
@@ -186,6 +187,18 @@ const getCoordinatorOrPartnerResponses = (reports, type) => {
   return coordinators;
 }
 
+const getGroupTable = (groupData, groupName) => {
+  const columns  = [
+    [getTableContent(''), ...groupData.columns.map(c => getTableContent(datasetGroup[groupName][c].names['en']))],
+    ...groupData.result.map((rg, index) => [
+      getTableContent(rg.name),
+      ...groupData.columns.map(c => getTableContent(`${rg.data[c]}%`))
+    ]
+  )
+  ]
+  return columns;
+}
+
 
 export default class CCPM_ReportContents {
   create(parentState) {
@@ -195,7 +208,8 @@ export default class CCPM_ReportContents {
     const chartByRegionRect = document.getElementById('chartbyType').getBoundingClientRect();
     const chartbyTypeAndRegionRect = document.getElementById('chartbyTypeAndRegion').getBoundingClientRect()
     const chartByClusterRect = document.getElementById('chartbyCluster').getBoundingClientRect()
-
+    const supportServiceDelievery = getGroupTableByRegion(completionRateRegions, 'supportServiceDelivery');
+    const supportServicedeliveryByCountry = getGroupTableByCluster(completionRateRegions, 'supportServiceDelivery');
     return new Promise((resolve) => {
       const sections = [
         {
@@ -271,6 +285,18 @@ export default class CCPM_ReportContents {
             }),
           ]
         },
+        {
+          properties: {
+            type: SectionType.NEXT_PAGE,
+          },
+          children: [
+            new Paragraph(''),
+            getTitle('Support Service delivery'),
+            new Paragraph(''),
+            getTable(getGroupTable(supportServiceDelievery, 'supportServiceDelivery'), 5, true, undefined, undefined, undefined, 50)
+         
+          ]
+        }
       ];
       resolve(new Document({
         sections: sections
