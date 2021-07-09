@@ -199,6 +199,18 @@ const getGroupTable = (groupData, groupName) => {
   return columns;
 }
 
+const getGroupByClusterTable = (groupData, groupName) => {
+  const columns  = [
+    [getTableContent(''),getTableContent(''), ...groupData.columns.map(c => getTableContent(datasetGroup[groupName][c].names['en']))],
+    ...groupData.result.map((rg, index) => [
+      getTableContent(rg.region),
+      getTableContent(rg.name),
+      ...groupData.columns.map(c => getTableContent(`${rg.data[c]}%`))
+    ]
+  )
+  ]
+  return columns;
+}
 
 export default class CCPM_ReportContents {
   create(parentState) {
@@ -293,7 +305,9 @@ export default class CCPM_ReportContents {
             new Paragraph(''),
             getTitle('Support Service delivery'),
             new Paragraph(''),
-            getTable(getGroupTable(supportServiceDelievery, 'supportServiceDelivery'), 5, true, undefined, undefined, undefined, 50)
+            getTable(getGroupTable(supportServiceDelievery, 'supportServiceDelivery'), 5, true, undefined, undefined, undefined, 50),
+            new Paragraph(''),
+            getTable(getGroupByClusterTable({...supportServicedeliveryByCountry, columns: supportServiceDelievery.columns}, 'supportServiceDelivery'), 5, true, undefined, undefined, undefined, 50)
          
           ]
         }
