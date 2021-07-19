@@ -513,8 +513,7 @@ class AgregatedReportContents extends React.Component {
     const completionRateRegions = this.getOverallCompletionRateRegion();
     const {languageIndex, languages} = this.props.parentState;
     const lcode = languages[languageIndex].code;
-    const supportServiceDelievery = getGroupTableByRegion(completionRateRegions, 'supportServiceDelivery');
-    const supportServicedeliveryByCountry = getGroupTableByCluster(completionRateRegions, 'supportServiceDelivery');
+
     let region = {};
     return (
       <div id='document-report'>
@@ -552,40 +551,45 @@ class AgregatedReportContents extends React.Component {
               <canvas ref={`chartbyCluster`} id={`chartbyCluster`} />
               <div style={{margin: '0px auto', textAlign:'center', alignContent: 'center'}} id="custom-legend"/>
             </div>
-
-        <h1 className="title" style={{marginTop: '22px' }}>Support Service delivery</h1>
-        <table style={{ borderCollapse: 'collapse', width: '75%', margin: '30px auto' }}>
-          <thead>
-            <th style={{color: '#ffffff', minWidth: '100px'}}>{titleConstants.region[lcode]}</th>
-            {supportServiceDelievery.columns.map(c =>  <th className="agregatedTableTitle">{datasetGroup.supportServiceDelivery[c].names['en']}</th>)}
-          </thead>
-          <tbody>
-              {supportServiceDelievery.result.map((rg, index) => <tr>
-                  <td className="agregatedTableTitle" style={{textAlign: 'center'}}>{rg.name}</td>
-                  {supportServiceDelievery.columns.map(c => <td className="agregatedTableContent">{rg.data[c]}%</td>)}
-                </tr>
-              )}
-          </tbody>
-        </table>
-        <table style={{ borderCollapse: 'collapse', width: '75%', margin: '30px auto' }}>
-          <thead>
-            <th style={{color: '#ffffff', minWidth: '100px'}}>{titleConstants.region[lcode]}</th>
-            <th style={{color: '#ffffff', minWidth: '100px'}}>Cluster</th>
-            {supportServiceDelievery.columns.map(c =>  <th className="agregatedTableTitle">{datasetGroup.supportServiceDelivery[c].names['en']}</th>)}
-          </thead>
-          <tbody>
-              {supportServicedeliveryByCountry.result.map((rg, index) => {
-                 const t = <tr>
-                 {!region[rg.region] && <td className="agregatedTableTitle" rowSpan={supportServicedeliveryByCountry.regions[rg.region]} style={{textAlign: 'center'}}>{rg.region}</td>}
-                  <td className="agregatedTableTitle" style={{textAlign: 'center'}}>{rg.name}</td>
-                  {supportServiceDelievery.columns.map(c => <td className="agregatedTableContent">{rg.data[c]}%</td>)}
-                </tr>
-                region[rg.region] = true;
-                return t;
-              })}
-          </tbody>
-        </table>
-      
+        {Object.keys(datasetGroup).filter(e=> e !== 'code' && e !== 'name' && e !== 'names').map(groupName =>{
+          const subGroup = getGroupTableByRegion(completionRateRegions, groupName);
+          const subGroupByCountry = getGroupTableByCluster(completionRateRegions, groupName);
+        return <>
+              <h1 className="title" style={{marginTop: '22px' }}>{datasetGroup[groupName].names[lcode]}</h1>
+              <table style={{ borderCollapse: 'collapse', width: '75%', margin: '30px auto' }}>
+                <thead>
+                  <th style={{color: '#ffffff', minWidth: '100px'}}>{titleConstants.region[lcode]}</th>
+                  {subGroup.columns.map(c =>  <th className="agregatedTableTitle">{datasetGroup[groupName][c].names['en']}</th>)}
+                </thead>
+                <tbody>
+                    {subGroup.result.map((rg, index) => <tr>
+                        <td className="agregatedTableTitle" style={{textAlign: 'center'}}>{rg.name}</td>
+                        {subGroup.columns.map(c => <td className="agregatedTableContent">{rg.data[c]}%</td>)}
+                      </tr>
+                    )}
+                </tbody>
+              </table>
+              <table style={{ borderCollapse: 'collapse', width: '75%', margin: '30px auto' }}>
+                <thead>
+                  <th style={{color: '#ffffff', minWidth: '100px'}}>{titleConstants.region[lcode]}</th>
+                  <th style={{color: '#ffffff', minWidth: '100px'}}>Cluster</th>
+                  {subGroup.columns.map(c =>  <th className="agregatedTableTitle">{datasetGroup[groupName][c].names['en']}</th>)}
+                </thead>
+                <tbody>
+                    {subGroupByCountry.result.map((rg, index) => {
+                      const t = <tr>
+                      {!region[rg.region] && <td className="agregatedTableTitle" rowSpan={subGroupByCountry.regions[rg.region]} style={{textAlign: 'center'}}>{rg.region}</td>}
+                        <td className="agregatedTableTitle" style={{textAlign: 'center'}}>{rg.name}</td>
+                        {subGroup.columns.map(c => <td className="agregatedTableContent">{rg.data[c]}%</td>)}
+                      </tr>
+                      region[rg.region] = true;
+                      if(index === subGroupByCountry.result.length-1) region = {};
+                      return t;
+                    })}
+                </tbody>
+              </table>
+            </>
+        })}
       </div>
     );
   }

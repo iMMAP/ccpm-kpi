@@ -76,6 +76,22 @@ export const datasetGroup = {
         frequencyPartnerContribution: {names: {en: 'Frequency partner contribution'}, code: '03', starting: 1, end: 2},
         partnerContribution: {names: {en: 'Partner contribution'}, code: '03_03'},
         useOfClusterAnalysis: {names: {en : 'Use of cluster analysis'}, code: '03', starting: 4, end: 5}
+    },
+    informingStrategicDecisions: {
+        name: 'Informing Strategy decision-making of the HC / Humanitarian Country Team',
+        names: {en: 'Informing Strategy decision-making of the HC / Humanitarian Country Team',
+                fr: 'Informer la prise de décision stratégique du HC / de l\'équipe humanitaire pays'},
+        code: 'P_IS',
+        organizationThatUsed: {names: {en: 'Organisation that used sectorial needs assessments tools and guidance agreed by cluster partners',
+                                       fr: 'Organisation qui a utilisé des outils d\'évaluation des besoins sectoriels et des orientations convenues par les partenaires du cluster'},
+                                       code: '01', starting: 1, end: 2},
+        organisationInvolved:  {names: {en: 'Organisation involved in coordinated sectorial needs assessments and surveys',
+                                       fr: 'Organisation impliquée dans les évaluations et enquêtes coordonnées des besoins sectoriels'},
+                                       code: '01', starting: 3, end: 5},
+        organisationParticipating: {names: {en: 'Organisations participating in joint situation analyses', fr: 'Organisations participant à des analyses de situation conjointes'}, 
+                                       code: '02'},
+        organisationShared: {names: {en: 'Organisation that shared reports of this surveys and assessments with cluster', fr : 'Organisation qui a partagé les rapports de ces enquêtes et évaluations avec le cluster'},
+                                       code: '01', starting: 6, end: 7 }
     }
 }
 
