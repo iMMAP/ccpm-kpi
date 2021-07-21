@@ -212,6 +212,23 @@ const getGroupByClusterTable = (groupData, groupName) => {
   return columns;
 }
 
+const getSecondSection = (lCode, completionRateRegions) => {
+  const data = [];
+  Object.keys(datasetGroup).filter(d => d !== 'code' && d !== 'name' && d !== 'names').forEach(subGroup => {
+
+    const subGroupData = getGroupTableByRegion(completionRateRegions, subGroup);
+    const subGroupDataByCountry = getGroupTableByCluster(completionRateRegions, subGroup);
+
+    data.push(getTitle(datasetGroup[subGroup].names[lCode]));
+    data.push(new Paragraph(''));
+    data.push(getTable(getGroupTable(subGroupData, subGroup), 5, true, undefined, undefined, undefined, 50));
+    data.push(new Paragraph(''));
+    data.push(getTable(getGroupByClusterTable({...subGroupDataByCountry, columns: subGroupData.columns}, subGroup), 5, true, undefined, undefined, undefined, 50))
+    data.push(new Paragraph(''));
+  }) 
+  return data;       
+}
+
 export default class CCPM_ReportContents {
   create(parentState) {
     const completionRateRegions = getOverallCompletionRateRegion(parentState);
@@ -220,8 +237,6 @@ export default class CCPM_ReportContents {
     const chartByRegionRect = document.getElementById('chartbyType').getBoundingClientRect();
     const chartbyTypeAndRegionRect = document.getElementById('chartbyTypeAndRegion').getBoundingClientRect()
     const chartByClusterRect = document.getElementById('chartbyCluster').getBoundingClientRect()
-    const supportServiceDelievery = getGroupTableByRegion(completionRateRegions, 'supportServiceDelivery');
-    const supportServicedeliveryByCountry = getGroupTableByCluster(completionRateRegions, 'supportServiceDelivery');
     return new Promise((resolve) => {
       const sections = [
         {
@@ -302,13 +317,7 @@ export default class CCPM_ReportContents {
             type: SectionType.NEXT_PAGE,
           },
           children: [
-            new Paragraph(''),
-            getTitle('Support Service delivery'),
-            new Paragraph(''),
-            getTable(getGroupTable(supportServiceDelievery, 'supportServiceDelivery'), 5, true, undefined, undefined, undefined, 50),
-            new Paragraph(''),
-            getTable(getGroupByClusterTable({...supportServicedeliveryByCountry, columns: supportServiceDelievery.columns}, 'supportServiceDelivery'), 5, true, undefined, undefined, undefined, 50)
-         
+            ...getSecondSection(lcode, completionRateRegions)
           ]
         }
       ];
