@@ -69,13 +69,13 @@ export const datasetGroup = {
         name: 'Support to Service Delivery',
         names: { en: 'Support to Service Delivery', fr: 'Appui à la Prestation de Services' },
         code: 'P_SS',
-        partnerSatisfaction : {names: {en: 'partner satisfaction'}, code: '01a_01' },
-        organizationAbility: {names: {en: 'Organization ability'}, code: '01a', starting: 2, end: 4},
-        clusterMeetingAbility: {names: {en: 'Cluster Meeting Ability'}, code: '04', starting: 1, end: 3},
-        clusterAbilityStrategic: {names: {en: 'cluster ability to make strategic decisions'}, code: '02', starting: 1, end: 3},
-        frequencyPartnerContribution: {names: {en: 'Frequency partner contribution'}, code: '03', starting: 1, end: 2},
-        partnerContribution: {names: {en: 'Partner contribution'}, code: '03_03'},
-        useOfClusterAnalysis: {names: {en : 'Use of cluster analysis'}, code: '03', starting: 4, end: 5}
+        partnerSatisfaction : {names: {en: 'partner satisfaction', fr: 'satisfaction du partenaire'}, code: '01a_01' },
+        organizationAbility: {names: {en: 'Organization ability', fr: 'Capacité d\'organisation'}, code: '01a', starting: 2, end: 4},
+        clusterMeetingAbility: {names: {en: 'Cluster Meeting Ability', fr: 'Capacité de réunion de cluster'}, code: '04', starting: 1, end: 3},
+        clusterAbilityStrategic: {names: {en: 'cluster ability to make strategic decisions', fr: 'capacité du cluster à prendre des décisions stratégiques'}, code: '02', starting: 1, end: 3},
+        frequencyPartnerContribution: {names: {en: 'Frequency partner contribution', fr: 'Contribution du partenaire de fréquence'}, code: '03', starting: 1, end: 2},
+        partnerContribution: {names: {en: 'Partner contribution', fr: 'Contribution du partenaire'}, code: '03_03'},
+        useOfClusterAnalysis: {names: {en : 'Use of cluster analysis', fr: 'Utilisation de l\'analyse de cluster'}, code: '03', starting: 4, end: 5}
     },
     informingStrategicDecisions: {
         name: 'Informing Strategy decision-making of the HC / Humanitarian Country Team',
@@ -92,6 +92,21 @@ export const datasetGroup = {
                                        code: '02'},
         organisationShared: {names: {en: 'Organisation that shared reports of this surveys and assessments with cluster', fr : 'Organisation qui a partagé les rapports de ces enquêtes et évaluations avec le cluster'},
                                        code: '01', starting: 6, end: 7 }
+    },
+    advocacy: {
+        code: 'P_AD',
+        name: 'Advocacy',
+        names: { en: 'Advocacy', fr: 'Plaidoyer' },
+        issuesRequiringAdvocacy: {names: {en: 'Issues requiring advocacy been identified and discussed together', fr: 'Les problèmes nécessitant un plaidoyer ont été identifiés et discutés ensemble'}, code: '01', starting: 1, end: 1},
+        organizationParticipating: {names: {en: 'Organization have participated in cluster advocacy activities', fr: 'Les problèmes nécessitant un plaidoyer ont été identifiés et discutés L\'organisation a participé ensemble aux activités de plaidoyer du cluster'}, code: '01', starting: 3, end: 5}
+    },
+    monitoringReporting: {
+        code: 'P_MR',
+        name: 'Monitoring and Reporting',
+        names: { en: 'Monitoring and Reporting', fr: 'Surveillance et Rapports' },
+        clusterBulletins: {names: {en: 'Cluster bullettins or updates highlight risks, gaps and changing needs', fr: 'Les bulletins ou mises à jour des clusters mettent en évidence les risques, les lacunes et les besoins changeants'}, code: '01_01'},
+        programMonitoring: {names: {en: 'Program monitoring and reporting formats are agreed by the cluster', fr: 'Les formats de suivi du programme et de rapport sont convenus par le cluster'}, code: '01_03'},
+        hasTheclusterTaken: {names: {en: 'Has the cluster taken into account the district needs, contributions and capacities of women, girl, men and boys in its response and monitoring', fr:'Le cluster a-t-il pris en compte les besoins, les contributions et les capacités du district des femmes, des filles, des hommes et des garçons dans sa réponse et son suivi'}, code: '01_05'}
     }
 }
 

@@ -73,7 +73,6 @@ class AgregatedReportContents extends React.Component {
   }
 
 
-
   getNationalLevel(reports){
     return reports.filter(rep => !rep.ccpmData.addSubCluster).length;
   }
@@ -559,7 +558,7 @@ class AgregatedReportContents extends React.Component {
               <table style={{ borderCollapse: 'collapse', width: '75%', margin: '30px auto' }}>
                 <thead>
                   <th style={{color: '#ffffff', minWidth: '100px'}}>{titleConstants.region[lcode]}</th>
-                  {subGroup.columns.map(c =>  <th className="agregatedTableTitle">{datasetGroup[groupName][c].names['en']}</th>)}
+                  {subGroup.columns.map(c =>  <th className="agregatedTableTitle">{datasetGroup[groupName][c].names[lcode]}</th>)}
                 </thead>
                 <tbody>
                     {subGroup.result.map((rg, index) => <tr>
@@ -573,9 +572,10 @@ class AgregatedReportContents extends React.Component {
                 <thead>
                   <th style={{color: '#ffffff', minWidth: '100px'}}>{titleConstants.region[lcode]}</th>
                   <th style={{color: '#ffffff', minWidth: '100px'}}>Cluster</th>
-                  {subGroup.columns.map(c =>  <th className="agregatedTableTitle">{datasetGroup[groupName][c].names['en']}</th>)}
+                  {subGroup.columns.map(c =>  <th className="agregatedTableTitle2">{datasetGroup[groupName][c].names[lcode]}</th>)}
                 </thead>
                 <tbody>
+                  
                     {subGroupByCountry.result.map((rg, index) => {
                       const t = <tr>
                       {!region[rg.region] && <td className="agregatedTableTitle" rowSpan={subGroupByCountry.regions[rg.region]} style={{textAlign: 'center'}}>{rg.region}</td>}
@@ -586,6 +586,14 @@ class AgregatedReportContents extends React.Component {
                       if(index === subGroupByCountry.result.length-1) region = {};
                       return t;
                     })}
+                    <tr>
+                      <td style={{border: 'none'}} />
+                      <td className="agregatedTableTitle" style={{textAlign:'center'}}>GLOBAL</td>
+                    {subGroup.columns.map(c => <td className="agregatedTableContent">{
+                      Number.parseFloat((subGroupByCountry.result.reduce((a,b) => a.data[c] + b.data[c]) / subGroupByCountry.result.length).toString()).toFixed(2)
+                    }%</td>)}
+                    </tr>
+                  
                 </tbody>
               </table>
             </>
