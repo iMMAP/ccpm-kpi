@@ -93,6 +93,16 @@ export const datasetGroup = {
         organisationShared: {names: {en: 'Organisation that shared reports of this surveys and assessments with cluster', fr : 'Organisation qui a partagé les rapports de ces enquêtes et évaluations avec le cluster'},
                                        code: '01', starting: 6, end: 7 }
     },
+    planningStrategyDevelopment: {
+        name: 'Planning and Strategy Development',
+        names: { en: 'Planning and Strategy Development', fr: 'Planification et Développement des Stratégies' },
+        code: 'P_PS',
+        organizationHelped: {names: {en: 'Organization have helped to develop cluster strategic plans', fr: 'Organisation ont aidé à développer des plans stratégiques de cluster'}, code: '01b', starting: 2, end: 3},
+        clusterPartnersAgreedTechnical: {names: {en: 'CLuster partners agreed technical standards and guidance and have applied them', fr: 'Les partenaires CLuster ont convenu de normes et d\'orientations techniques et les ont appliquées'}, wholeCode: 'C_PS02'},
+        clusterPartnerParticipatedIn: {names: {en: 'Cluster partners participating in prioritizing proposals under strategic plan with a transparent process', fr: 'Partenaires du cluster participant à la hiérarchisation des propositions dans le cadre du plan stratégique avec un processus transparent'}, code: '02', starting: 3, end: 4},
+        proposalsPrioritized: {names: {en: 'Proposals were prioritised against the strategic plan in a manner that was fair to all partners', fr: 'Les propositions ont été classées par ordre de priorité par rapport au plan stratégique d\'une manière équitable pour tous les partenaires'}, code: '02_05'},
+        clusterCoordinatorReported: {names: {en: 'The cluster coordinator reported on the cluster funding status against needs in appropriate time frames', fr: 'Le coordinateur du cluster a rendu compte de l\'état du financement du cluster par rapport aux besoins dans des délais appropriés'}, code: '02_06'}
+    },
     advocacy: {
         code: 'P_AD',
         name: 'Advocacy',
@@ -107,6 +117,20 @@ export const datasetGroup = {
         clusterBulletins: {names: {en: 'Cluster bullettins or updates highlight risks, gaps and changing needs', fr: 'Les bulletins ou mises à jour des clusters mettent en évidence les risques, les lacunes et les besoins changeants'}, code: '01_01'},
         programMonitoring: {names: {en: 'Program monitoring and reporting formats are agreed by the cluster', fr: 'Les formats de suivi du programme et de rapport sont convenus par le cluster'}, code: '01_03'},
         hasTheclusterTaken: {names: {en: 'Has the cluster taken into account the district needs, contributions and capacities of women, girl, men and boys in its response and monitoring', fr:'Le cluster a-t-il pris en compte les besoins, les contributions et les capacités du district des femmes, des filles, des hommes et des garçons dans sa réponse et son suivi'}, code: '01_05'}
+    },
+    preparednessPlan: {
+        code: 'P_PR',
+        name: 'Preparedness for Recurrent Disasters',
+        names: { en: 'Preparedness for Recurrent Disasters', fr: 'Préparation aux Catastrophes Récurrentes' },
+        organizationHelped: {names: {en: 'Organization helped to develop or update preparedness plans (Including multisectorial ones) that address hazards and risks', fr: 'L\'organisation a aidé à élaborer ou à mettre à jour des plans de préparation (y compris multisectoriels) qui traitent des dangers et des risques'}, code: '01', starting: 1, end: 3},
+        organizationCommittedStaff: {names: {en: 'Organization committed staff or resources that can be mobilized when preparedness plans are activated', fr: 'Personnel ou ressources engagés par l\'organisation qui peuvent être mobilisés lorsque les plans de préparation sont activés'}, code: '01', starting: 4, end: 5}
+    },
+    accoutabilityAffected: {
+        code: 'P_AA',
+        name: 'Accountability to affected populations',
+        names: {en: 'Accountability to affected populations', fr: 'Responsabilité envers les populations affectées'},
+        clusterPartnersConsulting: {names: {en: 'Cluster partners and applied mechanisms (procedures, tools or methodologies) for consulting and involving affected people in decision-making', fr: 'Partenaires du cluster et mécanismes appliqués (procédures, outils ou méthodologies) pour consulter et impliquer les personnes affectées dans la prise de décision'}, code: '01', content: [1, 3]},
+        clusterPartnersReceiving: {names: {en: 'Cluster partners and applied mechanisms (procedures, tools or methodologies) to receive, investigate and act on complaints by affected people', fr: 'Partenaires du cluster et mécanismes appliqués (procédures, outils ou méthodologies) pour recevoir, enquêter et agir sur les plaintes des personnes affectées'}, code: '01', content: [2,4] }
     }
 }
 
@@ -120,8 +144,21 @@ export const ccpm_getQuestionInRange = (groupIdentifier, subgroupIdentifier, dat
     const subgroup = group[subgroupIdentifier]
 
     const questions = [];
+    const code = `${group.code}${subgroup.code}`;
     if(subgroup){
-        const code = `${group.code}${subgroup.code}`;
+        if(subgroup.wholeCode){
+             questions.push(subgroup.wholeCode);
+        }
+        else if(subgroup.content){
+            subgroup.content.forEach(c => {
+                if (c >= 10) {
+                    questions.push(`${code}_${c}`);
+                } else {
+                    questions.push(`${code}_0${c}`);
+                }
+                questions.push(`${group.code}`)
+            })
+        } else {
         if (!subgroup.starting)
             questions.push(code);
         else {
@@ -133,6 +170,7 @@ export const ccpm_getQuestionInRange = (groupIdentifier, subgroupIdentifier, dat
                 }
             }
         }}
+    }
     return questions;
 }
 

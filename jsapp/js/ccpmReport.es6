@@ -114,6 +114,7 @@ const ccpm_getDataGlobalReport = (data, choices, dataSetGroup) => {
                 newReport[subGroup] = {};
                 // Find all the question of a report subgroup, calculate the average and populate the charts
                 newReport[subGroup].questions = data.filter(e => ccpm_getQuestionInRange(group, subGroup, dataSetGroup).includes(e.name)).map(q => {
+                    if(subGroup === '')
                     q.average = ccpm_getAverageInquestion(q);
                     if (q.data.responses.includes('Yes') || q.data.responses.includes('No')) {
                         q.averageLabel = ccpm_getStatusLabelBoolean(q.average);

@@ -553,6 +553,7 @@ class AgregatedReportContents extends React.Component {
         {Object.keys(datasetGroup).filter(e=> e !== 'code' && e !== 'name' && e !== 'names').map(groupName =>{
           const subGroup = getGroupTableByRegion(completionRateRegions, groupName);
           const subGroupByCountry = getGroupTableByCluster(completionRateRegions, groupName);
+          subGroupByCountry.result = subGroupByCountry.result.sort((a,b) => this.compareString(a,b, 'region'));
         return <>
               <h1 className="title" style={{marginTop: '22px' }}>{datasetGroup[groupName].names[lcode]}</h1>
               <table style={{ borderCollapse: 'collapse', width: '75%', margin: '30px auto' }}>
@@ -590,7 +591,13 @@ class AgregatedReportContents extends React.Component {
                       <td style={{border: 'none'}} />
                       <td className="agregatedTableTitle" style={{textAlign:'center'}}>GLOBAL</td>
                     {subGroup.columns.map(c => <td className="agregatedTableContent">{
-                      Number.parseFloat((subGroupByCountry.result.reduce((a,b) => a.data[c] + b.data[c]) / subGroupByCountry.result.length).toString()).toFixed(2)
+                      Number.parseFloat((subGroupByCountry.result.reduce((a,b) =>{
+                        if(!(a && a.data) && (b && b.data)) return 0;
+                        if(!(a && a.data)) return b.data[c];
+                        if(!(b && b.data)) return a.data[c];
+                        
+                       return  (a.data[c] + b.data[c])}) / subGroupByCountry.result.length).toString()).toFixed(2)
+        
                     }%</td>)}
                     </tr>
                   
