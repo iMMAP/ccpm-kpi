@@ -254,7 +254,8 @@ export const titleConstants = {
     nationalLevel: {en:'National Level', fr: 'Niveau National'},
     subNational: {en: 'Sub National', fr: 'Interieur'},
     coortinatorResponse: {en: 'Coordinators Responses', fr: 'Réponses des Coordinateurs'},
-    partnerResponse: {en: 'Partner Responses', fr: 'Réponses des Partenaires'}
+    partnerResponse: {en: 'Partner Responses', fr: 'Réponses des Partenaires'},
+    summaryResults: {en: 'Summary Results - Overall Performance', fr: 'Résumé des résultats - Performance globale'}
 }
 
 export default dataset;

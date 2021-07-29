@@ -1,27 +1,31 @@
-import { AlignmentType, BorderStyle, Document } from "docx";
+import { AlignmentType, BorderStyle, Document, ShadingType } from "docx";
 import { titleConstants, datasetGroup} from '../ccpmDataset';
 import { getGroupTableByCluster, getGroupTableByRegion } from '../ccpmReport';
 
 import { TextRun, Paragraph, ImageRun, SectionType, Table, TableRow, TableCell, WidthType} from 'docx';
 
-const getTable = (data, length, border = false, marginBottom = 150, leftMargin = 40, top = 0, size = 100, comment = false, omitHorizintalBorder = false) => {
+const getTable = (data, length, border = false, marginBottom = 150, leftMargin = 40,  omitHorizintalBorder = false, fillSecondCell = false) => {
   if (!data) return;
-  const rows = [...data.map(t => new TableRow({
+  const rowLength = 100 / length;
+  const remainingRowLength = 100 - (Math.round(rowLength) * length);
+  const rows = [...data.map((t, index) => new TableRow({
     children: t.map((tt, ind) => new TableCell({
       margins: { left: 100, right: 100 },
       children: [tt],
-      columnSpan: 5,
       verticalAlign: 'center',
+      shading: index === 0 || ind === 0 || (ind === 1 && fillSecondCell) ? {color: '#1f5782', fill: '#1f5782', val:ShadingType.SOLID}: null,
       width: {
-          size: `${100 / length}%`,
+          size: `${ind === 0 ? Math.round(rowLength) + remainingRowLength : Math.round(rowLength)}%`,
           type: WidthType.PERCENTAGE
         }
     }))
   }))]
   const columWidth = new Array(length);
+  const columnWidthSingle = (9000 / columWidth.length);
+  const remaining = 9000 - (Math.round(columnWidthSingle) * columWidth.length);
   return new Table({
-    columnWidths: columWidth.map(w => 9000 / columWidth.length),
-    width: { size, type: WidthType.PERCENTAGE },
+    columnWidths: columWidth.map((w, index) => index === 0 ? Math.round(columnWidthSingle) + remaining : Math.round(columnWidthSingle)),
+    width: { size: 100, type: WidthType.PERCENTAGE },
     margins: {
       top: 150,
       bottom: marginBottom,
@@ -112,7 +116,7 @@ const getSubTitle = (text, color = 'black', alignment) => {
   })
 }
 
-const getTableContent = (text, color = '#4e4e4e') => {
+const getTableContent = (text, color = '#4e4e4e', bold = false) => {
   return new Paragraph({
     spacing: {
       before: 100,
@@ -124,7 +128,7 @@ const getTableContent = (text, color = '#4e4e4e') => {
         text: text,
         size: 22,
         color,
-        bold: true,
+        bold,
         style: {
           size: 22,
           color,
@@ -189,9 +193,9 @@ const getCoordinatorOrPartnerResponses = (reports, type) => {
 
 const getGroupTable = (groupData, groupName) => {
   const columns  = [
-    [getTableContent(''), ...groupData.columns.map(c => getTableContent(datasetGroup[groupName][c].names['en']))],
+    [getTableContent(''), ...groupData.columns.map(c => getTableContent(datasetGroup[groupName][c].names['en'], '#ffffff'))],
     ...groupData.result.map((rg, index) => [
-      getTableContent(rg.name),
+      getTableContent(rg.name, '#ffffff', false),
       ...groupData.columns.map(c => getTableContent(`${rg.data[c]}%`))
     ]
   )
@@ -201,10 +205,10 @@ const getGroupTable = (groupData, groupName) => {
 
 const getGroupByClusterTable = (groupData, groupName) => {
   const columns  = [
-    [getTableContent(''),getTableContent(''), ...groupData.columns.map(c => getTableContent(datasetGroup[groupName][c].names['en']))],
+    [getTableContent(''),getTableContent(''), ...groupData.columns.map(c => getTableContent(datasetGroup[groupName][c].names['en'], '#ffffff'))],
     ...groupData.result.map((rg, index) => [
-      getTableContent(rg.region),
-      getTableContent(rg.name),
+      getTableContent(rg.region, '#ffffff', false),
+      getTableContent(rg.name, '#ffffff', false),
       ...groupData.columns.map(c => getTableContent(`${rg.data[c]}%`))
     ]
   )
@@ -213,20 +217,27 @@ const getGroupByClusterTable = (groupData, groupName) => {
 }
 
 const getSecondSection = (lCode, completionRateRegions) => {
-  const data = [];
-  Object.keys(datasetGroup).filter(d => d !== 'code' && d !== 'name' && d !== 'names').forEach(subGroup => {
+  const result = [];
+  Object.keys(datasetGroup).filter(d => d !== 'code' && d !=='content' && d!== 'wholeCode' && d !== 'name' && d !== 'names').forEach(subGroup => {
 
     const subGroupData = getGroupTableByRegion(completionRateRegions, subGroup);
     const subGroupDataByCountry = getGroupTableByCluster(completionRateRegions, subGroup);
+    const data = [];
 
     data.push(getTitle(datasetGroup[subGroup].names[lCode]));
     data.push(new Paragraph(''));
-    data.push(getTable(getGroupTable(subGroupData, subGroup), 5, true, undefined, undefined, undefined, 50));
+    data.push(getTable(getGroupTable(subGroupData, subGroup), 5, true, undefined, undefined, undefined,false));
     data.push(new Paragraph(''));
-    data.push(getTable(getGroupByClusterTable({...subGroupDataByCountry, columns: subGroupData.columns}, subGroup), 5, true, undefined, undefined, undefined, 50))
+    data.push(getTable(getGroupByClusterTable({...subGroupDataByCountry, columns: subGroupData.columns}, subGroup), 5, true,null, null, null, true))
     data.push(new Paragraph(''));
+
+    result.push({
+      properties: {
+        type: SectionType.NEXT_PAGE,
+      },
+      children: data})
   }) 
-  return data;       
+  return result;  
 }
 
 export default class CCPM_ReportContents {
@@ -236,7 +247,7 @@ export default class CCPM_ReportContents {
     const lcode = languages[languageIndex].code;
     const chartByRegionRect = document.getElementById('chartbyType').getBoundingClientRect();
     const chartbyTypeAndRegionRect = document.getElementById('chartbyTypeAndRegion').getBoundingClientRect()
-    const chartByClusterRect = document.getElementById('chartbyCluster').getBoundingClientRect()
+    const chartByClusterRect = document.getElementById('chartbyCluster').getBoundingClientRect();
     return new Promise((resolve) => {
       const sections = [
         {
@@ -250,18 +261,18 @@ export default class CCPM_ReportContents {
             new Paragraph(''),
             getTable([
               [getTableContent(''),
-              getTableContent(titleConstants.nationalLevel[lcode]),
-              getTableContent(titleConstants.subNational[lcode]),
-              getTableContent(titleConstants.coortinatorResponse[lcode]),
-              getTableContent(titleConstants.partnerResponse[lcode])],
+              getTableContent(titleConstants.nationalLevel[lcode], '#ffffff', false),
+              getTableContent(titleConstants.subNational[lcode], '#ffffff', false),
+              getTableContent(titleConstants.coortinatorResponse[lcode], '#ffffff', false),
+              getTableContent(titleConstants.partnerResponse[lcode], '#ffffff', false)],
               ...completionRateRegions.map(rg => [
-                getTableContent(rg.name),
+                getTableContent(rg.name, '#ffffff'),
                 getTableContent(getNationalLevel(rg.reports)),
                 getTableContent(getSubNationalLevel(rg.reports) || ''),
                 getTableContent(getCoordinatorOrPartnerResponses(rg.reports, 'coordinator')),
                 getTableContent(getCoordinatorOrPartnerResponses(rg.reports, 'partner'))
               ])
-            ], 5, true, undefined, undefined, undefined, 50),
+            ], 5, true, undefined, undefined, undefined, false),
             new Paragraph(''),
             getTitle(titleConstants.responseRateByRegionAndType[lcode]),
             new Paragraph(''),
@@ -279,6 +290,13 @@ export default class CCPM_ReportContents {
               })]
             }),
             new Paragraph(''),
+          ]
+        },
+        {
+          properties: {
+            type: SectionType.NEXT_PAGE,
+          },
+          children: [
             getTitle(titleConstants.partnerByRegion[lcode]),
             new Paragraph(''),
             new Paragraph({
@@ -312,14 +330,7 @@ export default class CCPM_ReportContents {
             }),
           ]
         },
-        {
-          properties: {
-            type: SectionType.NEXT_PAGE,
-          },
-          children: [
-            ...getSecondSection(lcode, completionRateRegions)
-          ]
-        }
+        ...getSecondSection(lcode, completionRateRegions)
       ];
       resolve(new Document({
         sections: sections

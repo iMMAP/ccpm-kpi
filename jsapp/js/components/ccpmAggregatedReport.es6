@@ -512,8 +512,10 @@ class AgregatedReportContents extends React.Component {
     const completionRateRegions = this.getOverallCompletionRateRegion();
     const {languageIndex, languages} = this.props.parentState;
     const lcode = languages[languageIndex].code;
+    const colors  = ['#007899', '#009898', '#48b484', '#9fc96f', '#f8d871', '#f87571']
 
     let region = {};
+    const colorRegion = {};
     return (
       <div id='document-report'>
         <h1 className="bigTitle">{titleConstants.completionAndResponseRate[lcode]}</h1>
@@ -527,10 +529,10 @@ class AgregatedReportContents extends React.Component {
             <th className="agregatedTableTitle">{titleConstants.partnerResponse[lcode]}</th>
           </thead>
               <tbody>
-              {completionRateRegions.map(rg => <tr>
+              {completionRateRegions.map((rg, index) => <tr>
                   <td className="agregatedTableTitle" style={{textAlign: 'center'}}>{rg.name}</td>
-                  <td className="agregatedTableContent">{this.getNationalLevel(rg.reports)}</td>
-                  <td className="agregatedTableContent">{this.getSubNationalLevel(rg.reports)}</td>
+                  <td className="agregatedTableContent" >{this.getNationalLevel(rg.reports)}</td>
+                  <td className="agregatedTableContent" >{this.getSubNationalLevel(rg.reports)}</td>
                   <td className="agregatedTableContent">{this.getCoordinatorOrPartnerResponses(rg.reports, 'coordinator')}</td>
                   <td className="agregatedTableContent">{this.getCoordinatorOrPartnerResponses(rg.reports, 'partner')}</td>
                 </tr>
@@ -550,6 +552,7 @@ class AgregatedReportContents extends React.Component {
               <canvas ref={`chartbyCluster`} id={`chartbyCluster`} />
               <div style={{margin: '0px auto', textAlign:'center', alignContent: 'center'}} id="custom-legend"/>
             </div>
+       <h1 className="bigTitle">{titleConstants.summaryResults[lcode]}</h1>
         {Object.keys(datasetGroup).filter(e=> e !== 'code' && e !== 'name' && e !== 'names').map(groupName =>{
           const subGroup = getGroupTableByRegion(completionRateRegions, groupName);
           const subGroupByCountry = getGroupTableByCluster(completionRateRegions, groupName);
@@ -562,25 +565,27 @@ class AgregatedReportContents extends React.Component {
                   {subGroup.columns.map(c =>  <th className="agregatedTableTitle">{datasetGroup[groupName][c].names[lcode]}</th>)}
                 </thead>
                 <tbody>
-                    {subGroup.result.map((rg, index) => <tr>
-                        <td className="agregatedTableTitle" style={{textAlign: 'center'}}>{rg.name}</td>
+                    {subGroup.result.map((rg, index) => {
+                    return <tr>
+                        <td className="agregatedTableTitle" style={{textAlign: 'center', backgroundColor: colors[index]}}>{rg.name}</td>
                         {subGroup.columns.map(c => <td className="agregatedTableContent">{rg.data[c]}%</td>)}
                       </tr>
-                    )}
+                    })}
                 </tbody>
               </table>
               <table style={{ borderCollapse: 'collapse', width: '75%', margin: '30px auto' }}>
                 <thead>
                   <th style={{color: '#ffffff', minWidth: '100px'}}>{titleConstants.region[lcode]}</th>
                   <th style={{color: '#ffffff', minWidth: '100px'}}>Cluster</th>
-                  {subGroup.columns.map(c =>  <th className="agregatedTableTitle2">{datasetGroup[groupName][c].names[lcode]}</th>)}
+                  {subGroup.columns.map(c =>  <th className="agregatedTableTitle">{datasetGroup[groupName][c].names[lcode]}</th>)}
                 </thead>
                 <tbody>
                   
                     {subGroupByCountry.result.map((rg, index) => {
+                      if(!colorRegion[rg.region]) colorRegion[rg.region] = colors[Object.keys(colorRegion).length]
                       const t = <tr>
-                      {!region[rg.region] && <td className="agregatedTableTitle" rowSpan={subGroupByCountry.regions[rg.region]} style={{textAlign: 'center'}}>{rg.region}</td>}
-                        <td className="agregatedTableTitle" style={{textAlign: 'center'}}>{rg.name}</td>
+                      {!region[rg.region] && <td className="agregatedTableTitle"  rowSpan={subGroupByCountry.regions[rg.region]} style={{textAlign: 'center', backgroundColor: colorRegion[rg.region]}}>{rg.region}</td>}
+                        <td className="agregatedTableTitle" style={{textAlign: 'center', backgroundColor:colorRegion[rg.region]}}>{rg.name}</td>
                         {subGroup.columns.map(c => <td className="agregatedTableContent">{rg.data[c]}%</td>)}
                       </tr>
                       region[rg.region] = true;
@@ -589,7 +594,7 @@ class AgregatedReportContents extends React.Component {
                     })}
                     <tr>
                       <td style={{border: 'none'}} />
-                      <td className="agregatedTableTitle" style={{textAlign:'center'}}>GLOBAL</td>
+                      <td className="agregatedTableTitle" style={{textAlign:'center', backgroundColor:'#009898'}}>GLOBAL</td>
                     {subGroup.columns.map(c => <td className="agregatedTableContent">{
                       Number.parseFloat((subGroupByCountry.result.reduce((a,b) =>{
                         if(!(a && a.data) && (b && b.data)) return 0;
