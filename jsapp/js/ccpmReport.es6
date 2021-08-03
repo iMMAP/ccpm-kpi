@@ -114,7 +114,6 @@ const ccpm_getDataGlobalReport = (data, choices, dataSetGroup) => {
                 newReport[subGroup] = {};
                 // Find all the question of a report subgroup, calculate the average and populate the charts
                 newReport[subGroup].questions = data.filter(e => ccpm_getQuestionInRange(group, subGroup, dataSetGroup).includes(e.name)).map(q => {
-                    if(subGroup === '')
                     q.average = ccpm_getAverageInquestion(q);
                     if (q.data.responses.includes('Yes') || q.data.responses.includes('No')) {
                         q.averageLabel = ccpm_getStatusLabelBoolean(q.average);
@@ -200,11 +199,19 @@ export const getGroupTableByRegion = (reports, groupName) => {
       result[region.name] = {};
       region.reports.forEach((report)=>{
         const subGroups = Object.keys(report.globalReport).filter(key => report.globalReport[key].group === groupName);
-        subGroups.forEach((sg => {
-          const data  =  report.globalReport[sg].averageInGroup;
-          if(!result[region.name][sg]) result[region.name][sg] = data;
-          else result[region.name][sg] += data;
-        }))
+        subGroups.forEach((sg) => {  
+          const data = report.globalReport[sg].averageInGroup || 0;
+          if(result[region.name][sg]){ 
+            if(sg === 'organizationHelped') console.log('exists',result[region.name][sg], region.name, sg, data); 
+            result[region.name][sg] += data;
+          }
+          else {
+            if(sg === 'organizationHelped') console.log('undedined',result[region.name][sg], region.name, sg, data);
+            result[region.name][sg] = data;
+          }
+          if(sg === 'organizationHelped') console.log(result[region.name][sg]);
+        })
+        reduced = 0;
       })
     })
     const result2 = Object.keys(result).map(key => {
@@ -235,8 +242,7 @@ const compareNumbers = (a, b) => {
 
 export const getGroupTableByCluster = (reports, groupName) => {
     let result = {};
-    reports.map((region, index) => {
-      let reduced = 0;
+    reports.map((region) => {
       result[region.name] = {};
       region.reports.forEach((report)=>{
         if(!result[region.name][report.ccpmData.cluster]) result[region.name][report.ccpmData.cluster] = {}

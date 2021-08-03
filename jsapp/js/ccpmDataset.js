@@ -97,7 +97,7 @@ export const datasetGroup = {
         name: 'Planning and Strategy Development',
         names: { en: 'Planning and Strategy Development', fr: 'Planification et Développement des Stratégies' },
         code: 'P_PS',
-        organizationHelped: {names: {en: 'Organization have helped to develop cluster strategic plans', fr: 'Organisation ont aidé à développer des plans stratégiques de cluster'}, code: '01b', starting: 2, end: 3},
+        organizationHelped2: {names: {en: 'Organization have helped to develop cluster strategic plans', fr: 'Organisation ont aidé à développer des plans stratégiques de cluster'}, code: '01b', starting: 2, end: 3},
         clusterPartnersAgreedTechnical: {names: {en: 'CLuster partners agreed technical standards and guidance and have applied them', fr: 'Les partenaires CLuster ont convenu de normes et d\'orientations techniques et les ont appliquées'}, wholeCode: 'C_PS02'},
         clusterPartnerParticipatedIn: {names: {en: 'Cluster partners participating in prioritizing proposals under strategic plan with a transparent process', fr: 'Partenaires du cluster participant à la hiérarchisation des propositions dans le cadre du plan stratégique avec un processus transparent'}, code: '02', starting: 3, end: 4},
         proposalsPrioritized: {names: {en: 'Proposals were prioritised against the strategic plan in a manner that was fair to all partners', fr: 'Les propositions ont été classées par ordre de priorité par rapport au plan stratégique d\'une manière équitable pour tous les partenaires'}, code: '02_05'},

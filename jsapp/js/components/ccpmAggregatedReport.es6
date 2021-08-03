@@ -507,6 +507,14 @@ class AgregatedReportContents extends React.Component {
 
   }
 
+  getGlobalSum (data, column) {
+    let sum = 0;
+    data.forEach(element => {
+      if(element && element.data && element.data[column]) sum += element.data[column];
+    })
+    return Number.parseFloat((sum / (data.length < 1 ? 1 : data.length)).toString()).toFixed(2);
+  }
+
   render () {
     const {tnslIndex, reportData} = this.state;
     const completionRateRegions = this.getOverallCompletionRateRegion();
@@ -555,6 +563,7 @@ class AgregatedReportContents extends React.Component {
        <h1 className="bigTitle">{titleConstants.summaryResults[lcode]}</h1>
         {Object.keys(datasetGroup).filter(e=> e !== 'code' && e !== 'name' && e !== 'names').map(groupName =>{
           const subGroup = getGroupTableByRegion(completionRateRegions, groupName);
+          console.log(subGroup);
           const subGroupByCountry = getGroupTableByCluster(completionRateRegions, groupName);
           subGroupByCountry.result = subGroupByCountry.result.sort((a,b) => this.compareString(a,b, 'region'));
         return <>
@@ -566,6 +575,7 @@ class AgregatedReportContents extends React.Component {
                 </thead>
                 <tbody>
                     {subGroup.result.map((rg, index) => {
+                    if(subGroup.name === 'organizationHelped') console.log(rg, 'the subgroup')
                     return <tr>
                         <td className="agregatedTableTitle" style={{textAlign: 'center', backgroundColor: colors[index]}}>{rg.name}</td>
                         {subGroup.columns.map(c => <td className="agregatedTableContent">{rg.data[c]}%</td>)}
@@ -596,13 +606,7 @@ class AgregatedReportContents extends React.Component {
                       <td style={{border: 'none'}} />
                       <td className="agregatedTableTitle" style={{textAlign:'center', backgroundColor:'#009898'}}>GLOBAL</td>
                     {subGroup.columns.map(c => <td className="agregatedTableContent">{
-                      Number.parseFloat((subGroupByCountry.result.reduce((a,b) =>{
-                        if(!(a && a.data) && (b && b.data)) return 0;
-                        if(!(a && a.data)) return b.data[c];
-                        if(!(b && b.data)) return a.data[c];
-                        
-                       return  (a.data[c] + b.data[c])}) / subGroupByCountry.result.length).toString()).toFixed(2)
-        
+                    this.getGlobalSum(subGroupByCountry.result, c)
                     }%</td>)}
                     </tr>
                   
