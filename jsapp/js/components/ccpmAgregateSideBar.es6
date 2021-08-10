@@ -29,7 +29,8 @@ class SidebarAgregatedCCPM extends Reflux.Component {
         filterTags: 'asset_type:survey',
       }),
       selectedYear : null,
-      selectedCluster: null
+      selectedCluster: [],
+      selectedSubCluster: []
     };
     this.store = stores.aggregatedReport;
     autoBind(this);
@@ -73,22 +74,26 @@ class SidebarAgregatedCCPM extends Reflux.Component {
     const reportByYear = [];
     const years = [];
     const clusters = [];
+    const subClusters = [];
 
     deployedReports.filter(report => (report.summary.labels.includes('Partner_or_Coordinator_GROUP') || report.summary.labels.includes('Partner or Coordinator?')) &&
       report.settings && report.settings.ccpmData).forEach(report => {
       const ccpmData = JSON.parse(report.settings.ccpmData);
       if(ccpmData && ccpmData.year && !years.includes(ccpmData.year)) years.push(ccpmData.year); 
-      if(ccpmData && ccpmData.year ) reportByYear.push({year: ccpmData.year, cluster: ccpmData.cluster,report }); 
+      if(ccpmData && ccpmData.year ) reportByYear.push({year: ccpmData.year, cluster: ccpmData.cluster,report, subCluster : ccpmData.subCluster }); 
       if(ccpmData.year === year){
-        if(ccpmData && ccpmData.cluster && !clusters.includes(ccpmData.cluster)) clusters.push(ccpmData.cluster);
+        if(ccpmData && !ccpmData.subCluster && ccpmData.cluster && !clusters.includes(ccpmData.cluster)) clusters.push(ccpmData.cluster);
+        if(ccpmData && ccpmData.subCluster  && !subClusters.includes(ccpmData.subCluster)) subClusters.push(ccpmData.subCluster);
       } 
     })
 
-    return {reportByYear, years, clusters};
+    return {reportByYear, years, clusters, subClusters};
   }
 
   generateReport(items){
-    const reports = items.filter(e => this.state.selectedYear.toString() === e.year && this.state.selectedCluster.map(v=>v.value).includes(e.cluster));
+    const reports = items.filter(e => this.state.selectedYear.toString() === e.year && 
+                    (!e.subCluster && this.state.selectedCluster.map(v=>v.value).includes(e.cluster))
+                    ||(this.state.selectedSubCluster.map(v=>v.value).includes(e.subCluster)));
     this.store.setState({selectedAssetUids: reports.map(v =>v.report.uid)})
   }
 
@@ -156,7 +161,13 @@ class SidebarAgregatedCCPM extends Reflux.Component {
                     else this.setState({selectedCluster:e});
                   }} value={this.state.selectedCluster} styles={customStyles} options={[{value: 'all', label: 'Select All'},...ccpmData.clusters.map(y => ({value: y, label: y}))]} isMulti/>
                   </>}
-                {(this.state.selectedCluster && this.state.selectedCluster.length > 1) && 
+                {this.state.selectedYear && <> <p>Select Sub-clusters </p>
+                  <Select onChange={(e)=>{
+                    if(e.find(v => v.value === 'all')) this.setState({selectedCluster: ccpmData.subClusters.map(y => ({value: y, label: y}))});
+                    else this.setState({selectedSubCluster:e});
+                  }} value={this.state.selectedSubCluster} styles={customStyles} options={[{value: 'all', label: 'Select All'},...ccpmData.subClusters.map(y => ({value: y, label: y}))]} isMulti/>
+                  </>}
+                {(this.state.selectedCluster && (this.state.selectedCluster.length + this.state.selectedSubCluster.length) > 1) && 
                 <div style={{marginTop: '30px'}}>
                   <bem.KoboButton onClick={()=>{this.generateReport(ccpmData.reportByYear)}}  m={['blue', 'fullwidth']}>
                     Generate Report

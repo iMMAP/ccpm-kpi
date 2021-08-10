@@ -604,7 +604,7 @@ class AgregatedReportContents extends React.Component {
                     })}
                     <tr>
                       <td style={{border: 'none'}} />
-                      <td className="agregatedTableTitle" style={{textAlign:'center', backgroundColor:'#009898'}}>GLOBAL</td>
+                      <td className="agregatedTableTitle" style={{textAlign:'center', backgroundColor:'#b3b3ff'}}>GLOBAL</td>
                     {subGroup.columns.map(c => <td className="agregatedTableContent">{
                     this.getGlobalSum(subGroupByCountry.result, c)
                     }%</td>)}
