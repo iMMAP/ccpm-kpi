@@ -110,7 +110,6 @@ class SidebarAgregatedCCPM extends Reflux.Component {
       }
       orderedSubCluster.push(s);
     }));
-    console.log(orderedSubCluster);
 
     return {reportByYear, years, clusters, subClusters: orderedSubCluster};
   }
@@ -188,7 +187,7 @@ class SidebarAgregatedCCPM extends Reflux.Component {
                     else this.setState({selectedCluster:e});
                   }} value={this.state.selectedCluster} styles={customStyles} options={[{value: 'all', label: 'Select All'},...ccpmData.clusters.map(y => ({value: y, label: y}))]} isMulti/>
                   </>}
-                {this.state.selectedYear && <> <p>Select Sub-clusters </p>
+                {this.state.selectedYear && <> <p>Select the Sub-clusters </p>
                   <Select onChange={(e)=>{
                     if(e.find(v => v.value === 'all')) this.setState({selectedSubCluster: ccpmData.subClusters.filter(e => e.subCluster).map(y => ({value: y.subCluster, label: y.subCluster}))});
                     else this.setState({selectedSubCluster:e});
