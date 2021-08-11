@@ -202,14 +202,11 @@ export const getGroupTableByRegion = (reports, groupName) => {
         subGroups.forEach((sg) => {  
           const data = report.globalReport[sg].averageInGroup || 0;
           if(result[region.name][sg]){ 
-            if(sg === 'organizationHelped') console.log('exists',result[region.name][sg], region.name, sg, data); 
             result[region.name][sg] += data;
           }
           else {
-            if(sg === 'organizationHelped') console.log('undedined',result[region.name][sg], region.name, sg, data);
             result[region.name][sg] = data;
           }
-          if(sg === 'organizationHelped') console.log(result[region.name][sg]);
         })
         reduced = 0;
       })
@@ -238,6 +235,21 @@ const compareString = (a, b, property) => {
 
 const compareNumbers = (a, b) => {
   return a - b;
+}
+
+export const getPlanningStategyCharts = (reports) => {
+    const regions = {};
+    reports.map((region) => {
+      if(!regions[region.name]) regions[region.name] = {};
+      region.reports.forEach((report)=>{
+        report.globalReport.organizationHelped2.questions.forEach(q => {
+          q.data.responses.forEach((response, index) => {
+            if(!regions[region.name][response]) regions[region.name][response] = q.data.frequencies[index];
+            else regions[region.name][response] += q.data.frequencies[index];
+          })
+        })
+      })
+    })
 }
 
 export const getGroupTableByCluster = (reports, groupName) => {

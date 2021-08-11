@@ -12,6 +12,7 @@ import {stores} from '../stores';
 import {CATEGORY_LABELS} from 'js/constants';
 import Select from 'react-select'
 
+
 class SidebarAgregatedCCPM extends Reflux.Component {
   constructor(props) {
     super(props);
@@ -35,6 +36,19 @@ class SidebarAgregatedCCPM extends Reflux.Component {
     this.store = stores.aggregatedReport;
     autoBind(this);
   }
+
+  compareString(a, b, property){
+    var propertyA = property ?  a[property].toUpperCase() : a.toUpperCase();
+    var propertyB = property ?  b[property].toUpperCase() : b.toUpperCase();
+    if (propertyA < propertyB) {
+      return -1;
+    }
+    if (propertyA > propertyB) {
+      return 1;
+    }
+    return 0;
+}
+
   componentDidMount () {
     this.listenTo(this.searchStore, this.searchChanged);
     if (!this.isFormList())
@@ -74,7 +88,7 @@ class SidebarAgregatedCCPM extends Reflux.Component {
     const reportByYear = [];
     const years = [];
     const clusters = [];
-    const subClusters = [];
+    let subClusters = [];
 
     deployedReports.filter(report => (report.summary.labels.includes('Partner_or_Coordinator_GROUP') || report.summary.labels.includes('Partner or Coordinator?')) &&
       report.settings && report.settings.ccpmData).forEach(report => {
@@ -83,11 +97,22 @@ class SidebarAgregatedCCPM extends Reflux.Component {
       if(ccpmData && ccpmData.year ) reportByYear.push({year: ccpmData.year, cluster: ccpmData.cluster,report, subCluster : ccpmData.subCluster }); 
       if(ccpmData.year === year){
         if(ccpmData && !ccpmData.subCluster && ccpmData.cluster && !clusters.includes(ccpmData.cluster)) clusters.push(ccpmData.cluster);
-        if(ccpmData && ccpmData.subCluster  && !subClusters.includes(ccpmData.subCluster)) subClusters.push(ccpmData.subCluster);
+        if(ccpmData && ccpmData.subCluster  && !subClusters.includes(ccpmData.subCluster)) subClusters.push({subCluster : ccpmData.subCluster, cluster: ccpmData.cluster });
       } 
     })
+    subClusters = subClusters.sort((a,b) => this.compareString(a,b,'cluster'));
+    let cluster = '';
+    const orderedSubCluster = [];
+    subClusters.forEach((s => {
+      if(cluster !== s.cluster){
+        cluster = s.cluster;
+        orderedSubCluster.push({cluster : s.cluster});
+      }
+      orderedSubCluster.push(s);
+    }));
+    console.log(orderedSubCluster);
 
-    return {reportByYear, years, clusters, subClusters};
+    return {reportByYear, years, clusters, subClusters: orderedSubCluster};
   }
 
   generateReport(items){
@@ -129,9 +154,11 @@ class SidebarAgregatedCCPM extends Reflux.Component {
       option: (provided, state) => {
         return {
         ...provided,
-        backgroundColor: state.data.value === 'all' ? '#e2e2e2' : 'transparent',
+        backgroundColor: state.data.value === 'all' ?  '#e2e2e2' : 'transparent',
         ":active": { backgroundColor: "#B2D4FF" },
         ":hover": { backgroundColor: "#B2D4FF" },
+        color: state.data.value ? '#000000' : 'grey',
+        padding: state.data.value ? 5 : 0
       }},
     }
 
@@ -163,9 +190,9 @@ class SidebarAgregatedCCPM extends Reflux.Component {
                   </>}
                 {this.state.selectedYear && <> <p>Select Sub-clusters </p>
                   <Select onChange={(e)=>{
-                    if(e.find(v => v.value === 'all')) this.setState({selectedCluster: ccpmData.subClusters.map(y => ({value: y, label: y}))});
+                    if(e.find(v => v.value === 'all')) this.setState({selectedSubCluster: ccpmData.subClusters.filter(e => e.subCluster).map(y => ({value: y.subCluster, label: y.subCluster}))});
                     else this.setState({selectedSubCluster:e});
-                  }} value={this.state.selectedSubCluster} styles={customStyles} options={[{value: 'all', label: 'Select All'},...ccpmData.subClusters.map(y => ({value: y, label: y}))]} isMulti/>
+                  }} value={this.state.selectedSubCluster} styles={customStyles} options={[{value: 'all', label: 'Select All'},...ccpmData.subClusters.map(y => ({value: y.subCluster, label: y.subCluster || y.cluster, isDisabled: y.subCluster ? false : true }))]} isMulti/>
                   </>}
                 {(this.state.selectedCluster && (this.state.selectedCluster.length + this.state.selectedSubCluster.length) > 1) && 
                 <div style={{marginTop: '30px'}}>

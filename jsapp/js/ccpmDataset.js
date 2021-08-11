@@ -184,7 +184,6 @@ export const ccpm_getAverageInQuestion = (question) => {
     let sum = 0;
     let divider = 0;
     if (question) {
-        console.log(question.data.frequencies);
         question.data.frequencies.forEach((element, index) => {
             if (ccpm_parseNumber(question.data.responses[index]) > 0) {
                 sum += element * ccpm_parseNumber(question.data.responses[index])

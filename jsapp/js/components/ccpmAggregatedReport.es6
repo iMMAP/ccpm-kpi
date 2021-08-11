@@ -22,7 +22,7 @@ import saveAs from 'save-as';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import dataset, { datasetGroup, ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion, ccpm_parseNumber} from '../ccpmDataset';
-import { getGroupTableByCluster, getGroupTableByRegion } from '../ccpmReport';
+import { getGroupTableByCluster, getGroupTableByRegion, getPlanningStategyCharts } from '../ccpmReport';
 
 Chart.plugins.register(ChartDataLabels);
 
@@ -520,7 +520,8 @@ class AgregatedReportContents extends React.Component {
     const completionRateRegions = this.getOverallCompletionRateRegion();
     const {languageIndex, languages} = this.props.parentState;
     const lcode = languages[languageIndex].code;
-    const colors  = ['#007899', '#009898', '#48b484', '#9fc96f', '#f8d871', '#f87571']
+    const colors  = ['#007899', '#009898', '#48b484', '#9fc96f', '#f8d871', '#f87571'];
+    const ct = getPlanningStategyCharts(completionRateRegions)
 
     let region = {};
     const colorRegion = {};
@@ -563,7 +564,6 @@ class AgregatedReportContents extends React.Component {
        <h1 className="bigTitle">{titleConstants.summaryResults[lcode]}</h1>
         {Object.keys(datasetGroup).filter(e=> e !== 'code' && e !== 'name' && e !== 'names').map(groupName =>{
           const subGroup = getGroupTableByRegion(completionRateRegions, groupName);
-          console.log(subGroup);
           const subGroupByCountry = getGroupTableByCluster(completionRateRegions, groupName);
           subGroupByCountry.result = subGroupByCountry.result.sort((a,b) => this.compareString(a,b, 'region'));
         return <>
@@ -575,7 +575,6 @@ class AgregatedReportContents extends React.Component {
                 </thead>
                 <tbody>
                     {subGroup.result.map((rg, index) => {
-                    if(subGroup.name === 'organizationHelped') console.log(rg, 'the subgroup')
                     return <tr>
                         <td className="agregatedTableTitle" style={{textAlign: 'center', backgroundColor: colors[index]}}>{rg.name}</td>
                         {subGroup.columns.map(c => <td className="agregatedTableContent">{rg.data[c]}%</td>)}
@@ -945,7 +944,7 @@ class Reports extends React.Component {
       return (
         <DocumentTitle title={`${docTitle} | Health Cluster`}>
           <div style={{width: '100%', height: '100%', padding: '100px'}}>
-            <p style={{textAlign: 'center', fontSize: 16, margin: 'auto 0px'}}>Please select a Year and at least two Clusters</p>
+            <p style={{textAlign: 'center', fontSize: 16, margin: 'auto 0px'}}>Please select a Year and at least two Clusters/Sub-Clusters</p>
           </div>
         </DocumentTitle>
       );
