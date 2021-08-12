@@ -212,7 +212,7 @@ const getGroupTable = (groupData, groupName) => {
 
 const getGroupByClusterTable = (groupData, groupName) => {
   groupData.result = groupData.result.sort((a,b) => compareString(a,b, 'region'));
-  const currentRegion = '';
+  let currentRegion = '';
   const columns  = [
     ['','', ...groupData.columns.map(c => getTableContent(datasetGroup[groupName][c].names['en'], '#ffffff'))],
     ...groupData.result.map((rg, index) => { 
