@@ -11,9 +11,15 @@ const getTable = (data, length, border = false, marginBottom = 150, leftMargin =
   const rows = [...data.map((t, index) => new TableRow({
     children: t.map((tt, ind) => new TableCell({
       margins: { left: 100, right: 100 },
-      children: [tt],
+      children: [tt ? tt : getTableContent('')],
       verticalAlign: 'center',
-      shading: index === 0 || ind === 0 || (ind === 1 && fillSecondCell) ? {color: '#1f5782', fill: '#1f5782', val:ShadingType.SOLID}: null,
+      borders: border ? {
+        bottom: { color: '#555555', size: tt ? 1 : 0, style: BorderStyle.SINGLE },
+        top: { color: '#555555', size: tt ? 1 : 0, style: BorderStyle.THICK },
+        left: omitHorizintalBorder ? { style: BorderStyle.NONE } : { color: '#555555', size: tt ? 1 : 0, style: BorderStyle.THICK },
+        right: omitHorizintalBorder ? { style: BorderStyle.NONE } : { color: '#555555', size: tt ? 1 : 0, style: BorderStyle.THICK },
+      } : false,
+      shading:!tt ? '' : index === 0 || ind === 0 || (ind === 1 && fillSecondCell) ? {color: tt.background || '#1f5782', fill: tt.background || '#1f5782', val:ShadingType.SOLID}: null,
       width: {
           size: `${ind === 0 ? Math.round(rowLength) + remainingRowLength : Math.round(rowLength)}%`,
           type: WidthType.PERCENTAGE
@@ -33,12 +39,6 @@ const getTable = (data, length, border = false, marginBottom = 150, leftMargin =
       right: 40,
       marginUnitType: 'dxa'
     },
-    borders: border ? {
-      bottom: { color: '#555555', size: 1, style: BorderStyle.SINGLE },
-      top: { color: '#555555', size: 1, style: BorderStyle.THICK },
-      left: omitHorizintalBorder ? { style: BorderStyle.NONE } : { color: '#555555', size: 10, style: BorderStyle.THICK },
-      right: omitHorizintalBorder ? { style: BorderStyle.NONE } : { color: '#555555', size: 10, style: BorderStyle.THICK },
-    } : false,
     rows
   })
 }
@@ -116,8 +116,8 @@ const getSubTitle = (text, color = 'black', alignment) => {
   })
 }
 
-const getTableContent = (text, color = '#4e4e4e', bold = false) => {
-  return new Paragraph({
+const getTableContent = (text, color = '#4e4e4e', bold = false, background) => {
+  const pp = new Paragraph({
     spacing: {
       before: 100,
       after: 100,
@@ -136,6 +136,8 @@ const getTableContent = (text, color = '#4e4e4e', bold = false) => {
       }),
     ]
   })
+  pp.background = background;
+  return pp;
 }
 
 const compareString = (a, b, property) => {
@@ -191,29 +193,53 @@ const getCoordinatorOrPartnerResponses = (reports, type) => {
   return coordinators;
 }
 
+const colors  = ['#007899', '#009898', '#48b484', '#9fc96f', '#f8d871', '#f87571'];
+const colorRegion = {};
+
 const getGroupTable = (groupData, groupName) => {
+  
   const columns  = [
-    [getTableContent(''), ...groupData.columns.map(c => getTableContent(datasetGroup[groupName][c].names['en'], '#ffffff'))],
+    ['', ...groupData.columns.map(c => getTableContent(datasetGroup[groupName][c].names['en'], '#ffffff'))],
     ...groupData.result.map((rg, index) => [
-      getTableContent(rg.name, '#ffffff', false),
+      getTableContent(rg.name, '#ffffff', false, colors[index]),
       ...groupData.columns.map(c => getTableContent(`${rg.data[c]}%`))
     ]
   )
   ]
+  const cc = getTableContent('text');
   return columns;
 }
 
 const getGroupByClusterTable = (groupData, groupName) => {
+  groupData.result = groupData.result.sort((a,b) => compareString(a,b, 'region'));
+  const currentRegion = '';
   const columns  = [
-    [getTableContent(''),getTableContent(''), ...groupData.columns.map(c => getTableContent(datasetGroup[groupName][c].names['en'], '#ffffff'))],
-    ...groupData.result.map((rg, index) => [
-      getTableContent(rg.region, '#ffffff', false),
-      getTableContent(rg.name, '#ffffff', false),
-      ...groupData.columns.map(c => getTableContent(`${rg.data[c]}%`))
-    ]
-  )
+    ['','', ...groupData.columns.map(c => getTableContent(datasetGroup[groupName][c].names['en'], '#ffffff'))],
+    ...groupData.result.map((rg, index) => { 
+      if(!colorRegion[rg.region]) colorRegion[rg.region] = colors[Object.keys(colorRegion).length]
+      const data =  [
+          getTableContent(currentRegion!== rg.region ? rg.region : '', '#ffffff', false, colorRegion[rg.region]),
+          getTableContent(rg.name, '#ffffff', false, colorRegion[rg.region]),
+          ...groupData.columns.map(c => getTableContent(`${rg.data[c]}%`)), 
+      ];
+      currentRegion = rg.region;
+      return data;
+    }),
+     [
+      '',
+      getTableContent('Global', '#ffffff', false),
+      ...groupData.columns.map(c => getTableContent(`${getGlobalSum(groupData.result, c)}%`)),
+     ]
   ]
   return columns;
+}
+
+const getGlobalSum = (data, column) => {
+  let sum = 0;
+  data.forEach(element => {
+    if(element && element.data && element.data[column]) sum += element.data[column];
+  })
+  return Number.parseFloat((sum / (data.length < 1 ? 1 : data.length)).toString()).toFixed(2);
 }
 
 const getSecondSection = (lCode, completionRateRegions) => {
@@ -260,7 +286,7 @@ export default class CCPM_ReportContents {
             getTitle(titleConstants.overallCompletionRate[lcode]),
             new Paragraph(''),
             getTable([
-              [getTableContent(''),
+              ['',
               getTableContent(titleConstants.nationalLevel[lcode], '#ffffff', false),
               getTableContent(titleConstants.subNational[lcode], '#ffffff', false),
               getTableContent(titleConstants.coortinatorResponse[lcode], '#ffffff', false),
