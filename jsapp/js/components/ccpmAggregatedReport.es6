@@ -423,7 +423,7 @@ class AgregatedReportContents extends React.Component {
             },
             clamp: true,
             align: 'center'
-          }
+          },
         },
         tooltips: {
           callbacks: {
@@ -444,7 +444,7 @@ class AgregatedReportContents extends React.Component {
     return opts;
   }
 
-  buildHorizontalStackedChart(subGroup, labels = [], languageIndex) {
+  buildHorizontalStackedChart(subGroup, labels = [], languageIndex, title) {
     const chartColors  = ['#454545','#737373','#b0b0b0', '#dee1e3', '#5a9ad6', '#3388d6']
 
     var chartType = 'horizontalBar';
@@ -492,6 +492,13 @@ class AgregatedReportContents extends React.Component {
         datasets: set2
       },
       options: {
+        title: {
+          display: true,
+          text: title[languageIndex],
+          fontSize: 12,
+          position: 'bottom',
+
+        },
         plugins: {
           datalabels: {
             color: '#fff',
@@ -500,9 +507,9 @@ class AgregatedReportContents extends React.Component {
               const percent = Number.parseInt(value);
               return percent > 0 ? `${percent}%` : '';
             },
-            clamp: true,
+            clamp: true,  
             align: 'center'
-          }
+          },
         },
         scales: {
             xAxes: [{
@@ -672,10 +679,10 @@ class AgregatedReportContents extends React.Component {
       return opts;
   }
 
-  loadSubGroupChart(languageIndex = 0, subGroup, labels) {
+  loadSubGroupChart(languageIndex = 0, subGroup, labels, title) {
     const canvas = ReactDOM.findDOMNode(this.refs[`chart-${subGroup}`]);
     if(canvas) {
-    const opts = this.buildHorizontalStackedChart(subGroup, labels, languageIndex); //this.buildHorizontalStackedChart('organizationHelped2');
+    const opts = this.buildHorizontalStackedChart(subGroup, labels, languageIndex, title); //this.buildHorizontalStackedChart('organizationHelped2');
 
    if (this[`itemChart-${subGroup}`]) {
      this[`itemChart-${subGroup}`].destroy();
@@ -732,7 +739,7 @@ class AgregatedReportContents extends React.Component {
     Object.keys(datasetGroup).forEach(groupName => {
       const charts = Object.keys(datasetGroup[groupName]).filter(o => datasetGroup[groupName][o].stackedChart);
       charts.forEach(chart => {
-        this.loadSubGroupChart(languageIndex, chart, datasetGroup[groupName][chart].stackedLabels);
+        this.loadSubGroupChart(languageIndex, chart, datasetGroup[groupName][chart].stackedLabels, datasetGroup[groupName][chart].stackTitle);
       })
     })
 
