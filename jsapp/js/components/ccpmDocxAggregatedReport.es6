@@ -14,10 +14,10 @@ const getTable = (data, length, border = false, marginBottom = 150, leftMargin =
       children: [tt ? tt : getTableContent('')],
       verticalAlign: 'center',
       borders: border ? {
-        bottom: { color: '#555555', size: tt ? 1 : 0, style: BorderStyle.SINGLE },
-        top: { color: '#555555', size: tt ? 1 : 0, style: BorderStyle.THICK },
-        left: omitHorizintalBorder ? { style: BorderStyle.NONE } : { color: '#555555', size: tt ? 1 : 0, style: BorderStyle.THICK },
-        right: omitHorizintalBorder ? { style: BorderStyle.NONE } : { color: '#555555', size: tt ? 1 : 0, style: BorderStyle.THICK },
+        bottom: { color: '#555555', size: tt ? 1 : 0, style: tt ? BorderStyle.SINGLE : BorderStyle.NONE, },
+        top: { color: '#555555', size: tt ? 1 : 0, style: tt ? BorderStyle.SINGLE : BorderStyle.NONE },
+        left: omitHorizintalBorder ? { size: 0, style: BorderStyle.NONE } : { color: '#555555', size: tt ? 1 : 0, style: BorderStyle.THICK },
+        right: omitHorizintalBorder ? {size: 0, style: BorderStyle.NONE } : { color: '#555555', size: tt ? 1 : 0, style: BorderStyle.THICK },
       } : false,
       shading:!tt ? '' : index === 0 || ind === 0 || (ind === 1 && fillSecondCell) ? {color: tt.background || '#1f5782', fill: tt.background || '#1f5782', val:ShadingType.SOLID}: null,
       width: {
@@ -212,7 +212,7 @@ const getGroupTable = (groupData, groupName) => {
 
 const getGroupByClusterTable = (groupData, groupName) => {
   groupData.result = groupData.result.sort((a,b) => compareString(a,b, 'region'));
-  const currentRegion = '';
+  let currentRegion = '';
   const columns  = [
     ['','', ...groupData.columns.map(c => getTableContent(datasetGroup[groupName][c].names['en'], '#ffffff'))],
     ...groupData.result.map((rg, index) => { 
@@ -257,6 +257,42 @@ const getSecondSection = (lCode, completionRateRegions) => {
     data.push(getTable(getGroupByClusterTable({...subGroupDataByCountry, columns: subGroupData.columns}, subGroup), 5, true,null, null, null, true))
     data.push(new Paragraph(''));
 
+      const charts = Object.keys(datasetGroup[subGroup]).filter(o => datasetGroup[subGroup][o].stackedChart);
+      charts.forEach(chart => {
+        const chartRect = document.getElementById(`chart-${chart}`).getBoundingClientRect()
+        data.push(new Paragraph({
+          spacing: {
+            before: 100,
+            after: 200,
+          },
+          children: [new ImageRun({
+            data: Uint8Array.from(atob((document.getElementById(`chart-${chart}`).toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
+            transformation: {
+              width: chartRect.width * (600 /chartRect.width),
+              height: chartRect.height * (600 / chartRect.width)
+            },
+          })]
+        }))
+        data.push(new Paragraph(''));
+        if(subGroup === 'planningStrategyDevelopment'){
+          const chartNegativeRect = document.getElementById(`negativeAnswerChart`).getBoundingClientRect();
+          data.push(new Paragraph({
+            spacing: {
+              before: 100,
+              after: 200,
+            },
+            children: [new ImageRun({
+              data: Uint8Array.from(atob((document.getElementById(`negativeAnswerChart`).toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
+              transformation: {
+                width: chartNegativeRect.width * (600 /chartNegativeRect.width),
+                height: chartNegativeRect.height * (600 / chartNegativeRect.width)
+              },
+            })]
+          }))
+          data.push(new Paragraph(''));
+        }
+    })
+
     result.push({
       properties: {
         type: SectionType.NEXT_PAGE,
@@ -268,8 +304,7 @@ const getSecondSection = (lCode, completionRateRegions) => {
 
 export default class CCPM_ReportContents {
   create(parentState) {
-    const completionRateRegions = getOverallCompletionRateRegion(parentState);
-    const {languageIndex, languages} = parentState;
+    const {languageIndex, languages, completionRateRegions } = parentState;
     const lcode = languages[languageIndex].code;
     const chartByRegionRect = document.getElementById('chartbyType').getBoundingClientRect();
     const chartbyTypeAndRegionRect = document.getElementById('chartbyTypeAndRegion').getBoundingClientRect()

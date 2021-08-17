@@ -22,7 +22,7 @@ import saveAs from 'save-as';
 import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import dataset, { datasetGroup, ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion, ccpm_parseNumber} from '../ccpmDataset';
-import { getGroupTableByCluster, getGroupTableByRegion, getPlanningStategyCharts } from '../ccpmReport';
+import { getGroupTableByCluster, getGroupTableByRegion, getChartData, compareString, ccpm_getElementName, compareStringAndPercentage } from '../ccpmReport';
 
 Chart.plugins.register(ChartDataLabels);
 
@@ -58,18 +58,6 @@ class AgregatedReportContents extends React.Component {
 
   compareNumbers(a, b) {
     return a - b;
-  }
-
-  getOverallCompletionRateRegion(){
-    const regions  = [];
-    this.props.parentState.reports.forEach(rep => {
-      const ccpmData = JSON.parse(rep.asset.settings.ccpmData);
-      const regionIndex = regions.findIndex(r => ccpmData.region && r.name === ccpmData.region.label);
-      if(regionIndex > -1 && ccpmData.region){
-        regions[regionIndex].reports.push({...rep, ccpmData});
-      } else if(ccpmData.region) regions.push({name: ccpmData.region.label, reports: [{...rep, ccpmData}]});
-    })
-    return regions.sort((a,b) => this.compareString(a, b, 'name'));
   }
 
 
@@ -262,12 +250,12 @@ class AgregatedReportContents extends React.Component {
 
     const set = [];
 
-    const sorted = Object.keys(data).sort((a,b) => this.compareString(a, b));
+    const sorted = Object.keys(data).sort((a,b) => compareString(a, b));
 
     sorted.forEach((key, index) => {
       set.push({
       label: this.getTranslation(labelData, key, language) || key,
-      data: Object.keys(data[key]).sort((a,b) => this.compareString(a, b)).map(e=>{
+      data: Object.keys(data[key]).sort((a,b) => compareString(a, b)).map(e=>{
         return Math.round(this.calculatePercentage(data[key][e].total,data[key][e].effective))
       }),
       borderWidth: 1,
@@ -275,7 +263,7 @@ class AgregatedReportContents extends React.Component {
     })});
 
     let labels = [];
-    labels = Object.keys(totalRegion).sort((a,b) => this.compareString(a, b))
+    labels = Object.keys(totalRegion).sort((a,b) => compareString(a, b))
 
     var opts = {
       type: chartType,
@@ -336,21 +324,6 @@ class AgregatedReportContents extends React.Component {
     return opts;
   }
 
-  compareStringAndPercentage(a, b, property, percentageA, percentageB){
-    var propertyA = property ?  a[property].toUpperCase() : a.toUpperCase();
-    var propertyB = property ?  b[property].toUpperCase() : b.toUpperCase();
-    if(propertyA < propertyB ) return -1;
-    if(propertyA > propertyB) return 1 ;
-    
-    if (percentageA > percentageB) {
-      return -1;
-    }
-    if (percentageA < percentageB) {
-      return 1;
-    }
-    return 0;
-}
-
   buildPartnerByClusterOptions() {
     const data = {};
     const colors = {};
@@ -387,7 +360,7 @@ class AgregatedReportContents extends React.Component {
 
 
 
-    const dataPerCountrySorted = dataPerCountry.sort((a,b) => this.compareStringAndPercentage(a,b,'region',a.value,b.value));
+    const dataPerCountrySorted = dataPerCountry.sort((a,b) => compareStringAndPercentage(a,b,'region',a.value,b.value));
     dataPerCountrySorted.forEach(v => {
       if(!Object.keys(colors).find(e => e === v.region)) colors[v.region] = chartColors[Object.keys(colors).length];
     })
@@ -400,7 +373,7 @@ class AgregatedReportContents extends React.Component {
 
     let labels = dataPerCountrySorted.map(e => e.key);
 
-    const colorArray = Object.keys(colors).map(c => ({color: colors[c], region: c})).sort((a,b) => this.compareString(a,b,'region'));
+    const colorArray = Object.keys(colors).map(c => ({color: colors[c], region: c})).sort((a,b) => compareString(a,b,'region'));
 
     var opts = {
       type: chartType,
@@ -471,6 +444,246 @@ class AgregatedReportContents extends React.Component {
     return opts;
   }
 
+  buildHorizontalStackedChart(subGroup, labels = []) {
+    const chartColors  = ['#454545','#737373','#b0b0b0', '#dee1e3', '#5a9ad6', '#3388d6']
+
+    var chartType = 'horizontalBar';
+
+    const subGroupData = getChartData(this.props.parentState.completionRateRegions, subGroup);
+    const set2 = [];
+    const totals = {};
+
+    Object.keys(subGroupData).forEach(r => {
+      let total = 0;
+      Object.keys(subGroupData[r]).forEach(element => {
+        total +=subGroupData[r][element.toString()];
+      });
+      if(total === 0) total = 1;
+      totals[r] = total;
+    });
+    [0,1,2,3,4,5].map((n, index) => {
+      const data = [];
+      Object.keys(subGroupData).forEach(r => {
+        let d = subGroupData[r][n.toString()];
+        if(!d) d = 0;
+        d = Number.parseInt(d, 10);
+        data.push((d * 100)/totals[r]);
+      });
+      set2.push({
+        label: labels[index],
+        data,
+        borderWidth: 1,
+        backgroundColor: chartColors[index]
+      });
+    })
+
+    // TODO: set as default globally in a higher level (PM)
+
+    var baseColor = '#1f5782';
+    Chart.defaults.global.elements.rectangle.backgroundColor = baseColor;
+
+    var opts = {
+      type: chartType,
+      responsive: true,
+     // plugins: [ChartDataLabels],
+      data: {
+        labels: Object.keys(subGroupData),
+        datasets: set2
+      },
+      options: {
+        plugins: {
+          datalabels: {
+            color: '#fff',
+            formatter: function (value, context) {
+              
+              const percent = Number.parseInt(value);
+              return percent > 0 ? `${percent}%` : '';
+            },
+            clamp: true,
+            align: 'center'
+          }
+        },
+        scales: {
+            xAxes: [{
+              stacked: true,
+              ticks: {
+                display: false
+              },
+              gridLines: {
+                display:false
+            }  
+          }],
+            yAxes: [{
+              stacked: true,
+              gridLines: {
+                display:false
+            }  
+          }], 
+        },
+        animation: {
+          duration: 500
+        },
+        tooltips: {
+          callbacks: {
+            label: (a,b)=>{
+              const title  = b.datasets[a.datasetIndex];
+              return `${title.label} (%): ${title.data[a.index]}`;
+            }
+          },
+        },
+        }
+    };
+
+    return opts;
+  }
+
+  buildNegativePercentageByRegionChart(language) {
+      const data = {};
+      const totalRegion = {};
+      const labelData = [];
+      const codesGroup = {};
+  
+      Object.keys(this.props.parentState.submissions).forEach(res => {
+        const ccpmData = JSON.parse(this.props.parentState.submissions[res].ccpmData);
+         this.props.parentState.submissions[res].result.forEach(r => {
+          
+          const codes = [];
+          Object.keys(r).forEach(c => {
+            const d = [];
+            if(c.includes('P_PS01b_02')) codes.push({code: 'P_PS01b_02', value: r[c]});
+            if(c.includes('P_PS01b_03')) codes.push({code: 'P_PS01b_03', value : r[c]});
+            if(c.includes('P_GI03')) codes.push({code: 'P_GI03', value: r[c]});
+          })
+          if(!codesGroup[ccpmData.region.label]) codesGroup[ccpmData.region.label] = [codes];
+          else codesGroup[ccpmData.region.label].push(codes);
+        });
+
+        Object.keys(codesGroup).forEach(element => {
+          codesGroup[element].forEach(elementData => {
+            const org = elementData.find(e => e.code === 'P_GI03');
+            if(org) {
+              let negatives = 0;
+              let total = 0;
+              elementData.forEach(d => {
+                if(d.code === 'P_PS01b_02' || d.code === 'P_PS01b_03'){
+                  if(Number.parseInt(d.value) < 3){
+                    negatives += 1;
+                  }
+                  total += 1;
+                }
+              });
+              if(!totalRegion[element]) totalRegion[element] = {};
+              if(!totalRegion[element][org.value]) totalRegion[element][org.value] = {negatives, total};
+              else {
+                totalRegion[element][org.value].negatives += negatives;
+                totalRegion[element][org.value].total += total;
+              }
+            }
+          })
+        })
+      });
+      
+      var chartType = 'bar';
+  
+      // TODO: set as default globally in a higher level (PM)
+  
+      var baseColor = '#1D6F9C';
+      Chart.defaults.global.elements.rectangle.backgroundColor = baseColor;
+      const colors  = ['#1f5782', '#007899', '#009898', '#48b484', '#9fc96f', '#f8d871', '#f87571', '#df9fbe', '#b3b3ff']
+  
+      const set = [];
+  
+      const orgs = ["C_CP02_01", "C_CP02_02", "C_CP02_03", "C_CP02_04", "C_CP02_05", "C_CP02_06", "C_CP02_07"] ;
+        orgs.forEach((organisation, index) => {
+          const codeOrg= this.props.parentState.reports[0].asset.content.survey.find(c => c.name === organisation);
+          set.push({
+            label: codeOrg.label[language],
+            data: Object.keys(totalRegion).map(key => {
+              const elementName = ccpm_getElementName(organisation);
+              const elementData = totalRegion[key][elementName];
+              if(!elementData) return 0;
+              return Math.round(this.calculatePercentage(elementData.negatives,elementData.total))
+            }),
+            borderWidth: 1,
+            backgroundColor: colors[index]
+          })
+        })
+  
+      let labels = [];
+      labels = Object.keys(totalRegion);
+  
+      var opts = {
+        type: chartType,
+        responsive: true,
+        plugins: [ChartDataLabels],
+        data: {
+          labels: labels,
+          datasets: set
+        },
+        options: {
+          scales: {
+            yAxes: [{
+                ticks: {
+                  display: false
+                },
+                gridLines: {
+                  display:false
+              }  
+            }],
+            xAxes: [{
+              gridLines: {
+                  display:false
+              }
+          }],
+          },
+          legend: {
+            display: true,
+            labels: {
+                color: 'rgb(255, 99, 132)'
+            }
+          },
+          animation: {
+            duration: 500
+          },
+          tooltips: {
+            callbacks: {
+              label: (a,b)=>{
+                const title  = b.datasets[a.datasetIndex];
+                return `${title.label} (%): ${title.data[a.index]}`;
+              }
+            },
+          },
+          plugins: {
+            datalabels: {
+              color: '#fff',
+              formatter: function (value, context) {
+                
+                const percent = Number.parseInt(value);
+                return percent > 0 ? `${percent}%` : '';
+              },
+              clamp: true,
+              align: 'center'
+            }
+          },
+          }
+      };
+  
+      return opts;
+  }
+
+  loadSubGroupChart(languageIndex = 0, subGroup, labels) {
+    const canvas = ReactDOM.findDOMNode(this.refs[`chart-${subGroup}`]);
+    if(canvas) {
+    const opts = this.buildHorizontalStackedChart(subGroup, labels); //this.buildHorizontalStackedChart('organizationHelped2');
+
+   if (this[`itemChart-${subGroup}`]) {
+     this[`itemChart-${subGroup}`].destroy();
+     this[`itemChart-${subGroup}`] = new Chart(canvas, opts);
+   } else {
+     this[`itemChart-${subGroup}`] = new Chart(canvas, opts);
+   }}
+  }
+
   loadChart(languageIndex = 0) {
 
     var canvas = ReactDOM.findDOMNode(this.refs[`chartbyType`]);
@@ -505,7 +718,24 @@ class AgregatedReportContents extends React.Component {
      document.getElementById('custom-legend').innerHTML = this[`itemChart-chartbyCluster`].generateLegend();
    }
 
-  }
+   canvas = ReactDOM.findDOMNode(this.refs[`negativeAnswerChart`]);
+    opts = this.buildNegativePercentageByRegionChart(languageIndex); //this.buildHorizontalStackedChart('organizationHelped2');
+
+    if (this[`itemChart-negativeAnswerChart`]) {
+      this[`itemChart-negativeAnswerChart`].destroy();
+      this[`itemChart-negativeAnswerChart`] = new Chart(canvas, opts);
+    } else {
+      this[`itemChart-negativeAnswerChart`] = new Chart(canvas, opts);
+    }
+
+    Object.keys(datasetGroup).forEach(groupName => {
+      const charts = Object.keys(datasetGroup[groupName]).filter(o => datasetGroup[groupName][o].stackedChart);
+      charts.forEach(chart => {
+        this.loadSubGroupChart(languageIndex, chart, datasetGroup[groupName][chart].stackedLabels);
+      })
+    })
+
+   }
 
   getGlobalSum (data, column) {
     let sum = 0;
@@ -515,13 +745,14 @@ class AgregatedReportContents extends React.Component {
     return Number.parseFloat((sum / (data.length < 1 ? 1 : data.length)).toString()).toFixed(2);
   }
 
+
+
   render () {
     const {tnslIndex, reportData} = this.state;
-    const completionRateRegions = this.getOverallCompletionRateRegion();
-    const {languageIndex, languages} = this.props.parentState;
+    const {languageIndex, languages, completionRateRegions } = this.props.parentState;
     const lcode = languages[languageIndex].code;
     const colors  = ['#007899', '#009898', '#48b484', '#9fc96f', '#f8d871', '#f87571'];
-    const ct = getPlanningStategyCharts(completionRateRegions)
+    const ct = getChartData(completionRateRegions, 'organizationHelped2')
 
     let region = {};
     const colorRegion = {};
@@ -561,11 +792,13 @@ class AgregatedReportContents extends React.Component {
               <canvas ref={`chartbyCluster`} id={`chartbyCluster`} />
               <div style={{margin: '0px auto', textAlign:'center', alignContent: 'center'}} id="custom-legend"/>
             </div>
+
        <h1 className="bigTitle">{titleConstants.summaryResults[lcode]}</h1>
         {Object.keys(datasetGroup).filter(e=> e !== 'code' && e !== 'name' && e !== 'names').map(groupName =>{
           const subGroup = getGroupTableByRegion(completionRateRegions, groupName);
           const subGroupByCountry = getGroupTableByCluster(completionRateRegions, groupName);
-          subGroupByCountry.result = subGroupByCountry.result.sort((a,b) => this.compareString(a,b, 'region'));
+          const charts = Object.keys(datasetGroup[groupName]).filter(o => datasetGroup[groupName][o].stackedChart);
+          subGroupByCountry.result = subGroupByCountry.result.sort((a,b) => compareString(a,b, 'region'));
         return <>
               <h1 className="title" style={{marginTop: '22px' }}>{datasetGroup[groupName].names[lcode]}</h1>
               <table style={{ borderCollapse: 'collapse', width: '75%', margin: '30px auto' }}>
@@ -611,6 +844,20 @@ class AgregatedReportContents extends React.Component {
                   
                 </tbody>
               </table>
+              {
+                charts.map(chart => <>
+                <div style={{ width: '75%', margin: '20px auto', border: "1px #000 solid", padding: '20px'}}>
+                   <canvas ref={`chart-${chart}`} id={`chart-${chart}`} />
+                </div>
+                </>)
+              }
+
+              {groupName === 'planningStrategyDevelopment' && <>
+                <div style={{ width: '75%', margin: '20px auto', border: "1px #000 solid", padding: '20px'}}>
+                   <canvas ref={`negativeAnswerChart`} id={`negativeAnswerChart`} />
+                </div>
+              </>}
+
             </>
         })}
       </div>
@@ -733,6 +980,18 @@ class Reports extends React.Component {
     this.setState({isFullscreen: !this.state.isFullscreen});
   }
 
+  getOverallCompletionRateRegion(reports){
+    const regions  = [];
+    reports.forEach(rep => {
+      const ccpmData = JSON.parse(rep.asset.settings.ccpmData);
+      const regionIndex = regions.findIndex(r => ccpmData.region && r.name === ccpmData.region.label);
+      if(regionIndex > -1 && ccpmData.region){
+        regions[regionIndex].reports.push({...rep, ccpmData});
+      } else if(ccpmData.region) regions.push({name: ccpmData.region.label, reports: [{...rep, ccpmData}]});
+    })
+    return regions.sort((a,b) => compareString(a, b, 'name'));
+  }
+
   toggleReportLanguageSettings () {
     this.setState({
       showChangeLanguage : !this.state.showChangeLanguage,
@@ -775,6 +1034,22 @@ class Reports extends React.Component {
       </bem.FormView__reportButtons>
     );
   }
+
+  getPath(index, asset ) {
+    const groupsBoundaries = asset.content.survey.slice(0, index).filter(v => v.type === 'begin_group' || v.type === 'end_group');
+
+    const unClosedBoundaries = [];
+    groupsBoundaries.filter(v => v.type === 'begin_group').forEach(v => {
+      if(!groupsBoundaries.find(r => r.type === 'end_group' && r['$kuid'] === `/${v['$kuid']}`)) unClosedBoundaries.push(v);
+    })
+
+    let path  = '';
+    unClosedBoundaries.forEach((s,i) => {
+      path = `${path}${i > 0 ? '/' : ''}${s.name}`;
+    })
+    return path;
+  }
+
   loadReportData(items) {
       if(items){
         this.setState({isLoading: true, reports: []});
@@ -836,15 +1111,22 @@ class Reports extends React.Component {
       
               pathP_IS02 = `${pathP_IS02}/P_IS02`;
               pathP_IS03 = `${pathP_IS03}/`;
+
+              const pathP_P01 = this.getPath(asset.content.survey.findIndex(v => v.name === 'P_PS01b_02'), asset);
+              const pathP_GI03 = this.getPath(asset.content.survey.findIndex(v => v.name === 'P_GI03'), asset);
+              const graphCodes = [`${pathP_P01}/P_PS01b_02`, `${pathP_P01}/P_PS01b_03`, `${pathP_GI03}/P_GI03`];
       
               const fields = [
                 pathP_IS02,
-                ...ccpm_getQuestionInRange('informingStrategicDecisions','analysisTopicCovered').map(s => `${pathP_IS03}${s}`)
+                ...ccpm_getQuestionInRange('informingStrategicDecisions','analysisTopicCovered').map(s => `${pathP_IS03}${s}`),
+                ...graphCodes
               ];
+              
               
               dataInterface.getSubmissions(uid, 1000,0, [],fields).done((data2) => {
                 this.setState({
                   P_IS02Result : data2.results,
+                  submissions: {...this.state.submissions || {}, [uid] : { result:  data2.results, ccpmData: asset.settings.ccpmData }},
                   pathP_IS03,
                   pathP_IS02
                 })
@@ -869,9 +1151,7 @@ class Reports extends React.Component {
                 let newReport = {};
       
                 if(dataWithResponses[0].name === 'type_of_survey') newReport = ccpmReport(dataWithResponses, asset.content, datasetGroup);
-                this.setState({
-                  isLoading: this.state.reports.length +1 < this.store.state.selectedAssetUids.length,
-                  reports : [...this.state.reports, {
+                const rep = [...this.state.reports, {
                   asset: asset,
                   rowsByKuid: rowsByKuid,
                   rowsByIdentifier: rowsByIdentifier,
@@ -889,6 +1169,10 @@ class Reports extends React.Component {
                   totalEffectiveResponse: newReport.totalEffectiveResponse,
                   totalEffectiveResponseDisagregatedByPartner : newReport.totalEffectiveResponseDisagregatedByPartner,
                   questionResponseGroup: newReport.questionResponseGroup}]
+                this.setState({
+                  isLoading: this.state.reports.length +1 < this.store.state.selectedAssetUids.length,
+                  reports : rep,
+                  completionRateRegions  : this.getOverallCompletionRateRegion(rep)
                 });
               }).fail((err)=> {
                 if (groupBy && groupBy.length > 0 && !this.state.currentCustomReport && reportStyles.default.groupDataBy !== undefined) {

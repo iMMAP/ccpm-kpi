@@ -50,7 +50,7 @@ const ccpm_getSumOfQuestions = (questions, data) => {
     return sum;
 }
 
-const ccpm_getElementName = (e, data, content) => {
+export const ccpm_getElementName = (e, data, content) => {
     switch (e) {
         case "C_CP01_01":
         case "C_CP02_01": return "international_org";
@@ -221,7 +221,7 @@ export const getGroupTableByRegion = (reports, groupName) => {
     return {result: result2, columns: Object.keys(datasetGroup[groupName]).filter(c => (c !== 'name' && c !== 'names' && c !== 'code'))}
   }
 
-const compareString = (a, b, property) => {
+export const compareString = (a, b, property) => {
     var propertyA = property ?  a[property].toUpperCase() : a.toUpperCase();
     var propertyB = property ?  b[property].toUpperCase() : b.toUpperCase();
     if (propertyA < propertyB) {
@@ -233,16 +233,31 @@ const compareString = (a, b, property) => {
     return 0;
 }
 
-const compareNumbers = (a, b) => {
+export const compareNumbers = (a, b) => {
   return a - b;
 }
 
-export const getPlanningStategyCharts = (reports) => {
+export const compareStringAndPercentage = (a, b, property, percentageA, percentageB) =>{
+  var propertyA = property ?  a[property].toUpperCase() : a.toUpperCase();
+  var propertyB = property ?  b[property].toUpperCase() : b.toUpperCase();
+  if(propertyA < propertyB ) return -1;
+  if(propertyA > propertyB) return 1 ;
+  
+  if (percentageA > percentageB) {
+    return -1;
+  }
+  if (percentageA < percentageB) {
+    return 1;
+  }
+  return 0;
+}
+
+export const getChartData = (reports, subGroup) => {
     const regions = {};
     reports.map((region) => {
       if(!regions[region.name]) regions[region.name] = {};
       region.reports.forEach((report)=>{
-        report.globalReport.organizationHelped2.questions.forEach(q => {
+        report.globalReport[subGroup].questions.forEach(q => {
           q.data.responses.forEach((response, index) => {
             if(!regions[region.name][response]) regions[region.name][response] = q.data.frequencies[index];
             else regions[region.name][response] += q.data.frequencies[index];
@@ -250,6 +265,7 @@ export const getPlanningStategyCharts = (reports) => {
         })
       })
     })
+    return regions;
 }
 
 export const getGroupTableByCluster = (reports, groupName) => {
