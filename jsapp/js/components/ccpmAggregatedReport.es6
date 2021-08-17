@@ -444,7 +444,7 @@ class AgregatedReportContents extends React.Component {
     return opts;
   }
 
-  buildHorizontalStackedChart(subGroup, labels = []) {
+  buildHorizontalStackedChart(subGroup, labels = [], languageIndex) {
     const chartColors  = ['#454545','#737373','#b0b0b0', '#dee1e3', '#5a9ad6', '#3388d6']
 
     var chartType = 'horizontalBar';
@@ -471,7 +471,7 @@ class AgregatedReportContents extends React.Component {
         data.push((d * 100)/totals[r]);
       });
       set2.push({
-        label: labels[index],
+        label: labels[index][languageIndex],
         data,
         borderWidth: 1,
         backgroundColor: chartColors[n]
@@ -675,7 +675,7 @@ class AgregatedReportContents extends React.Component {
   loadSubGroupChart(languageIndex = 0, subGroup, labels) {
     const canvas = ReactDOM.findDOMNode(this.refs[`chart-${subGroup}`]);
     if(canvas) {
-    const opts = this.buildHorizontalStackedChart(subGroup, labels); //this.buildHorizontalStackedChart('organizationHelped2');
+    const opts = this.buildHorizontalStackedChart(subGroup, labels, languageIndex); //this.buildHorizontalStackedChart('organizationHelped2');
 
    if (this[`itemChart-${subGroup}`]) {
      this[`itemChart-${subGroup}`].destroy();
