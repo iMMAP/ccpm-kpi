@@ -461,7 +461,8 @@ class AgregatedReportContents extends React.Component {
       if(total === 0) total = 1;
       totals[r] = total;
     });
-    [0,1,2,3,4,5].map((n, index) => {
+    const valueArray = labels.length === 6 ? [0,1,2,3,4,5] : [1,2,3,4,5]
+    valueArray.map((n, index) => {
       const data = [];
       Object.keys(subGroupData).forEach(r => {
         let d = subGroupData[r][n.toString()];
@@ -473,7 +474,7 @@ class AgregatedReportContents extends React.Component {
         label: labels[index],
         data,
         borderWidth: 1,
-        backgroundColor: chartColors[index]
+        backgroundColor: chartColors[n]
       });
     })
 
