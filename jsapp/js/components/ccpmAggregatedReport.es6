@@ -394,7 +394,8 @@ class AgregatedReportContents extends React.Component {
 
         legend: {
           display: false,
-          position: 'bottom'
+          position: 'bottom',
+          
         },
         legendCallback: function(chart) { 
           var text = []; 
@@ -633,7 +634,9 @@ class AgregatedReportContents extends React.Component {
         options: {
           title: {
             display: true,
-            text: titles[language]
+            text: titles[language],
+            fontSize: 12,
+            position: 'bottom',
           },
           scales: {
             yAxes: [{
