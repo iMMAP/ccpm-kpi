@@ -556,7 +556,7 @@ class AgregatedReportContents extends React.Component {
       const labelData = [];
       const codesGroup = {};
 
-      const titles = [['Graph 3.10. Percent of respondents (by type and region) who reported that they were not invited to', 'participatein the development of strategic plans'], ['Graphique 3.10. Pourcentage de répondants (par type et région) qui ont déclaré qu\'ils', 'n\'avaient pas été invités à participer à l\'élaboration de plans stratégiques']];
+      const titles = [['Percent of respondents (by type and region) who reported that they were not invited to', 'participate in the development of strategic plans.'], ['Pourcentage de répondants (par type et région) qui ont déclaré qu\'ils', 'n\'avaient pas été invités à participer à l\'élaboration de plans stratégiques.']];
 
       Object.keys(this.props.parentState.submissions).forEach(res => {
         const ccpmData = JSON.parse(this.props.parentState.submissions[res].ccpmData);
@@ -1024,7 +1024,7 @@ class Reports extends React.Component {
     const newReport = documentCreator.create(data, colorPallete, globalColor);
     newReport.then(doc => {
        Packer.toBlob(doc).then(blob => {
-        saveAs(blob, `globalReport${this.store.state.selectedYear}.docx`);
+        saveAs(blob, `GlobalReport${this.store.state.selectedYear}.docx`);
       });
     });
 }
