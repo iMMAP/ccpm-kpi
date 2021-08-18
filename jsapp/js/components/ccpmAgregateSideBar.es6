@@ -181,18 +181,18 @@ class SidebarAgregatedCCPM extends Reflux.Component {
                   this.setState({selectedYear: e.value, selectedCluster: []})
                 }} options={ccpmData.years.map(y =>({value: y, label: y.toString()}))}/>
 
-                {this.state.selectedYear && <> <p>Select the Clusters </p>
+                {this.state.selectedYear ? <> <p>Select the Clusters </p>
                   <Select onChange={(e)=>{
                     if(e.find(v => v.value === 'all')) this.setState({selectedCluster: ccpmData.clusters.map(y => ({value: y, label: y}))});
                     else this.setState({selectedCluster:e});
                   }} value={this.state.selectedCluster} styles={customStyles} options={[{value: 'all', label: 'Select All'},...ccpmData.clusters.map(y => ({value: y, label: y}))]} isMulti/>
-                  </>}
-                {this.state.selectedYear && <> <p>Select the Sub-clusters </p>
+                  </> : ''}
+                {this.state.selectedYear ? <> <p>Select the Sub-clusters </p>
                   <Select onChange={(e)=>{
                     if(e.find(v => v.value === 'all')) this.setState({selectedSubCluster: ccpmData.subClusters.filter(e => e.subCluster).map(y => ({value: y.subCluster, label: y.subCluster}))});
                     else this.setState({selectedSubCluster:e});
                   }} value={this.state.selectedSubCluster} styles={customStyles} options={[{value: 'all', label: 'Select All'},...ccpmData.subClusters.map(y => ({value: y.subCluster, label: y.subCluster || y.cluster, isDisabled: y.subCluster ? false : true }))]} isMulti/>
-                  </>}
+                  </> : ''}
                 {(this.state.selectedCluster && (this.state.selectedCluster.length + this.state.selectedSubCluster.length) > 1) && 
                 <div style={{marginTop: '30px'}}>
                   <bem.KoboButton onClick={()=>{this.generateReport(ccpmData.reportByYear, this.state.selectedYear)}}  m={['blue', 'fullwidth']}>

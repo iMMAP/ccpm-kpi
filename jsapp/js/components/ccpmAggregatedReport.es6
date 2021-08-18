@@ -535,11 +535,12 @@ class AgregatedReportContents extends React.Component {
         animation: {
           duration: 500
         },
+        
         tooltips: {
           callbacks: {
             label: (a,b)=>{
               const title  = b.datasets[a.datasetIndex];
-              return `${title.label} (%): ${title.data[a.index]}`;
+              return `${title.label} (%): ${Math.round(title.data[a.index])}`;
             }
           },
         },
