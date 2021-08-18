@@ -114,11 +114,11 @@ class SidebarAgregatedCCPM extends Reflux.Component {
     return {reportByYear, years, clusters, subClusters: orderedSubCluster};
   }
 
-  generateReport(items){
+  generateReport(items, year){
     const reports = items.filter(e => this.state.selectedYear.toString() === e.year && 
                     (!e.subCluster && this.state.selectedCluster.map(v=>v.value).includes(e.cluster))
                     ||(this.state.selectedSubCluster.map(v=>v.value).includes(e.subCluster)));
-    this.store.setState({selectedAssetUids: reports.map(v =>v.report.uid)})
+    this.store.setState({selectedAssetUids: reports.map(v =>v.report.uid), selectedYear: year })
   }
 
   render () {
@@ -195,7 +195,7 @@ class SidebarAgregatedCCPM extends Reflux.Component {
                   </>}
                 {(this.state.selectedCluster && (this.state.selectedCluster.length + this.state.selectedSubCluster.length) > 1) && 
                 <div style={{marginTop: '30px'}}>
-                  <bem.KoboButton onClick={()=>{this.generateReport(ccpmData.reportByYear)}}  m={['blue', 'fullwidth']}>
+                  <bem.KoboButton onClick={()=>{this.generateReport(ccpmData.reportByYear, this.state.selectedYear)}}  m={['blue', 'fullwidth']}>
                     Generate Report
                   </bem.KoboButton>
                 </div>

@@ -16,8 +16,8 @@ const getTable = (data, length, border = false, marginBottom = 150, leftMargin =
       borders: border ? {
         bottom: { color: '#555555', size: tt ? 1 : 0, style: tt ? BorderStyle.SINGLE : BorderStyle.NONE, },
         top: { color: '#555555', size: tt ? 1 : 0, style: tt ? BorderStyle.SINGLE : BorderStyle.NONE },
-        left: omitHorizintalBorder ? { size: 0, style: BorderStyle.NONE } : { color: '#555555', size: tt ? 1 : 0, style: BorderStyle.THICK },
-        right: omitHorizintalBorder ? {size: 0, style: BorderStyle.NONE } : { color: '#555555', size: tt ? 1 : 0, style: BorderStyle.THICK },
+        left: omitHorizintalBorder ? { size: 0, style: BorderStyle.NONE } : { color: '#555555', size: tt ? 1 : 0, style: tt ? BorderStyle.THICK : BorderStyle.NONE },
+        right: omitHorizintalBorder ? {size: 0, style: BorderStyle.NONE } : { color: '#555555', size: tt ? 1 : 0, style: tt ? BorderStyle.THICK : BorderStyle.NONE },
       } : false,
       shading:!tt ? '' : index === 0 || ind === 0 || (ind === 1 && fillSecondCell) ? {color: tt.background || '#1f5782', fill: tt.background || '#1f5782', val:ShadingType.SOLID}: null,
       width: {
@@ -126,11 +126,12 @@ const getTableContent = (text, color = '#4e4e4e', bold = false, background) => {
     children: [
       new TextRun({
         text: text,
-        size: 22,
+        size: 20,
         color,
         bold,
+        font: 'arial',
         style: {
-          size: 22,
+          size: 17,
           color,
         }
       }),
@@ -193,13 +194,13 @@ const getCoordinatorOrPartnerResponses = (reports, type) => {
   return coordinators;
 }
 
-const colors  = ['#007899', '#009898', '#48b484', '#9fc96f', '#f8d871', '#f87571'];
+let colors  = ['#007899', '#009898', '#48b484', '#9fc96f', '#f8d871', '#f87571'];
 const colorRegion = {};
 
-const getGroupTable = (groupData, groupName) => {
-  
+const getGroupTable = (groupData, groupName, lCode, colorPallete, globalColor) => {
+  colors = colorPallete;
   const columns  = [
-    ['', ...groupData.columns.map(c => getTableContent(datasetGroup[groupName][c].names['en'], '#ffffff'))],
+    ['', ...groupData.columns.map(c => getTableContent(datasetGroup[groupName][c].names[lCode], '#ffffff'))],
     ...groupData.result.map((rg, index) => [
       getTableContent(rg.name, '#ffffff', false, colors[index]),
       ...groupData.columns.map(c => getTableContent(`${rg.data[c]}%`))
@@ -210,11 +211,12 @@ const getGroupTable = (groupData, groupName) => {
   return columns;
 }
 
-const getGroupByClusterTable = (groupData, groupName) => {
+const getGroupByClusterTable = (groupData, groupName, lCode, colorPallete, globalColor) => {
+  colors = colorPallete;
   groupData.result = groupData.result.sort((a,b) => compareString(a,b, 'region'));
   let currentRegion = '';
   const columns  = [
-    ['','', ...groupData.columns.map(c => getTableContent(datasetGroup[groupName][c].names['en'], '#ffffff'))],
+    ['','', ...groupData.columns.map(c => getTableContent(datasetGroup[groupName][c].names[lCode], '#ffffff'))],
     ...groupData.result.map((rg, index) => { 
       if(!colorRegion[rg.region]) colorRegion[rg.region] = colors[Object.keys(colorRegion).length]
       const data =  [
@@ -227,7 +229,7 @@ const getGroupByClusterTable = (groupData, groupName) => {
     }),
      [
       '',
-      getTableContent('Global', '#ffffff', false),
+      getTableContent('Global', '#ffffff', false, globalColor),
       ...groupData.columns.map(c => getTableContent(`${getGlobalSum(groupData.result, c)}%`)),
      ]
   ]
@@ -242,19 +244,24 @@ const getGlobalSum = (data, column) => {
   return Number.parseFloat((sum / (data.length < 1 ? 1 : data.length)).toString()).toFixed(2);
 }
 
-const getSecondSection = (lCode, completionRateRegions) => {
+const getSecondSection = (lCode, completionRateRegions, colorPallete, globalColor) => {
   const result = [];
-  Object.keys(datasetGroup).filter(d => d !== 'code' && d !=='content' && d!== 'wholeCode' && d !== 'name' && d !== 'names').forEach(subGroup => {
+  Object.keys(datasetGroup).filter(d => d !== 'code' && d !=='content' && d!== 'wholeCode' && d !== 'name' && d !== 'names').forEach((subGroup, index) => {
+    const data = [];
+
+    if(index === 0) {
+      data.push(getBigTitle(titleConstants.summaryResults[lCode]));
+      data.push(new Paragraph(''));
+    }
 
     const subGroupData = getGroupTableByRegion(completionRateRegions, subGroup);
     const subGroupDataByCountry = getGroupTableByCluster(completionRateRegions, subGroup);
-    const data = [];
 
     data.push(getTitle(datasetGroup[subGroup].names[lCode]));
     data.push(new Paragraph(''));
-    data.push(getTable(getGroupTable(subGroupData, subGroup), 5, true, undefined, undefined, undefined,false));
+    data.push(getTable(getGroupTable(subGroupData, subGroup, lCode, colorPallete, globalColor), 5, true, undefined, undefined, undefined,false));
     data.push(new Paragraph(''));
-    data.push(getTable(getGroupByClusterTable({...subGroupDataByCountry, columns: subGroupData.columns}, subGroup), 5, true,null, null, null, true))
+    data.push(getTable(getGroupByClusterTable({...subGroupDataByCountry, columns: subGroupData.columns}, subGroup, lCode, colorPallete, globalColor), 5, true,null, null, null, true))
     data.push(new Paragraph(''));
 
       const charts = Object.keys(datasetGroup[subGroup]).filter(o => datasetGroup[subGroup][o].stackedChart);
@@ -303,7 +310,7 @@ const getSecondSection = (lCode, completionRateRegions) => {
 }
 
 export default class CCPM_ReportContents {
-  create(parentState) {
+  create(parentState, colorPallete, globalColor) {
     const {languageIndex, languages, completionRateRegions } = parentState;
     const lcode = languages[languageIndex].code;
     const chartByRegionRect = document.getElementById('chartbyType').getBoundingClientRect();
@@ -391,7 +398,7 @@ export default class CCPM_ReportContents {
             }),
           ]
         },
-        ...getSecondSection(lcode, completionRateRegions)
+        ...getSecondSection(lcode, completionRateRegions, colorPallete, globalColor)
       ];
       resolve(new Document({
         sections: sections

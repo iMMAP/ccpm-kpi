@@ -27,6 +27,9 @@ import { getGroupTableByCluster, getGroupTableByRegion, getChartData, compareStr
 Chart.plugins.register(ChartDataLabels);
 
 
+const colorPallete = ['#205783', '#196687', '#177B89', '#058C8B', '#109B8E', '#19AB8D', '#54B385', '#8BBF7E', '#BFCB74'];
+const globalColor = '#F8D670'
+
 class AgregatedReportContents extends React.Component {
   constructor(props) {
     super(props);
@@ -246,7 +249,7 @@ class AgregatedReportContents extends React.Component {
 
     var baseColor = '#1D6F9C';
     Chart.defaults.global.elements.rectangle.backgroundColor = baseColor;
-    const colors  = ['#1f5782', '#007899', '#009898', '#48b484', '#9fc96f', '#f8d871', '#f87571', '#df9fbe', '#b3b3ff']
+    const colors  = colorPallete;
 
     const set = [];
 
@@ -328,7 +331,7 @@ class AgregatedReportContents extends React.Component {
     const data = {};
     const colors = {};
     const regions  = [];
-    const chartColors  = ['#1f5782', '#48b484', '#9fc96f', '#f8d871', '#f87571', '#b3b3ff', '#007899', '#009898', '#df9fbe']
+    const chartColors  = colorPallete;
 
 
     this.props.parentState.reports.forEach((rep, index) => {
@@ -446,7 +449,7 @@ class AgregatedReportContents extends React.Component {
   }
 
   buildHorizontalStackedChart(subGroup, labels = [], languageIndex, title) {
-    const chartColors  = ['#454545','#737373','#b0b0b0', '#dee1e3', '#5a9ad6', '#3388d6']
+    const chartColors  =  ['#454545','#737373','#b0b0b0', '#dee1e3', '#5a9ad6', '#3388d6'];
 
     var chartType = 'horizontalBar';
 
@@ -600,7 +603,7 @@ class AgregatedReportContents extends React.Component {
   
       var baseColor = '#1D6F9C';
       Chart.defaults.global.elements.rectangle.backgroundColor = baseColor;
-      const colors  = ['#1f5782', '#007899', '#009898', '#48b484', '#9fc96f', '#f8d871', '#f87571', '#df9fbe', '#b3b3ff']
+      const colors  = colorPallete
   
       const set = [];
   
@@ -768,7 +771,7 @@ class AgregatedReportContents extends React.Component {
     const {tnslIndex, reportData} = this.state;
     const {languageIndex, languages, completionRateRegions } = this.props.parentState;
     const lcode = languages[languageIndex].code;
-    const colors  = ['#007899', '#009898', '#48b484', '#9fc96f', '#f8d871', '#f87571'];
+    const colors  = colorPallete;
     const ct = getChartData(completionRateRegions, 'organizationHelped2')
 
     let region = {};
@@ -853,7 +856,7 @@ class AgregatedReportContents extends React.Component {
                     })}
                     <tr>
                       <td style={{border: 'none'}} />
-                      <td className="agregatedTableTitle" style={{textAlign:'center', backgroundColor:'#b3b3ff'}}>GLOBAL</td>
+                      <td className="agregatedTableTitle" style={{textAlign:'center', backgroundColor:globalColor}}>GLOBAL</td>
                     {subGroup.columns.map(c => <td className="agregatedTableContent">{
                     this.getGlobalSum(subGroupByCountry.result, c)
                     }%</td>)}
@@ -1017,10 +1020,10 @@ class Reports extends React.Component {
 
   exportToDocx(data) {
     const documentCreator = new DocumentCreator();
-    const newReport = documentCreator.create(data);
+    const newReport = documentCreator.create(data, colorPallete, globalColor);
     newReport.then(doc => {
        Packer.toBlob(doc).then(blob => {
-        saveAs(blob, `globalReport.docx`);
+        saveAs(blob, `globalReport${this.store.state.selectedYear}.docx`);
       });
     });
 }
@@ -1069,7 +1072,7 @@ class Reports extends React.Component {
 
   loadReportData(items) {
       if(items){
-        this.setState({isLoading: true, reports: []});
+        this.setState({isLoading: true, reports: [], selectedYear: items.selectedYar});
        items.selectedAssetUids.forEach(uid => {
         stores.allAssets.whenLoaded(uid, (asset)=>{
             let rowsByKuid = {};

@@ -116,7 +116,8 @@ const translationsStore = Reflux.createStore({
 const aggreagetedStore = Reflux.createStore({
   init() {
     this.state = {
-      selectedAssetUids: []
+      selectedAssetUids: [],
+      selectedYear: 0
     }
   },
   setState (change) {
