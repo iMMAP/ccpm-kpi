@@ -454,25 +454,27 @@ class ProjectSettings extends React.Component {
   }
 
   createAssetAndOpenInBuilder() {
+    const isCcpmSurvey = this.state.formAsset.content.survey.find(element => element.name === 'Partner_or_Coordinator_GROUP');
     const settings = JSON.stringify({
       description: this.state.description,
       sector: this.state.sector,
       country: this.state.country,
       'share-metadata': true,
-      ccpmData: {region: this.state.ccpmRegion,year: this.state.ccpmYear.toString(), cluster: this.state.ccpmCluster, addSubCluster: this.state.ccpmAddSubCluster, subCluster: this.state.ccpmSubCluster},
+      ccpmData: isCcpmSurvey ? {region: this.state.ccpmRegion,year: this.state.ccpmYear.toString(), cluster: this.state.ccpmCluster, addSubCluster: this.state.ccpmAddSubCluster, subCluster: this.state.ccpmSubCluster} : null,
     });
     dataInterface.createResource({
       name: this.state.name,
       settings,
       asset_type: 'survey',
     }).done((asset) => {
-      this.goToFormBuilder(asset.uid);
+       this.goToFormBuilder(asset.uid);
     }).fail(function(r){
       alertify.error(t('Error: new CCPM could not be created.') + ` (code: ${r.statusText})`);
     });
   }
 
   updateAndOpenAsset() {
+    const isCcpmSurvey = this.state.formAsset.content.survey.find(element => element.name === 'Partner_or_Coordinator_GROUP');
     actions.resources.updateAsset(
       this.state.formAsset.uid,
       {
@@ -482,7 +484,7 @@ class ProjectSettings extends React.Component {
           sector: this.state.sector,
           country: this.state.country,
           'share-metadata': this.state['share-metadata'],
-          ccpmData: JSON.stringify({region: this.state.ccpmRegion, year: this.state.ccpmYear.toString(), cluster: this.state.ccpmCluster, addSubCluster: this.state.ccpmAddSubCluster, subCluster: this.state.ccpmSubCluster}),
+          ccpmData: isCcpmSurvey ? JSON.stringify({region: this.state.ccpmRegion, year: this.state.ccpmYear.toString(), cluster: this.state.ccpmCluster, addSubCluster: this.state.ccpmAddSubCluster, subCluster: this.state.ccpmSubCluster}) : null,
         }),
       }
     );
@@ -642,6 +644,7 @@ class ProjectSettings extends React.Component {
   }
 
   handleSubmit(evt) {
+    const isCcpmSurvey = this.state.formAsset.content.survey.find(element => element.name === 'Partner_or_Coordinator_GROUP');
     evt.preventDefault();
 
     // simple non-empty name validation
@@ -650,17 +653,17 @@ class ProjectSettings extends React.Component {
       return;
     }
 
-    if (!this.state.ccpmYear.trim()) {
+    if (isCcpmSurvey && !this.state.ccpmYear.trim()) {
       alertify.error(t('Please enter a year for your CCPM.'));
       return;
     }
 
-    if (!this.state.ccpmRegion) {
+    if (isCcpmSurvey && !this.state.ccpmRegion) {
       alertify.error(t('Please select a region for your CCPM.'));
       return;
     }
 
-    if (!this.state.ccpmCluster.trim()) {
+    if (isCcpmSurvey && !this.state.ccpmCluster.trim()) {
       alertify.error(t('Please enter a country/cluster for your CCPM.'));
       return;
     }
