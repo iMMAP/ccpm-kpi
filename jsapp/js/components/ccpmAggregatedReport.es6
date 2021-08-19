@@ -557,10 +557,13 @@ class AgregatedReportContents extends React.Component {
 
   buildNegativePercentageByRegionChart(language) {
       const data = {};
-      const totalRegion = {};
-      const labelData = [];
-      const codesGroup = {};
+      let regions = [];
 
+      this.props.parentState.completionRateRegions.forEach(element => {
+        regions.push(element.name);
+      })
+
+      regions = regions.sort((a,b) => this.compareString(a,b));
 
       const orgs = ["C_CP02_01", "C_CP02_02", "C_CP02_03", "C_CP02_04", "C_CP02_05", "C_CP02_06", "C_CP02_07", "C_CP02_08", "C_CP02_09"] ;
 
@@ -578,7 +581,6 @@ class AgregatedReportContents extends React.Component {
           })
 
           if(codes.P_GI03){
-            console.log(codes.P_GI03, codes.P_PS01b_02, codes.P_PS01b_03);
             if(!data[codes.P_GI03]) data[codes.P_GI03] = {};
             if(!data[codes.P_GI03][ccpmData.region.label]){
               let total = 0;
@@ -594,8 +596,6 @@ class AgregatedReportContents extends React.Component {
           }
         });
       });
-
-      console.log(data, 'total region');
       
       var chartType = 'bar';
   
@@ -606,15 +606,14 @@ class AgregatedReportContents extends React.Component {
       const colors  = colorPallete
   
       const set = [];
-      const regions = [];
       
       orgs.forEach((organisation, index) => {
         const codeOrg= this.props.parentState.reports[0].asset.content.survey.find(c => c.name === organisation);
+        const elementName = ccpm_getElementName(organisation);
         set.push({
           label: codeOrg.label[language],
-          data: !data[ccpm_getElementName(organisation)] ? [] :  Object.keys(data[ccpm_getElementName(organisation)]).map(key => {
-            const elementName = ccpm_getElementName(organisation);
-            if(!regions.includes(key)) regions.push(key);
+          data: !data[elementName] ? [] : regions.map(key => {
+            if(!data[elementName][key]) return 0;
             return Math.round(this.calculatePercentage(data[elementName][key].negatives,data[elementName][key].total))
           }),
           borderWidth: 1,
@@ -770,7 +769,6 @@ class AgregatedReportContents extends React.Component {
     const {languageIndex, languages, completionRateRegions } = this.props.parentState;
     const lcode = languages[languageIndex].code;
     const colors  = colorPallete;
-    const ct = getChartData(completionRateRegions, 'organizationHelped2')
 
     let region = {};
     const colorRegion = {};
