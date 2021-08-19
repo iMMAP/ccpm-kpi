@@ -584,12 +584,12 @@ class AgregatedReportContents extends React.Component {
               let total = 0;
               if(codes.P_PS01b_03 > -1) total += 1;
               if(codes.P_PS01b_02 > -1) total += 1;
-              data[codes.P_GI03][ccpmData.region.label]= {total, negatives: this.checkNegative(codes.P_PS01b_02) + this.checkNegative(codes.P_PS01b_02)};
+              data[codes.P_GI03][ccpmData.region.label]= {total, negatives: this.checkNegative(codes.P_PS01b_02) + this.checkNegative(codes.P_PS01b_03)};
             } 
             else {
               if(codes.P_PS01b_03 > -1) data[codes.P_GI03][ccpmData.region.label].total += 1;
               if(codes.P_PS01b_02 > -1) data[codes.P_GI03][ccpmData.region.label].total += 1;
-              data[codes.P_GI03][ccpmData.region.label].negatives += this.checkNegative(codes.P_PS01b_02) + this.checkNegative(codes.P_PS01b_02);
+              data[codes.P_GI03][ccpmData.region.label].negatives += this.checkNegative(codes.P_PS01b_02) + this.checkNegative(codes.P_PS01b_03);
             }
           }
         });
