@@ -372,7 +372,7 @@ class FormSummary extends React.Component {
                       }
                       {ccpmData.subCluster &&
                         <bem.FormView__cell>
-                          <bem.FormView__label m='sector'>{t('Sub Cluster')}</bem.FormView__label>
+                          <bem.FormView__label m='sector'>{t('Sub-Cluster')}</bem.FormView__label>
                           {ccpmData.subCluster}
                         </bem.FormView__cell>
                       }

@@ -15,6 +15,7 @@ import ui from '../ui';
 import mixins from '../mixins';
 
 import LibrarySidebar from '../components/librarySidebar';
+import CCPMAgregatedSidebar from '../components/ccpmAgregateSideBar';
 import {
   IntercomHelpBubble,
   SupportHelpBubble
@@ -75,12 +76,65 @@ class FormSidebar extends Reflux.Component {
 
 };
 
+class AgregatedSidebar extends Reflux.Component {
+  constructor(props){
+    super(props);
+    this.state = assign({
+      currentAssetId: false,
+      files: []
+    }, stores.pageState.state);
+    this.stores = [
+      stores.session,
+      stores.pageState
+    ];
+    autoBind(this);
+  }
+  componentWillMount() {
+    this.setStates();
+  }
+  setStates() {
+    this.setState({
+      headerFilters: 'forms',
+      searchContext: searches.getSearchContext('forms', {
+        filterParams: {
+          assetType: 'asset_type:survey',
+        },
+        filterTags: 'asset_type:survey',
+      })
+    });
+  }
+  newFormModal (evt) {
+    evt.preventDefault();
+    stores.pageState.showModal({
+      type: MODAL_TYPES.NEW_FORM
+    });
+  }
+  render () {
+    return (
+      <bem.FormSidebar__wrapper>
+        <CCPMAgregatedSidebar/>
+      </bem.FormSidebar__wrapper>
+    );
+  }
+  componentWillReceiveProps() {
+    this.setStates();
+  }
+
+};
+
 FormSidebar.contextTypes = {
   router: PropTypes.object
 };
 
 reactMixin(FormSidebar.prototype, searches.common);
 reactMixin(FormSidebar.prototype, mixins.droppable);
+
+AgregatedSidebar.contextTypes = {
+  router: PropTypes.object
+};
+
+reactMixin(AgregatedSidebar.prototype, searches.common);
+reactMixin(AgregatedSidebar.prototype, mixins.droppable);
 
 class DrawerLink extends React.Component {
   constructor(props) {
@@ -139,13 +193,14 @@ class Drawer extends Reflux.Component {
     return (
       <bem.KDrawer>
         <bem.KDrawer__primaryIcons>
+          <DrawerLink label={t('Global Reports')} linkto='/global-reports' ki-icon='report' />
           <DrawerLink label={t('Projects')} linkto='/forms' ki-icon='projects' />
           <DrawerLink label={t('Library')} linkto='/library' ki-icon='library' />
         </bem.KDrawer__primaryIcons>
 
         <bem.KDrawer__sidebar>
           { this.isLibrary()
-            ? <LibrarySidebar />
+            ? <LibrarySidebar /> : this.isReport() ? <AgregatedSidebar />
             : <FormSidebar />
           }
         </bem.KDrawer__sidebar>

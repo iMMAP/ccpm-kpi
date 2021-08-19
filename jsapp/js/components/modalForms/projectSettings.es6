@@ -88,7 +88,7 @@ class ProjectSettings extends React.Component {
       isAwaitingArchiveCompleted: false,
       isAwaitingUnarchiveCompleted: false,
       // CCPM project details
-      ccpmYear: ccpmData.year || new Date().getFullYear(),
+      ccpmYear: ccpmData.year ? ccpmData.year.toString() : new Date().getFullYear().toString(),
       ccpmRegion: ccpmData.region || null,
       ccpmCluster: ccpmData.cluster || '',
       ccpmAddSubCluster: ccpmData.addSubCluster || false,
@@ -646,7 +646,27 @@ class ProjectSettings extends React.Component {
 
     // simple non-empty name validation
     if (!this.state.name.trim()) {
-      alertify.error(t('Please enter a title for your CCPM!'));
+      alertify.error(t('Please enter a name for your CCPM.'));
+      return;
+    }
+
+    if (!this.state.ccpmYear.trim()) {
+      alertify.error(t('Please enter a year for your CCPM.'));
+      return;
+    }
+
+    if (!this.state.ccpmRegion) {
+      alertify.error(t('Please select a region for your CCPM.'));
+      return;
+    }
+
+    if (!this.state.ccpmCluster.trim()) {
+      alertify.error(t('Please enter a country/cluster for your CCPM.'));
+      return;
+    }
+
+    if (!this.state.ccpmSubCluster.trim() && this.state.ccpmAddSubCluster) {
+      alertify.error(t('Please enter a sub-cluster for your CCPM.'));
       return;
     }
 

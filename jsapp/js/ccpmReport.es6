@@ -1,4 +1,4 @@
-import dataset, { ccpm_getQuestionInRange, ccpm_getAverageInSubGroup, ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion, titleConstants } from './ccpmDataset';
+import datasetCcpm, { ccpm_getQuestionInRange, ccpm_getAverageInSubGroup, ccpm_getAverageInQuestion, ccpm_getAverageInBoolQuestion, titleConstants, datasetGroup } from './ccpmDataset';
 
 
 // Get label based on the average 
@@ -50,7 +50,7 @@ const ccpm_getSumOfQuestions = (questions, data) => {
     return sum;
 }
 
-const ccpm_getElementName = (e, data, content) => {
+export const ccpm_getElementName = (e, data, content) => {
     switch (e) {
         case "C_CP01_01":
         case "C_CP02_01": return "international_org";
@@ -101,19 +101,51 @@ const ccpm_getResponseGrouped = (q) => {
     return result;
 }
 
-
-const ccpm_getData = (data, choices) => {
+const ccpm_getDataGlobalReport = (data, choices, dataSetGroup) => {
     const newReport = {};
     const chartData = {};
+    let dataset = dataSetGroup;
     const questionResponseGroup = {};
     Object.keys(dataset).forEach(group => {
         const groupedByLabel = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 };
+
+        Object.keys(dataset[group]).forEach(subGroup => {
+            if (subGroup !== 'code' && subGroup !== 'name' && subGroup !== 'names') {
+                newReport[subGroup] = {};
+                // Find all the question of a report subgroup, calculate the average and populate the charts
+                newReport[subGroup].questions = data.filter(e => ccpm_getQuestionInRange(group, subGroup, dataSetGroup).includes(e.name)).map(q => {
+                    q.average = ccpm_getAverageInquestion(q);
+                    if (q.data.responses.includes('Yes') || q.data.responses.includes('No')) {
+                        q.averageLabel = ccpm_getStatusLabelBoolean(q.average);
+                    } else
+                        q.averageLabel = ccpm_getStatusLabel(q.average);
+                    return q;
+                });
+                newReport[subGroup].averageInGroup = ccpm_getAverageInSubGroup(newReport[subGroup].questions);
+                newReport[subGroup].group = group;
+            }
+        })
+        questionResponseGroup[group] = groupedByLabel;
+    })
+
+    return newReport;
+}
+
+
+const ccpm_getData = (data, choices, dataSetGroup) => {
+    const newReport = {};
+    const chartData = {};
+    let dataset = datasetCcpm;
+    const questionResponseGroup = {};
+    Object.keys(dataset).forEach(group => {
+        const groupedByLabel = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 };
+
         Object.keys(dataset[group]).forEach(subGroup => {
             if (subGroup !== 'code' || subGroup !== 'name') {
                 newReport[subGroup] = {};
                 // Find all the question of a report subgroup, calculate the average and populate the charts
                 newReport[subGroup].questions = data.filter(e => ccpm_getQuestionInRange(group, subGroup).includes(e.name)).map(q => {
-                    q.average = ccpm_getAverageInquestion(q);
+                    q.average = ccpm_getAverageInquestion(q, dataSetGroup);
                     if (q.data.responses.includes('Yes') || q.data.responses.includes('No')) {
                         q.averageLabel = ccpm_getStatusLabelBoolean(q.average);
                     } else
@@ -129,7 +161,7 @@ const ccpm_getData = (data, choices) => {
                     else chartData[group][q.averageLabel] = 1;
                     return q;
                 });
-                newReport[subGroup].averageInGroup = ccpm_getAverageInSubGroup(newReport[subGroup].questions);
+                newReport[subGroup].averageInGroup = ccpm_getAverageInSubGroup(newReport[subGroup].questions, dataSetGroup);
                 newReport[subGroup].group = group;
             }
         })
@@ -154,9 +186,118 @@ const ccpm_getData = (data, choices) => {
         totalResponseDisagregatedByPartner: ccpm_getNumberOfParnerResponseByType(totalResponseQuestions, data, choices),
         totalEffectiveResponse: { numberOfPartner: isNaN(numberOfPartner) ? 0 : numberOfPartner, sum: ccpm_getSumOfQuestions(totalEffectiveResponseQuestions, data) },
         totalEffectiveResponseDisagregatedByPartner: ccpm_getNumberOfParnerResponseByType(totalEffectiveResponseQuestions, data, choices),
-        questionResponseGroup: questionResponseGroup
+        questionResponseGroup: questionResponseGroup,
+        globalReport: dataSetGroup ? ccpm_getDataGlobalReport(data, choices, dataSetGroup) : {}
     }
     return finalData;
 }
+
+export const getGroupTableByRegion = (reports, groupName) => {
+    let result = {};
+    reports.map((region, index) => {
+      let reduced = 0;
+      result[region.name] = {};
+      region.reports.forEach((report)=>{
+        const subGroups = Object.keys(report.globalReport).filter(key => report.globalReport[key].group === groupName);
+        subGroups.forEach((sg) => {  
+          const data = report.globalReport[sg].averageInGroup || 0;
+          if(result[region.name][sg]){ 
+            result[region.name][sg] += data;
+          }
+          else {
+            result[region.name][sg] = data;
+          }
+        })
+        reduced = 0;
+      })
+    })
+    const result2 = Object.keys(result).map(key => {
+      const data  = {name: key, data: {}}
+      Object.keys(result[key]).forEach(key2 => {
+        data.data[key2] = Math.round(100 * (result[key][key2] / (5 * reports.find(val => val.name === key).reports.length)))
+      })
+      return data;
+    })
+    return {result: result2, columns: Object.keys(datasetGroup[groupName]).filter(c => (c !== 'name' && c !== 'names' && c !== 'code'))}
+  }
+
+export const compareString = (a, b, property) => {
+    var propertyA = property ?  a[property].toUpperCase() : a.toUpperCase();
+    var propertyB = property ?  b[property].toUpperCase() : b.toUpperCase();
+    if (propertyA < propertyB) {
+      return -1;
+    }
+    if (propertyA > propertyB) {
+      return 1;
+    }
+    return 0;
+}
+
+export const compareNumbers = (a, b) => {
+  return a - b;
+}
+
+export const compareStringAndPercentage = (a, b, property, percentageA, percentageB) =>{
+  var propertyA = property ?  a[property].toUpperCase() : a.toUpperCase();
+  var propertyB = property ?  b[property].toUpperCase() : b.toUpperCase();
+  if(propertyA < propertyB ) return -1;
+  if(propertyA > propertyB) return 1 ;
+  
+  if (percentageA > percentageB) {
+    return -1;
+  }
+  if (percentageA < percentageB) {
+    return 1;
+  }
+  return 0;
+}
+
+export const getChartData = (reports, subGroup) => {
+    const regions = {};
+    reports.map((region) => {
+      if(!regions[region.name]) regions[region.name] = {};
+      region.reports.forEach((report)=>{
+        report.globalReport[subGroup].questions.forEach(q => {
+          q.data.responses.forEach((response, index) => {
+            if(!regions[region.name][response]) regions[region.name][response] = q.data.frequencies[index];
+            else regions[region.name][response] += q.data.frequencies[index];
+          })
+        })
+      })
+    })
+    return regions;
+}
+
+export const getGroupTableByCluster = (reports, groupName) => {
+    let result = {};
+    reports.map((region) => {
+      result[region.name] = {};
+      region.reports.forEach((report)=>{
+        if(!result[region.name][report.ccpmData.cluster]) result[region.name][report.ccpmData.cluster] = {}
+        const subGroups = Object.keys(report.globalReport).filter(key => report.globalReport[key].group === groupName);
+        subGroups.forEach((sg => {
+          const data  =  report.globalReport[sg].averageInGroup;
+          if(!result[region.name][report.ccpmData.cluster][sg]) result[region.name][report.ccpmData.cluster][sg] = data;
+          else result[region.name][report.ccpmData.cluster][sg] += data;
+        }))
+      })
+    });
+    const regions = {};
+    const result2 =[];
+    Object.keys(result).forEach(region => {
+      Object.keys(result[region]).forEach(cluster => {
+        const totalCluster  = reports.find(reg => reg.name === region).reports.filter(r => r.ccpmData.cluster === cluster).length || 1;
+        const data = {};
+        Object.keys(result[region][cluster]).forEach(key => {
+          data[key] = Math.round(100 * result[region][cluster][key] / (5 * totalCluster))
+        })
+        result2.push({name: cluster, region, data})
+        if(!regions[region]) regions[region] = 1;
+        else regions[region]++;
+      })
+    })
+
+    return {result: result2.sort((a,b) => compareString(a, b, 'name')), regions}
+  }
 
 export default ccpm_getData;

@@ -708,6 +708,9 @@ mixins.contextRouter = {
   isLibrary () {
     return this.context.router.isActive('library');
   },
+  isReport () {
+    return this.context.router.isActive('global-reports');
+  },
   isFormSingle () {
     return this.context.router.isActive('forms') && this.context.router.params.assetid != undefined;
   },

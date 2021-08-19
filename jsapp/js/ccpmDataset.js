@@ -64,23 +64,111 @@ const dataset = {
     }
 }
 
+export const datasetGroup = {
+    supportServiceDelivery: {
+        name: 'Support to Service Delivery',
+        names: { en: 'Support to Service Delivery', fr: 'Appui à la Prestation de Services' },
+        code: 'P_SS',
+        partnerSatisfaction : {names: {en: 'Partner satisfaction with meeting frequency', fr: 'Satisfaction des partenaires quant à la fréquence des réunions'}, code: '01a_01' },
+        organizationAbility: {names: {en: 'Organizations ability to participate fully in cluster meetings (access language)', fr: 'Capacité des organisations à participer pleinement aux réunions du cluster (langue d\'accès)'}, code: '01a', starting: 2, end: 4},
+        clusterMeetingAbility: {names: {en: 'Cluster meeting ability to identify and discuss needs, gaps and response priorities', fr: 'Capacité de réunion du cluster à identifier et à discuter des besoins, des lacunes et des priorités de la réponse'}, code: '04', starting: 1, end: 3},
+        clusterAbilityStrategic: {names: {en: 'Cluster ability to take strategic decisions about the direction of the response', fr: 'Capacité du cluster à prendre des décisions stratégiques sur la direction de la réponse'}, code: '02', starting: 1, end: 3},
+        frequencyPartnerContribution: {names: {en: 'Frequency of partner contribution to 3W mapping', fr: 'Fréquence de contribution des partenaires à la cartographie 3W'}, code: '03', starting: 1, end: 2},
+        partnerContribution: {names: {en: 'Partner contribution to analysis of gaps and overlaps in 3W data', fr: 'Contribution des partenaires à l\'analyse des lacunes et des redondance dans les données 3W'}, code: '03_03'},
+        useOfClusterAnalysis: {names: {en : 'Use of cluster analysis of gaps and overlaps in partner decision making', fr: 'Utilisation de l\'analyse groupée des lacunes et des redondance dans la prise de décision des partenaires'}, code: '03', starting: 4, end: 5}
+    },
+    informingStrategicDecisions: {
+        name: 'Informing Strategic Decision-Making of the HC / Humanitarian Country Team',
+        names: {en: 'Informing Strategic Decision-Making of the HC / Humanitarian Country Team',
+                fr: 'Informer la Prise de Décision Stratégique du HC / de l\'Équipe Humanitaire Pays'},
+        code: 'P_IS',
+        organizationThatUsed: {names: {en: 'Organizations that used sectoral needs assessment tools and guidance agreed by cluster partners',
+                                       fr: 'Organisation qui a utilisé des outils d\'évaluation des besoins sectoriels et des orientations convenues par les partenaires du cluster'},
+                                       code: '01', starting: 1, end: 2},
+        organisationInvolved:  {names: {en: 'Organization involved in coordinated sectoral needs assessment and surveys',
+                                       fr: 'Organisation impliquée dans les évaluations et enquêtes coordonnées des besoins sectoriels'},
+                                       code: '01', starting: 3, end: 5},
+        organisationParticipating: {names: {en: 'Organizations participation in joint situation analyses', fr: 'Organisations participant à des analyses de situation conjointes'}, 
+                                       code: '02'},
+        organisationShared: {names: {en: 'Organizations that shared reports of its surveys and assessments with the cluster', fr : 'Organisation qui a partagé les rapports de ces enquêtes et évaluations avec le cluster'},
+                                       code: '01', starting: 6, end: 7 }
+    },
+    planningStrategyDevelopment: {
+        name: 'Planning and Strategy Development',
+        names: { en: 'Planning and Strategy Development', fr: 'Planification et Développement des Stratégies' },
+        code: 'P_PS',
+        organizationHelped2: {names: {en: 'Organizations have helped to develop cluster strategic plans', fr: 'Organisation ont aidé à développer des plans stratégiques de cluster'}, code: '01b', starting: 2, end: 3, stackedChart: true, stackTitle: ['Regional breakdown of responses to "Organizations have helped to develop cluster strategic plans"', 'Répartition régionale des réponses à "Les organisations ont aidé à élaborer des plans stratégiques de cluster"'],stackedLabels: [['No strategic plan developed', 'Aucun plan stratégique élaboré'], ['Not asked to participate', 'Pas demandé de participer'], ['Chose not to contribute', 'A choisi de ne pas contribuer'], ['Not considered','N\'a pas considéré'], ['Somewhat considered', 'Un peu considéré'], ['Fully considered', 'totalement considéré']]},
+        clusterPartnersAgreedTechnical: {names: {en: 'Cluster partners agreed technical standards and guidance and have applied them', fr: 'Les partenaires CLuster ont convenu de normes et d\'orientations techniques et les ont appliquées'}, wholeCode: 'C_PS02'},
+        clusterPartnerParticipatedIn: {names: {en: 'Cluster partners participated in prioritizing proposals under strategic plan with a transparent process', fr: 'Partenaires du cluster participant à la hiérarchisation des propositions dans le cadre du plan stratégique avec un processus transparent'}, code: '02', starting: 3, end: 4},
+        proposalsPrioritized: {names: {en: 'Proposals were prioritised against the strategic plan in a manner that was fair to all partners', fr: 'Les propositions ont été classées par ordre de priorité par rapport au plan stratégique d\'une manière équitable pour tous les partenaires'}, code: '02_05'},
+        clusterCoordinatorReported: {names: {en: 'The cluster coordinator reported on the cluster funding status against needs in appropriate time frames', fr: 'Le coordinateur du cluster a rendu compte de l\'état du financement du cluster par rapport aux besoins dans des délais appropriés'}, code: '02_06'}
+    },
+    advocacy: {
+        code: 'P_AD',
+        name: 'Advocacy',
+        names: { en: 'Advocacy', fr: 'Plaidoyer' },
+        issuesRequiringAdvocacy: {names: {en: 'Issues requiring advocacy have been identified and discussed together', fr: 'Les problèmes nécessitant un plaidoyer ont été identifiés et discutés ensemble'}, code: '01', starting: 1, end: 1},
+        organizationParticipating: {names: {en: 'Organizations have participated in cluster advocacy activities', fr: 'Les problèmes nécessitant un plaidoyer ont été identifiés et discutés L\'organisation a participé ensemble aux activités de plaidoyer du cluster'}, code: '01', starting: 3, end: 5, stackTitle: ['Regional breakdown of responses to "Organizations have participated in cluster advocacy activities"', 'Répartition régionale des réponses à "Les organisations ont participé aux activités de plaidoyer du cluster"'], stackedChart: true, stackedLabels: [['No advocacy activities', 'Aucune activité de plaidoyer'], ['Not invited to participate', 'Non invité à participer'], ['None', 'Aucun'], ['Some', 'Certain'], ['Most', 'La majorité']]}
+    },
+    monitoringReporting: {
+        code: 'P_MR',
+        name: 'Monitoring and Reporting on Implementation of Cluster Strategy and Results',
+        names: { en: 'Monitoring and Reporting on Implementation of Cluster Strategy and Results', fr: 'Suivi et rapports sur la mise en œuvre de la stratégie et des résultats du cluster' },
+        clusterBulletins: {names: {en: 'Cluster bulletins or updates highlight risks, gaps and changing needs', fr: 'Les bulletins ou mises à jour des clusters mettent en évidence les risques, les lacunes et les besoins changeants'}, code: '01_01'},
+        programMonitoring: {names: {en: 'Program monitoring and reporting formats are agreed by the cluster', fr: 'Les formats de suivi du programme et de rapport sont convenus par le cluster'}, code: '01_03'},
+        hasTheclusterTaken: {names: {en: 'Has the cluster taken into account the distinct needs, contributions and capacities of women, girls, men and boys in its response and monitoring', fr:'Le cluster a-t-il pris en compte les besoins, les contributions et les capacités distincts des femmes, des filles, des hommes et des garçons dans sa réponse et son suivi'}, code: '01_05'}
+    },
+    preparednessPlan: {
+        code: 'P_PR',
+        name: 'Preparedness for Recurrent Disasters',
+        names: { en: 'Preparedness for Recurrent Disasters', fr: 'Préparation aux Catastrophes Récurrentes' },
+        organizationHelped: {names: {en: 'Organizations helped to develop or update preparedness plans (including multisectoral ones) that address hazards and risks', fr: 'L\'organisation a aidé à élaborer ou à mettre à jour des plans de préparation (y compris multisectoriels) qui traitent des dangers et des risques'}, code: '01', starting: 1, end: 3, stackTitle: [['Regional breakdown of responses to "Has your organization helped to develop or', 'update preparedness plans (including multisectoral ones) that address hazards and risks?". Shown in terms of','how adequately partners felt their contributions were reflected.'], ['« Répartition régionale des réponses à la question « Votre organisation a-t-elle aidé à élaborer ou », « mettre à jour des plans de préparation (y compris des plans multisectoriels) qui traitent des dangers et des risques ?". Montré en termes de ',' dans quelle mesure les partenaires ont estimé que leurs contributions ont été reflétées.']], stackedChart: true, stackedLabels: [['No plan developed / updated', 'Aucun plan développé / mis à jour'], ['Not invited to participate', 'Non invité à participe'], ['Did not contribute', 'N\'a pas contribué'], ['Inadequately reflected', 'Insuffisamment reflété'], ['Adequately reflected', 'Correctement reflété']]},
+        organizationCommittedStaff: {names: {en: 'Organizations committed staff or resources that can be mobilized when preparedness plans are activated', fr: 'Personnel ou ressources engagés par l\'organisation qui peuvent être mobilisés lorsque les plans de préparation sont activés'}, code: '01', starting: 4, end: 5}
+    },
+    accoutabilityAffected: {
+        code: 'P_AA',
+        name: 'Accountability to Affected Populations',
+        names: {en: 'Accountability to Affected Populations', fr: 'Responsabilité envers les Populations Affectées'},
+        clusterPartnersConsulting: {names: {en: 'Cluster partners agreed and applied mechanisms (procedures, tools or methodologies) for consulting and involving affected people in decision-making', fr: 'Les partenaires du cluster ont convenu et appliqués des mécanismes (procédures, outils ou méthodologies) pour consulter et impliquer les personnes affectées dans la prise de décision'}, code: '01', content: [1, 3], stackedChart: true, stackTitle: [['Regional breakdown of responses to "Cluster partners agreed and applied mechanisms (procedures, tools or methodologies)', 'for consulting and involving affected people in decision-making"'], ['Répartition régionale des réponses aux « Mécanismes convenus et appliqués par les partenaires du cluster (procédures, outils ou méthodologies) », « pour consulter et impliquer les personnes affectées dans la prise de décision »']], stackedLabels: [['No mechanisms agreed', 'Pas de mécanismes convenus'], ['Never', 'Jamais'], ['Seldom', 'Rarement'], ['Sometimes', 'De fois'], ['Often', 'Souvent'], ['Always', 'Toujours']]},
+        clusterPartnersReceiving: {names: {en: 'Cluster partners agreed and applied mechanisms (procedures, tools or methodologies) to receive, investigate and act on complaints by affected people', fr: 'Les partenaires du cluster ont convenu et appliqués des mécanismes (procédures, outils ou méthodologies) pour recevoir, enquêter et agir sur les plaintes des personnes affectées'}, code: '01', content: [2,4], stackedChart: true, stackTitle: [['Regional breakdown of responses to "Cluster partners agreed and applied mechanisms (procedures, tools or methodologies)', 'to receive, investigate and act on complaints by affected people"'], ['Répartition régionale des réponses aux "Les partenaires du cluster ont convenu et appliqués les mécanismes (procédures, outils ou méthodologies)', 'pour recevoir, enquêter et traiter les plaintes des personnes concernées"']], stackedLabels: [['No mechanisms agreed', 'Pas de mécanismes convenus'], ['Never', 'Jamais'], ['Seldom', 'Rarement'], ['Sometimes', 'De fois'], ['Often', 'Souvent'], ['Always', 'Toujours']]}
+    }
+}
+
 // Get Questions code list in a subgroup
 
-export const ccpm_getQuestionInRange = (groupIdentifier, subgroupIdentifier) => {
-    const group = dataset[groupIdentifier];
+export const ccpm_getQuestionInRange = (groupIdentifier, subgroupIdentifier, datasetGroup) => {
+    let group = {};
+    if(datasetGroup) group = datasetGroup[groupIdentifier];
+    else group = dataset[groupIdentifier]
+    
     const subgroup = group[subgroupIdentifier]
-    const code = `${group.code}${subgroup.code}`;
+
     const questions = [];
-    if (!subgroup.starting)
-        questions.push(code);
-    else {
-        for (let i = subgroup.starting; i <= subgroup.end; i++) {
-            if (i >= 10) {
-                questions.push(`${code}_${i}`);
-            } else {
-                questions.push(`${code}_0${i}`);
-            }
+    const code = `${group.code}${subgroup.code}`;
+    if(subgroup){
+        if(subgroup.wholeCode){
+             questions.push(subgroup.wholeCode);
         }
+        else if(subgroup.content){
+            subgroup.content.forEach(c => {
+                if (c >= 10) {
+                    questions.push(`${code}_${c}`);
+                } else {
+                    questions.push(`${code}_0${c}`);
+                }
+            })
+        } else {
+        if (!subgroup.starting)
+            questions.push(code);
+        else {
+            for (let i = subgroup.starting; i <= subgroup.end; i++) {
+                if (i >= 10) {
+                    questions.push(`${code}_${i}`);
+                } else {
+                    questions.push(`${code}_0${i}`);
+                }
+            }
+        }}
     }
     return questions;
 }
@@ -121,14 +209,14 @@ export const ccpm_getAverageInBoolQuestion = (question) => {
 
 // Get average in a subgroup (Check wheither que question contains numeric response or boolean and return the result)
 
-export const ccpm_getAverageInSubGroup = (data) => {
+export const ccpm_getAverageInSubGroup = (data, datasetGroup) => {
     if (data.length === 0 || !data[0]) return 0;
     if (data[0].data.responses.includes('yes') || data[0].data.responses.includes('no')) {
-        const d = data.map(e => ccpm_getAverageInBoolQuestion(e));
+        const d = data.map(e => ccpm_getAverageInBoolQuestion(e, datasetGroup));
         return (d.reduce((a, b) => a + b)) / d.length;
     }
     const questionsAverage = data.map(e => {
-        return ccpm_getAverageInQuestion(e)
+        return ccpm_getAverageInQuestion(e, datasetGroup)
     });
     return questionsAverage.reduce((a, b) => a + b, 0) / data.length;
 }
@@ -136,7 +224,7 @@ export const ccpm_getAverageInSubGroup = (data) => {
 export const titleConstants = {
     overallResponseRate: { en: 'Overall Response Rate', fr: 'Taux de Réponse Global' },
     overallActivePartner: { en: 'Total Response', fr: 'Total des Réponses' },
-    responseByType: { en: 'Response By Type', fr: 'Reponse par Type' },
+    responseByType: { en: 'Response By Type', fr: 'Réponse par Type' },
     effectiveResponseRate: { en: 'Effective Response Rate', fr: 'Taux de Réponse Effective' },
     totalResponse: { en: 'Total Response', fr: 'Total des Réponses' },
     overallPerformance: { en: 'Overall Performance', fr: 'Performance Global' },
@@ -155,7 +243,18 @@ export const titleConstants = {
     weak: { en: 'Weak', fr: 'Faible' },
     unsatisfactory: { en: 'Unsatisfactory', fr: 'Non satisfaisant' },
     satifactory: { en: 'Satisfactory', fr: 'Satisfaisant' },
-    good: { en: 'Good', fr: 'Bon' }
+    good: { en: 'Good', fr: 'Bon' },
+    completionAndResponseRate: {en: 'Completion and Response Rate', fr: 'Taux de Réponse et Completion'},
+    overallCompletionRate: {en: 'Overall Completion Rate', fr: 'Taux de Completion Total'},
+    responseRateByRegionAndType: {en: 'Response Rate of Partners by Type of Organization and Region', fr: 'Taux de Réponse des Partenaires par Type d\'Organisation et par Région'},
+    partnerByRegion: {en: 'Partners by Region', fr: 'Partenaires par Région'},
+    reponseRateByCOuntry: {en: 'Response Rate by Country', fr: 'Taux de Réponse par Pays'},
+    region: {en:'Region', fr:'Région'},
+    nationalLevel: {en:'National Level', fr: 'Niveau National'},
+    subNational: {en: 'Sub National', fr: 'Interieur'},
+    coortinatorResponse: {en: 'Coordinators Responses', fr: 'Réponses des Coordinateurs'},
+    partnerResponse: {en: 'Partner Responses', fr: 'Réponses des Partenaires'},
+    summaryResults: {en: 'Summary Results - Overall Performance', fr: 'Résumé des Résultats - Performance Globale'}
 }
 
 export default dataset;

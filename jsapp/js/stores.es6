@@ -113,6 +113,27 @@ const translationsStore = Reflux.createStore({
   },
 });
 
+const aggreagetedStore = Reflux.createStore({
+  init() {
+    this.state = {
+      selectedAssetUids: [],
+      selectedYear: 0
+    }
+  },
+  setState (change) {
+    const changed = changes(this.state, change);
+    if (changed) {
+      assign(this.state, changed);
+      this.trigger(changed);
+    }
+  },
+  setTranslationTableUnsaved (uids) {
+    this.setState({
+      selectedAssetUids: uids
+    });
+  },
+});
+
 var pageStateStore = Reflux.createStore({
   init () {
     this.state = {
@@ -493,4 +514,5 @@ assign(stores, {
   userExists: userExistsStore,
   surveyState: surveyStateStore,
   serverEnvironment: serverEnvironmentStore,
+  aggregatedReport: aggreagetedStore
 });
