@@ -612,7 +612,7 @@ class AgregatedReportContents extends React.Component {
         const elementName = ccpm_getElementName(organisation);
         set.push({
           label: codeOrg.label[language],
-          data: !data[elementName] ? [] : regions.map(key => {
+          data: !data[elementName] ? [0,0] : regions.map(key => {
             if(!data[elementName][key]) return 0;
             return Math.round(this.calculatePercentage(data[elementName][key].negatives,data[elementName][key].total))
           }),
