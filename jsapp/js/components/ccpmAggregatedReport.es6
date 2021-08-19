@@ -573,6 +573,8 @@ class AgregatedReportContents extends React.Component {
           else codesGroup[ccpmData.region.label].push(codes);
         });
 
+        console.log(codesGroup, 'codesGroup');
+
         Object.keys(codesGroup).forEach(element => {
           codesGroup[element].forEach(elementData => {
             const org = elementData.find(e => e.code === 'P_GI03');
@@ -597,6 +599,8 @@ class AgregatedReportContents extends React.Component {
           })
         })
       });
+
+      console.log(totalRegion, 'total region');
       
       var chartType = 'bar';
   
@@ -613,7 +617,7 @@ class AgregatedReportContents extends React.Component {
           const codeOrg= this.props.parentState.reports[0].asset.content.survey.find(c => c.name === organisation);
           set.push({
             label: codeOrg.label[language],
-            data: Object.keys(totalRegion).map(key => {
+            data: Object.keys(totalRegion).sort((a,b)=>this.compareString(a,b)).map(key => {
               const elementName = ccpm_getElementName(organisation);
               const elementData = totalRegion[key][elementName];
               if(!elementData) return 0;
@@ -625,7 +629,7 @@ class AgregatedReportContents extends React.Component {
         })
   
       let labels = [];
-      labels = Object.keys(totalRegion);
+      labels = Object.keys(totalRegion).sort((a,b)=>this.compareString(a,b));
   
       var opts = {
         type: chartType,
