@@ -550,11 +550,19 @@ class AgregatedReportContents extends React.Component {
     return opts;
   }
 
+  checkNegative(value){
+    if(value < 3 && value > -1) return 1;
+    return 0;
+  }
+
   buildNegativePercentageByRegionChart(language) {
       const data = {};
       const totalRegion = {};
       const labelData = [];
       const codesGroup = {};
+
+
+      const orgs = ["C_CP02_01", "C_CP02_02", "C_CP02_03", "C_CP02_04", "C_CP02_05", "C_CP02_06", "C_CP02_07", "C_CP02_08", "C_CP02_09"] ;
 
       const titles = [['Percent of respondents (by type and region) who reported that they were not invited to', 'participate in the development of strategic plans.'], ['Pourcentage de répondants (par type et région) qui ont déclaré qu\'ils', 'n\'avaient pas été invités à participer à l\'élaboration de plans stratégiques.']];
 
@@ -562,45 +570,32 @@ class AgregatedReportContents extends React.Component {
         const ccpmData = JSON.parse(this.props.parentState.submissions[res].ccpmData);
          this.props.parentState.submissions[res].result.forEach(r => {
           
-          const codes = [];
+          const codes = {P_PS01b_02: -1, P_PS01b_03: -1, P_GI03: '' };
           Object.keys(r).forEach(c => {
-            const d = [];
-            if(c.includes('P_PS01b_02')) codes.push({code: 'P_PS01b_02', value: r[c]});
-            if(c.includes('P_PS01b_03')) codes.push({code: 'P_PS01b_03', value : r[c]});
-            if(c.includes('P_GI03')) codes.push({code: 'P_GI03', value: r[c]});
+            if(c.includes('P_PS01b_02')) codes.P_PS01b_02 = r[c]; 
+            if(c.includes('P_PS01b_03')) codes.P_PS01b_03 = r[c];
+            if(c.includes('P_GI03')) codes.P_GI03 = r[c];
           })
-          if(!codesGroup[ccpmData.region.label]) codesGroup[ccpmData.region.label] = [codes];
-          else codesGroup[ccpmData.region.label].push(codes);
-        });
 
-        console.log(codesGroup, 'codesGroup');
-
-        Object.keys(codesGroup).forEach(element => {
-          codesGroup[element].forEach(elementData => {
-            const org = elementData.find(e => e.code === 'P_GI03');
-            if(org) {
-              let negatives = 0;
+          if(codes.P_GI03){
+            console.log(codes.P_GI03, codes.P_PS01b_02, codes.P_PS01b_03);
+            if(!data[codes.P_GI03]) data[codes.P_GI03] = {};
+            if(!data[codes.P_GI03][ccpmData.region.label]){
               let total = 0;
-              elementData.forEach(d => {
-                if(d.code === 'P_PS01b_02' || d.code === 'P_PS01b_03'){
-                  if(Number.parseInt(d.value) < 3){
-                    negatives += 1;
-                  }
-                  total += 1;
-                }
-              });
-              if(!totalRegion[element]) totalRegion[element] = {};
-              if(!totalRegion[element][org.value]) totalRegion[element][org.value] = {negatives, total};
-              else {
-                totalRegion[element][org.value].negatives += negatives;
-                totalRegion[element][org.value].total += total;
-              }
+              if(codes.P_PS01b_03 > -1) total += 1;
+              if(codes.P_PS01b_02 > -1) total += 1;
+              data[codes.P_GI03][ccpmData.region.label]= {total, negatives: this.checkNegative(codes.P_PS01b_02) + this.checkNegative(codes.P_PS01b_02)};
+            } 
+            else {
+              if(codes.P_PS01b_03 > -1) data[codes.P_GI03][ccpmData.region.label].total += 1;
+              if(codes.P_PS01b_02 > -1) data[codes.P_GI03][ccpmData.region.label].total += 1;
+              data[codes.P_GI03][ccpmData.region.label].negatives += this.checkNegative(codes.P_PS01b_02) + this.checkNegative(codes.P_PS01b_02);
             }
-          })
-        })
+          }
+        });
       });
 
-      console.log(totalRegion, 'total region');
+      console.log(data, 'total region');
       
       var chartType = 'bar';
   
@@ -611,25 +606,23 @@ class AgregatedReportContents extends React.Component {
       const colors  = colorPallete
   
       const set = [];
-  
-      const orgs = ["C_CP02_01", "C_CP02_02", "C_CP02_03", "C_CP02_04", "C_CP02_05", "C_CP02_06", "C_CP02_07"] ;
-        orgs.forEach((organisation, index) => {
-          const codeOrg= this.props.parentState.reports[0].asset.content.survey.find(c => c.name === organisation);
-          set.push({
-            label: codeOrg.label[language],
-            data: Object.keys(totalRegion).sort((a,b)=>this.compareString(a,b)).map(key => {
-              const elementName = ccpm_getElementName(organisation);
-              const elementData = totalRegion[key][elementName];
-              if(!elementData) return 0;
-              return Math.round(this.calculatePercentage(elementData.negatives,elementData.total))
-            }),
-            borderWidth: 1,
-            backgroundColor: colors[index]
-          })
+      const regions = [];
+      
+      orgs.forEach((organisation, index) => {
+        const codeOrg= this.props.parentState.reports[0].asset.content.survey.find(c => c.name === organisation);
+        set.push({
+          label: codeOrg.label[language],
+          data: !data[ccpm_getElementName(organisation)] ? [] :  Object.keys(data[ccpm_getElementName(organisation)]).map(key => {
+            const elementName = ccpm_getElementName(organisation);
+            if(!regions.includes(key)) regions.push(key);
+            return Math.round(this.calculatePercentage(data[elementName][key].negatives,data[elementName][key].total))
+          }),
+          borderWidth: 1,
+          backgroundColor: colors[index]
         })
+      })
   
-      let labels = [];
-      labels = Object.keys(totalRegion).sort((a,b)=>this.compareString(a,b));
+      const labels = regions;
   
       var opts = {
         type: chartType,
