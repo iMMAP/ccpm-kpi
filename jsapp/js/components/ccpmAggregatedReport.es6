@@ -231,8 +231,8 @@ class AgregatedReportContents extends React.Component {
         const label = element.name;
         if(!data[label]) data[label] = {};
         if(element.data.provided > 0){
-          if(!labelData.find(a =>a.name === element.name))
-          labelData.push({code: label, translations: element.row.label, name: element.name});
+          const languageLabels = rep.asset.content.settings.default_language.includes('(en)') ? element.row.label : [element.row.label[1], element.row.label[0]]
+          if(!labelData.find(a =>a.name === element.name)) labelData.push({code: label, translations:languageLabels, name: element.name});
           if(!data[label][ccpmData.region.label]) data[label][ccpmData.region.label] = {total: 0, effective:0};
           data[label][ccpmData.region.label].total+=element.questionsDisagregatedByPartner;
           data[label][ccpmData.region.label].effective+=element.data.mean;
@@ -610,8 +610,9 @@ class AgregatedReportContents extends React.Component {
       orgs.forEach((organisation, index) => {
         const codeOrg= this.props.parentState.reports[0].asset.content.survey.find(c => c.name === organisation);
         const elementName = ccpm_getElementName(organisation);
+        const isEnglishDefault = this.props.parentState.reports[0].asset.content.settings.default_language.includes('(en)');
         set.push({
-          label: codeOrg.label[language],
+          label: isEnglishDefault ? codeOrg.label[language] : language === 0 ? codeOrg.label[1] : codeOrg.label[0],
           data: !data[elementName] ? [0,0] : regions.map(key => {
             if(!data[elementName][key]) return 0;
             return Math.round(this.calculatePercentage(data[elementName][key].negatives,data[elementName][key].total))
