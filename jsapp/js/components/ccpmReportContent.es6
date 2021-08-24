@@ -419,19 +419,19 @@ export default class CCPM_ReportContents extends React.Component {
 
     // Build question by question breakdown charts 
 
-    Object.keys(dataset).forEach(element => {
-      if (element !== 'code') {
-        var canvas = ReactDOM.findDOMNode(this.refs[`canvas${element}`]);
-        var opts = this.buildQByQBreakdownChartOptions(this.props.parentState.questionResponseGroup[element], choosenLanguage);
+    // Object.keys(dataset).forEach(element => {
+    //   if (element !== 'code') {
+    //     var canvas = ReactDOM.findDOMNode(this.refs[`canvas${element}`]);
+    //     var opts = this.buildQByQBreakdownChartOptions(this.props.parentState.questionResponseGroup[element], choosenLanguage);
 
-        if (this[`itemChart-${element}`]) {
-          this[`itemChart-${element}`].destroy();
-          this[`itemChart-${element}`] = new Chart(canvas, opts);
-        } else {
-          this[`itemChart-${element}`] = new Chart(canvas, opts);
-        }
-      }
-    })
+    //     if (this[`itemChart-${element}`]) {
+    //       this[`itemChart-${element}`].destroy();
+    //       this[`itemChart-${element}`] = new Chart(canvas, opts);
+    //     } else {
+    //       this[`itemChart-${element}`] = new Chart(canvas, opts);
+    //     }
+    //   }
+    // })
 
     // Build response by type charts
 
@@ -746,7 +746,7 @@ export default class CCPM_ReportContents extends React.Component {
               })}
             </>)
         })}
-        <h1 className="bigTitle" style={{ pageBreakBefore: 'always' }}>{titleConstants.qustionByquestionBreakdown[choosenLanguage]}</h1>
+       {/* <h1 className="bigTitle" style={{ pageBreakBefore: 'always' }}>{titleConstants.qustionByquestionBreakdown[choosenLanguage]}</h1>
         {
           Object.keys(dataset).map(element => {
             if (element !== 'code' && element !== 'name') {
@@ -758,7 +758,7 @@ export default class CCPM_ReportContents extends React.Component {
               </>
             }
           })
-        }
+        }*/}
         <h1 className="bigTitle" style={{ pageBreakBefore: 'always', paddingBottom: '0px' }}>{titleConstants.finalComments[choosenLanguage]}</h1>
         {this.renderComment('P_OI01', titleConstants.partner[choosenLanguage])}
         
