@@ -29,7 +29,7 @@ Chart.plugins.register(ChartDataLabels);
 
 const colorPallete = ['#205783', '#196687', '#177B89', '#058C8B', '#109B8E', '#19AB8D', '#54B385', '#8BBF7E', '#BFCB74'];
 const globalColor = '#F8D670';
-const divergentColors = ['#717171', "#999999", "#c4c4c4", "#f1f1f1", "#d7e2f1", "#bdd4f2", "#a1c6f3", "#81b8f3", "#5aabf3", "#009ef3"]
+const divergentColors = ['#717171', "#999999", "#c4c4c4", "#f1f1f1", "#d7e2f1", "#bdd4f2", "#a1c6f3", "#81b8f3", "#5aabf3", "#009ef3", "#009ef3" ]
 
 class AgregatedReportContents extends React.Component {
   constructor(props) {
@@ -853,7 +853,7 @@ class AgregatedReportContents extends React.Component {
                     <tr>
                       <td style={{border: 'none'}} />
                       <td className="agregatedTableTitle" style={{textAlign:'center', fontWeight: 'bold'}}>GLOBAL</td>
-                    {subGroup.columns.map(c => <td className="agregatedTableContent" >{
+                    {subGroup.columns.map(c => <td className="agregatedTableContent" style={{backgroundColor: divergentColors[Math.floor(this.getGlobalSum(subGroupByCountry.result, c) / 10)]}} >{
                       this.getGlobalSum(subGroupByCountry.result, c)
                     }%</td>)}
                     </tr>

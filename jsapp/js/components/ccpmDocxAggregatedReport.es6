@@ -232,7 +232,7 @@ const getGroupByClusterTable = (groupData, groupName, lCode, colorPallete, globa
      [
       '',
       getTableContent('Global', '#000000', true),
-      ...groupData.columns.map(c => getTableContent(`${getGlobalSum(groupData.result, c)}%`, '#000000', true)),
+      ...groupData.columns.map(c => getTableContent(`${getGlobalSum(groupData.result, c)}%`, '#000000', true, divergentColors[Math.floor(getGlobalSum(groupData.result, c) / 10)])),
      ]
   ]
   return columns;
