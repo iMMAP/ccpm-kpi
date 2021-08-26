@@ -1068,7 +1068,7 @@ class Reports extends React.Component {
 
   loadReportData(items) {
       if(items){
-        this.setState({isLoading: true, reports: [], selectedYear: items.selectedYar});
+        this.setState({isLoading: true, reports: [], selectedYear: items.selectedYar, submissions: {}});
        items.selectedAssetUids.forEach(uid => {
         stores.allAssets.whenLoaded(uid, (asset)=>{
             let rowsByKuid = {};
