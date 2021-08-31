@@ -8,24 +8,29 @@ const getTable = (data, length, border = false, marginBottom = 150, leftMargin =
   if (!data) return;
   const rowLength = 100 / length;
   const remainingRowLength = 100 - (Math.round(rowLength) * length);
-  const rows = [...data.map((t, index) => new TableRow({
-    children: t.map((tt, ind) => new TableCell({
+  const rows = [...data.map((t, index) => {
+    return new TableRow({
+    children: t.map((tt, ind) => {
+
+      let nextIsEmpty = false;
+      if(data[index + 1] && data[index + 1][ind] === 'empty-region') nextIsEmpty = true;
+      return new TableCell({
       margins: { left: 100, right: 100 },
-      children: [tt ? tt : getTableContent('')],
+      children: [tt && tt !=='empty-region' ? tt : getTableContent('')],
       verticalAlign: 'center',
       borders: border ? {
-        bottom: { color: '#555555', size: tt ? 1 : 0, style: tt ? BorderStyle.SINGLE : BorderStyle.NONE, },
-        top: { color: '#555555', size: tt ? 1 : 0, style: tt ? BorderStyle.SINGLE : BorderStyle.NONE },
-        left: omitHorizintalBorder ? { size: 0, style: BorderStyle.NONE } : { color: '#555555', size: tt ? 1 : 0, style: tt ? BorderStyle.THICK : BorderStyle.NONE },
-        right: omitHorizintalBorder ? {size: 0, style: BorderStyle.NONE } : { color: '#555555', size: tt ? 1 : 0, style: tt ? BorderStyle.THICK : BorderStyle.NONE },
+        bottom: { color: !nextIsEmpty && tt ? '#555555' : '#ffffff', size: tt ? 1 : 0, style: !nextIsEmpty && tt ? BorderStyle.SINGLE : BorderStyle.NONE, },
+        top: { color:  tt && tt !== 'empty-region' ? '#555555' : '#ffffff', size: tt ? 1 : 0, style: tt && tt !== 'empty-region' ? BorderStyle.SINGLE : BorderStyle.NONE },
+        left: omitHorizintalBorder ? { size: 0, style: BorderStyle.NONE } : { color: '#555555', size: tt !== '' ? 1 : 0, style: tt !== '' ? BorderStyle.THICK : BorderStyle.NONE },
+        right: omitHorizintalBorder ? {size: 0, style: BorderStyle.NONE } : { color: '#555555', size: tt !== '' ? 1 : 0, style: tt !== '' ? BorderStyle.THICK : BorderStyle.NONE },
       } : false,
-      shading:!tt ? '' : index === 0 || ind === 0 || (ind === 1 && fillSecondCell) ? {color: tt.background || '#1f5782', fill: tt.background || '#1f5782', val:ShadingType.SOLID}: null,
+      shading:tt.background ? {color: tt.background || '#1f5782', fill: tt.background || '#1f5782', val:ShadingType.SOLID}: null,
       width: {
           size: `${ind === 0 ? Math.round(rowLength) + remainingRowLength : Math.round(rowLength)}%`,
           type: WidthType.PERCENTAGE
         }
-    }))
-  }))]
+    })})
+  })})]
   const columWidth = new Array(length);
   const columnWidthSingle = (9000 / columWidth.length);
   const remaining = 9000 - (Math.round(columnWidthSingle) * columWidth.length);
@@ -195,15 +200,17 @@ const getCoordinatorOrPartnerResponses = (reports, type) => {
 }
 
 let colors  = ['#007899', '#009898', '#48b484', '#9fc96f', '#f8d871', '#f87571'];
+const divergentColors = ['#717171', "#999999", "#c4c4c4", "#f1f1f1", "#d7e2f1", "#bdd4f2", "#a1c6f3", "#81b8f3", "#5aabf3", "#009ef3", "#009ef3"]
+
 const colorRegion = {};
 
 const getGroupTable = (groupData, groupName, lCode, colorPallete, globalColor) => {
   colors = colorPallete;
   const columns  = [
-    ['', ...groupData.columns.map(c => getTableContent(datasetGroup[groupName][c].names[lCode], '#ffffff'))],
+    ['', ...groupData.columns.map(c => getTableContent(datasetGroup[groupName][c].names[lCode], '#000000', false, '#ffffff'))],
     ...groupData.result.map((rg, index) => [
-      getTableContent(rg.name, '#ffffff', false, colors[index]),
-      ...groupData.columns.map(c => getTableContent(`${rg.data[c]}%`))
+      getTableContent(rg.name, '#000000', false, '#ffffff'),
+      ...groupData.columns.map(c => getTableContent(`${rg.data[c]}%`, '#000000', false, divergentColors[Math.floor(rg.data[c]/10)]))
     ]
   )
   ]
@@ -216,21 +223,21 @@ const getGroupByClusterTable = (groupData, groupName, lCode, colorPallete, globa
   groupData.result = groupData.result.sort((a,b) => compareString(a,b, 'region'));
   let currentRegion = '';
   const columns  = [
-    ['','', ...groupData.columns.map(c => getTableContent(datasetGroup[groupName][c].names[lCode], '#ffffff'))],
+    ['','', ...groupData.columns.map(c => getTableContent(datasetGroup[groupName][c].names[lCode], '#000000'))],
     ...groupData.result.map((rg, index) => { 
       if(!colorRegion[rg.region]) colorRegion[rg.region] = colors[Object.keys(colorRegion).length]
       const data =  [
-          getTableContent(currentRegion!== rg.region ? rg.region : '', '#ffffff', false, colorRegion[rg.region]),
-          getTableContent(rg.name, '#ffffff', false, colorRegion[rg.region]),
-          ...groupData.columns.map(c => getTableContent(`${rg.data[c]}%`)), 
+        currentRegion!== rg.region  ? getTableContent(rg.region, '#000000', false) : 'empty-region',
+          getTableContent(rg.name, '#000000', false),
+          ...groupData.columns.map(c => getTableContent(`${rg.data[c]}%`, '#000000', false, divergentColors[Math.floor(rg.data[c]/10)])), 
       ];
       currentRegion = rg.region;
       return data;
     }),
      [
       '',
-      getTableContent('Global', '#ffffff', false, globalColor),
-      ...groupData.columns.map(c => getTableContent(`${getGlobalSum(groupData.result, c)}%`)),
+      getTableContent('Global', '#000000', true),
+      ...groupData.columns.map(c => getTableContent(`${getGlobalSum(groupData.result, c)}%`, '#000000', true, divergentColors[Math.floor(getGlobalSum(groupData.result, c) / 10)])),
      ]
   ]
   return columns;
@@ -329,12 +336,12 @@ export default class CCPM_ReportContents {
             new Paragraph(''),
             getTable([
               ['',
-              getTableContent(titleConstants.nationalLevel[lcode], '#ffffff', false),
-              getTableContent(titleConstants.subNational[lcode], '#ffffff', false),
-              getTableContent(titleConstants.coortinatorResponse[lcode], '#ffffff', false),
-              getTableContent(titleConstants.partnerResponse[lcode], '#ffffff', false)],
+              getTableContent(titleConstants.nationalLevel[lcode], '#ffffff', false, '#1f5782'),
+              getTableContent(titleConstants.subNational[lcode], '#ffffff', false, '#1f5782'),
+              getTableContent(titleConstants.coortinatorResponse[lcode], '#ffffff', false, '#1f5782'),
+              getTableContent(titleConstants.partnerResponse[lcode], '#ffffff', false, '#1f5782')],
               ...completionRateRegions.map(rg => [
-                getTableContent(rg.name, '#ffffff'),
+                getTableContent(rg.name, '#ffffff', false, '#1f5782'),
                 getTableContent(getNationalLevel(rg.reports)),
                 getTableContent(getSubNationalLevel(rg.reports) || ''),
                 getTableContent(getCoordinatorOrPartnerResponses(rg.reports, 'coordinator')),

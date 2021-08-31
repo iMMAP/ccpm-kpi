@@ -753,12 +753,12 @@ export default class CCPM_ReportContents {
             ...getScoreBreakDownGroup(parentState, choosenLanguage, currentLanguageIndex),
           ]
         },
-        {
-          properties: {
-            type: SectionType.NEXT_PAGE,
-          },
-          children: getQuestionByQuestionResult(parentState, choosenLanguage)
-        },
+        // {
+        //   properties: {
+        //     type: SectionType.NEXT_PAGE,
+        //   },
+        //   children: getQuestionByQuestionResult(parentState, choosenLanguage)
+        // },
         {
           properties: {
             type: SectionType.NEXT_PAGE,
