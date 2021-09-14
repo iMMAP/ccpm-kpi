@@ -271,7 +271,7 @@ const getSecondSection = (lCode, completionRateRegions, colorPallete, globalColo
     data.push(getTable(getGroupByClusterTable({...subGroupDataByCountry, columns: subGroupData.columns}, subGroup, lCode, colorPallete, globalColor), 5, true,null, null, null, true))
     data.push(new Paragraph(''));
 
-      const charts = Object.keys(datasetGroup[subGroup]).filter(o => datasetGroup[subGroup][o].stackedChart);
+      const charts = Object.keys(datasetGroup[subGroup]).filter(k => k !== 'code' && k!== 'name' && k !== 'names');
       charts.forEach(chart => {
         const chartRect = document.getElementById(`chart-${chart}`).getBoundingClientRect()
         data.push(new Paragraph({
