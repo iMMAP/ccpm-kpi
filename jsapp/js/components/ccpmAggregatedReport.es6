@@ -452,6 +452,8 @@ class AgregatedReportContents extends React.Component {
   buildHorizontalStackedChart(subGroup, labels = [], languageIndex, title) {
     const chartColors  =  ['#454545','#737373','#b0b0b0', '#dee1e3', '#5a9ad6', '#3388d6'];
 
+    
+
     var chartType = 'horizontalBar';
 
     const subGroupData = getChartData(this.props.parentState.completionRateRegions, subGroup);
@@ -466,7 +468,7 @@ class AgregatedReportContents extends React.Component {
       if(total === 0) total = 1;
       totals[r] = total;
     });
-    const valueArray = labels.length === 6 ? [0,1,2,3,4,5] : [1,2,3,4,5]
+    const valueArray = (subGroup === 'organisationParticipating' || subGroup === 'clusterPartnersAgreedTechnical') ? ['yes', 'no'] : labels.length === 6 ? [0,1,2,3,4,5] : [1,2,3,4,5]
     valueArray.map((n, index) => {
       const data = [];
       Object.keys(subGroupData).forEach(r => {
@@ -479,7 +481,7 @@ class AgregatedReportContents extends React.Component {
         label: labels[index][languageIndex],
         data,
         borderWidth: 1,
-        backgroundColor: chartColors[n]
+        backgroundColor: (subGroup === 'organisationParticipating' || subGroup === 'clusterPartnersAgreedTechnical') ? n === 'yes' ? chartColors[4] : chartColors[0]  : chartColors[n]
       });
     })
 
@@ -748,9 +750,18 @@ class AgregatedReportContents extends React.Component {
     }
 
     Object.keys(datasetGroup).forEach(groupName => {
-      const charts = Object.keys(datasetGroup[groupName]).filter(o => datasetGroup[groupName][o].stackedChart);
+      const charts = Object.keys(datasetGroup[groupName]).filter(k => k !== 'code' && k!== 'name' && k !== 'names');
       charts.forEach(chart => {
-        this.loadSubGroupChart(languageIndex, chart, datasetGroup[groupName][chart].stackedLabels, datasetGroup[groupName][chart].stackTitle);
+        const titleArray = [];
+        const title = [`Regional breakdown of responses to "${datasetGroup[groupName][chart].names['en']}"`, `Répartition régionale des réponses à "${datasetGroup[groupName][chart].names['fr']}"`];
+        for(let i = 0; i< title.length; i++){
+          titleArray[i] = [];
+          const titleLength= Math.floor(title[i].length / 80);
+          for(let l = 0; l <= titleLength; l++) {
+            titleArray[i].push(title[i].substr(l * 80, ((l+1) * 80)))
+          }
+        }
+        this.loadSubGroupChart(languageIndex, chart, datasetGroup[groupName][chart].stackedLabels, titleArray);
       })
     })
 
@@ -813,7 +824,7 @@ class AgregatedReportContents extends React.Component {
         {Object.keys(datasetGroup).filter(e=> e !== 'code' && e !== 'name' && e !== 'names').map(groupName =>{
           const subGroup = getGroupTableByRegion(completionRateRegions, groupName);
           const subGroupByCountry = getGroupTableByCluster(completionRateRegions, groupName);
-          const charts = Object.keys(datasetGroup[groupName]).filter(o => datasetGroup[groupName][o].stackedChart);
+          const charts = Object.keys(datasetGroup[groupName]);
           subGroupByCountry.result = subGroupByCountry.result.sort((a,b) => compareString(a,b, 'region'));
         return <>
               <h1 className="title" style={{marginTop: '22px' }}>{datasetGroup[groupName].names[lcode]}</h1>
@@ -861,7 +872,7 @@ class AgregatedReportContents extends React.Component {
                 </tbody>
               </table>
               {
-                charts.map(chart => <>
+                charts.filter(k => k !== 'code' && k!== 'name' && k !== 'names').map(chart => <>
                 <div style={{ width: '75%', margin: '20px auto', border: "1px #000 solid", padding: '20px'}}>
                    <canvas ref={`chart-${chart}`} id={`chart-${chart}`} />
                 </div>
