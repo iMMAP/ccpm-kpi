@@ -756,9 +756,12 @@ class AgregatedReportContents extends React.Component {
         const title = [`Regional breakdown of responses to "${datasetGroup[groupName][chart].names['en']}"`, `Répartition régionale des réponses à "${datasetGroup[groupName][chart].names['fr']}"`];
         for(let i = 0; i< title.length; i++){
           titleArray[i] = [];
-          const titleLength= Math.floor(title[i].length / 80);
-          for(let l = 0; l <= titleLength; l++) {
-            titleArray[i].push(title[i].substr(l * 80, ((l+1) * 80)))
+          let textLength = 0;
+          while((textLength < title[i].length)) {
+            const lastSpace = title[i].substr(textLength, 80).lastIndexOf(' ');
+            const t = (title[i].length - textLength) < 80 ? title[i].substr(textLength) : title[i].substr(textLength, lastSpace);
+            titleArray[i].push(t);
+            textLength = textLength + t.length;
           }
         }
         this.loadSubGroupChart(languageIndex, chart, datasetGroup[groupName][chart].stackedLabels, titleArray);
