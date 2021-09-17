@@ -111,12 +111,12 @@ class AgregatedReportContents extends React.Component {
     const labelData = [];
 
     this.props.parentState.reports.forEach(rep => {
-      const languageIndex = this.getLanguageIndex(rep);
-      rep.totalResponseDisagregatedByPartner.forEach(element=>{
-        const label = element.row.label[languageIndex] || element.row.label[1];
-
+     rep.totalResponseDisagregatedByPartner.forEach(element=>{
+        const label = element.name;
+        const languageLabels = rep.asset.content.settings.default_language.includes('(en)') ? element.row.label : [element.row.label[1], element.row.label[0]]
+        if(!labelData.find(a =>a.name === element.name)) labelData.push({code: label, translations:languageLabels, name: element.name});
+        
         if(element.data.provided > 0){
-        labelData.push({code: label, translations: element.row.label});
         if(data[label])data[label]+=element.questionsDisagregatedByPartner;
         else data[label] = element.questionsDisagregatedByPartner;
         }
