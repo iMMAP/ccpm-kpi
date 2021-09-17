@@ -253,7 +253,8 @@ const getGlobalSum = (data, column) => {
 
 const getSecondSection = (lCode, completionRateRegions, colorPallete, globalColor) => {
   const result = [];
-  Object.keys(datasetGroup).filter(d => d !== 'code' && d !=='content' && d!== 'wholeCode' && d !== 'name' && d !== 'names').forEach((subGroup, index) => {
+  const subGroups = Object.keys(datasetGroup).filter(d => d !== 'code' && d !=='content' && d!== 'wholeCode' && d !== 'name' && d !== 'names');
+    subGroups.forEach((subGroup, index) => {
     const data = [];
 
     if(index === 0) {
@@ -273,7 +274,7 @@ const getSecondSection = (lCode, completionRateRegions, colorPallete, globalColo
 
       const charts = Object.keys(datasetGroup[subGroup]).filter(k => k !== 'code' && k!== 'name' && k !== 'names');
       let negativeChartShown = false;
-      charts.forEach((chart, index) => {
+      charts.forEach((chart, index2) => {
         data.push(new Paragraph(''));
         const chartRect = document.getElementById(`chart-${chart}`).getBoundingClientRect();
         const children = [new ImageRun({
@@ -283,7 +284,7 @@ const getSecondSection = (lCode, completionRateRegions, colorPallete, globalColo
             height: chartRect.height * (600 / chartRect.width)
           },
         })];
-        if(index % 2 !== 0) children.push(new PageBreak());
+        if(index2 % 2 !== 0 && !(index2 === charts.length -1 && index !== subGroups.length - 1)) children.push(new PageBreak());
         data.push(new Paragraph({
           spacing: {
             before: 100,
@@ -315,6 +316,7 @@ const getSecondSection = (lCode, completionRateRegions, colorPallete, globalColo
           },
           children
         }))
+
         if(subGroup === 'planningStrategyDevelopment' && index === charts.length - 1){
           const chartNegativeRect = document.getElementById(`negativeAnswerChart`).getBoundingClientRect();
           data.push(new Paragraph({
