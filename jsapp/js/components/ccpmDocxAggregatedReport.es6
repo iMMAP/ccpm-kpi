@@ -284,7 +284,7 @@ const getSecondSection = (lCode, completionRateRegions, colorPallete, globalColo
             height: chartRect.height * (600 / chartRect.width)
           },
         })];
-        if(index2 % 2 !== 0 && !(index2 === charts.length -1 && index !== subGroups.length - 1)) children.push(new PageBreak());
+        if(index2 % 2 !== 0 && !(index2 === charts.length -1 && index === subGroups.length - 1)) children.push(new PageBreak());
         data.push(new Paragraph({
           spacing: {
             before: 100,
