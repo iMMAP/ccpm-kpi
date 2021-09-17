@@ -279,6 +279,28 @@ const getSecondSection = (lCode, completionRateRegions, colorPallete, globalColo
             before: 100,
             after: 200,
           },
+          border: {
+            top: {
+              color: '#000000',
+              size: 1,
+              value: 'single'
+            },
+            bottom: {
+              color: '#000000',
+              size: 1,
+              value: 'single'
+            },
+            left: {
+              color: '#000000',
+              size: 1,
+              value: 'single'
+            },
+            right: {
+              color: '#000000',
+              size: 1,
+              value: 'single'
+            }
+          },
           children: [new ImageRun({
             data: Uint8Array.from(atob((document.getElementById(`chart-${chart}`).toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
             transformation: {
@@ -294,6 +316,28 @@ const getSecondSection = (lCode, completionRateRegions, colorPallete, globalColo
             spacing: {
               before: 100,
               after: 200,
+            },
+            border: {
+              top: {
+                color: '#000000',
+                size: 1,
+                value: 'single'
+              },
+              bottom: {
+                color: '#000000',
+                size: 1,
+                value: 'single'
+              },
+              left: {
+                color: '#000000',
+                size: 1,
+                value: 'single'
+              },
+              right: {
+                color: '#000000',
+                size: 1,
+                value: 'single'
+              }
             },
             children: [new ImageRun({
               data: Uint8Array.from(atob((document.getElementById(`negativeAnswerChart`).toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
@@ -356,6 +400,28 @@ export default class CCPM_ReportContents {
                 before: 100,
                 after: 200,
               },
+              border: {
+                top: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                },
+                bottom: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                },
+                left: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                },
+                right: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                }
+              },
               children: [new ImageRun({
                 data: Uint8Array.from(atob((document.getElementById('chartbyType').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
                 transformation: {
@@ -379,6 +445,28 @@ export default class CCPM_ReportContents {
                 before: 100,
                 after: 200,
               },
+              border: {
+                top: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                },
+                bottom: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                },
+                left: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                },
+                right: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                }
+              },
               children: [new ImageRun({
                 data: Uint8Array.from(atob((document.getElementById('chartbyTypeAndRegion').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
                 transformation: {
@@ -394,6 +482,28 @@ export default class CCPM_ReportContents {
               spacing: {
                 before: 100,
                 after: 200,
+              },
+              border: {
+                top: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                },
+                bottom: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                },
+                left: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                },
+                right: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                }
               },
               children: [new ImageRun({
                 data: Uint8Array.from(atob((document.getElementById('chartbyCluster').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
