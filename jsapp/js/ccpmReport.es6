@@ -152,9 +152,11 @@ const ccpm_getData = (data, choices, dataSetGroup) => {
                         q.averageLabel = ccpm_getStatusLabel(q.average);
 
                     const questionGroupedByLabel = ccpm_getResponseGrouped(q);
-                    Object.keys(questionGroupedByLabel).forEach(v => {
-                        groupedByLabel[v] = groupedByLabel[v] + questionGroupedByLabel[v];
-                    })
+                    if(!questionResponseGroup[group]) questionResponseGroup[group] = {};
+                    questionResponseGroup[group][q.name] = questionGroupedByLabel;
+                    // Object.keys(questionGroupedByLabel).forEach(v => {
+                    //     groupedByLabel[v] = groupedByLabel[v] + questionGroupedByLabel[v];
+                    // })
 
                     if (!chartData[group]) chartData[group] = {};
                     if (chartData[group][q.averageLabel]) chartData[group][q.averageLabel] = chartData[group][q.averageLabel] + 1;
@@ -165,7 +167,7 @@ const ccpm_getData = (data, choices, dataSetGroup) => {
                 newReport[subGroup].group = group;
             }
         })
-        questionResponseGroup[group] = groupedByLabel;
+        //questionResponseGroup[group] = groupedByLabel;
     })
 
     const totalResponseQuestions = []

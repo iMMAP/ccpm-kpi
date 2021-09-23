@@ -1,4 +1,4 @@
-import { AlignmentType, BorderStyle, Document, TabStopPosition, TabStopType } from "docx";
+import { AlignmentType, BorderStyle, Document, PageBreak, TabStopPosition, TabStopType } from "docx";
 import dataset, { ccpm_parseNumber, titleConstants, ccpm_getQuestionInRange, ccpm_getAverageInBoolQuestion } from '../ccpmDataset';
 import { ccpm_getStatusLabel, ccpm_getStatusColor, ccpm_getLabel, ccpm_getName } from '../ccpmReport';
 import { TextRun, Paragraph, ImageRun, SectionType, Table, TableRow, TableCell, WidthType, SymbolRun } from 'docx';
@@ -629,6 +629,7 @@ const getQuestionByQuestionResult = (parentState, choosenLanguage) => {
       data.push(new Paragraph({spacing: {before: 100, after: 100},children: [new TextRun('')]}))
       let image = '';
       const canv = window.document.getElementById(`${element}canv`);
+      const canvRect = canv.getBoundingClientRect();
       if (canv) {
         image = canv.toDataURL();
         data.push(new Paragraph({
@@ -639,8 +640,8 @@ const getQuestionByQuestionResult = (parentState, choosenLanguage) => {
           children: [new ImageRun({
             data: Uint8Array.from(atob(image.replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
             transformation: {
-              width: 550,
-              height: 250
+              width: canvRect.width * (700 /canvRect.width),
+              height: canvRect.height * (700 / canvRect.width)
             },
           })]
         }))
@@ -651,6 +652,7 @@ const getQuestionByQuestionResult = (parentState, choosenLanguage) => {
       data.push(new Paragraph({spacing: {before: 100, after: 100},children: [new TextRun('')]}))
       data.push(getTable([[new Paragraph(''), getNoteTitle(titleConstants.commentSuccessStories[choosenLanguage])]], 2, false, undefined, undefined, undefined, undefined, true));
       data.push(renderComment(dataset[element].comments[1], titleConstants.commentSuccessStories[choosenLanguage], parentState))
+      data.push(new Paragraph({children: [new PageBreak()]}))
     }
   })
   return data;
@@ -753,12 +755,12 @@ export default class CCPM_ReportContents {
             ...getScoreBreakDownGroup(parentState, choosenLanguage, currentLanguageIndex),
           ]
         },
-        // {
-        //   properties: {
-        //     type: SectionType.NEXT_PAGE,
-        //   },
-        //   children: getQuestionByQuestionResult(parentState, choosenLanguage)
-        // },
+        {
+          properties: {
+            type: SectionType.NEXT_PAGE,
+          },
+          children: getQuestionByQuestionResult(parentState, choosenLanguage)
+        },
         {
           properties: {
             type: SectionType.NEXT_PAGE,
