@@ -261,17 +261,14 @@ export default class CCPM_ReportContents extends React.Component {
 
     const set2 = [];
     const totals = {};
-
     Object.keys(data).forEach(r => {
       let total = 0;
       Object.keys(data[r]).forEach(element => {
-        console.log(element,data[r][element.toString()]);
         total +=data[r][element.toString()];
       });
       if(total === 0) total = 1;
       totals[r] = total;
     });
-    console.log(totals);
     const valueArray = [0,1,2,3,4,5]
     valueArray.forEach((n, index) => {
       const newdata = [];
@@ -281,7 +278,6 @@ export default class CCPM_ReportContents extends React.Component {
         d = Number.parseInt(d, 10);
         newdata.push((d * 100)/totals[r]);
       });
-      console.log(newdata);
       set2.push({
         label: labels[currentLanguageIndex][index],
         data: newdata,
@@ -318,13 +314,6 @@ export default class CCPM_ReportContents extends React.Component {
       },
       options: {
         maintainAspectRation: false,
-        // title: {
-        //   display: true,
-        //   text: title[languageIndex],
-        //   fontSize: 12,
-        //   position: 'bottom',
-
-        // },
         plugins: {
           datalabels: {
             color: '#fff',
@@ -379,7 +368,6 @@ export default class CCPM_ReportContents extends React.Component {
     Chart.defaults.global.elements.rectangle.backgroundColor = baseColor;
 
     let total = 0;
-    console.log(data);
     Object.keys(data).forEach(d => {
       total += data[d];
     });
@@ -541,7 +529,7 @@ export default class CCPM_ReportContents extends React.Component {
     //Build question by question breakdown charts 
 
     Object.keys(dataset).forEach(element => {
-      if (element !== 'code') {
+      if (element !== 'code' && this.props.parentState.questionResponseGroup[element]) {
         var canvas = ReactDOM.findDOMNode(this.refs[`canvas${element}`]);
         var opts = this.buildHorizontalStackedChart(this.props.parentState.questionResponseGroup[element], currentLanguageIndex);
 
