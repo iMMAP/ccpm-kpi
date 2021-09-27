@@ -253,9 +253,9 @@ export default class CCPM_ReportContents extends React.Component {
   }
 
   buildHorizontalStackedChart(data, currentLanguageIndex) {
-    const chartColors  =  ['#454545','#737373','#b0b0b0', '#dee1e3', '#5a9ad6', '#3388d6'];
+    const chartColors  =  ['#454545','#737373','#b0b0b0', '#dee1e3', '#5a9ad6', '#3388d6', '#8BBF7E', '#BFCB74'];
 
-    const labels = [ ['Not Applicable','Strongly Disagree', 'Disagree', 'Neither Agree or Disagree', 'Agree', 'Strongly Agree'], ['Non applicable','Pas du tout d\'accord', 'Pas d\'accord', 'Neutre', 'D\'accord', 'Tout à fait d\'accord']]
+    const labels = [ ['Not Applicable','Strongly Disagree', 'Disagree', 'Neither Agree or Disagree', 'Agree', 'Strongly Agree', 'Yes', 'No'], ['Non applicable','Pas du tout d\'accord', 'Pas d\'accord', 'Neutre', 'D\'accord', 'Tout à fait d\'accord', 'Oui', 'Non' ]]
 
     var chartType = 'horizontalBar';
 
@@ -269,7 +269,7 @@ export default class CCPM_ReportContents extends React.Component {
       if(total === 0) total = 1;
       totals[r] = total;
     });
-    const valueArray = [0,1,2,3,4,5]
+    const valueArray = [0,1,2,3,4,5, 'yes', 'no']
     valueArray.forEach((n, index) => {
       const newdata = [];
       Object.keys(data).forEach(r => {
@@ -282,7 +282,7 @@ export default class CCPM_ReportContents extends React.Component {
         label: labels[currentLanguageIndex][index],
         data: newdata,
         borderWidth: 1,
-        backgroundColor: chartColors[n]
+        backgroundColor: chartColors[index]
       });
     })
 
@@ -862,7 +862,7 @@ export default class CCPM_ReportContents extends React.Component {
               if(element === 'supportServiceDelivery' || element === 'informingStrategicDecisions') {
                 return <>
                   <h1 className="title" style={{ marginLeft: '10px', paddingTop: '15px' }}> {ccpm_getName(dataset[element], choosenLanguage)}</h1>
-                  <div style={{height: '850px', width: '100%'}}>
+                  <div style={{height: '900px', width: '95%'}}>
                     <canvas ref={`canvas${element}`} height={280}  id={`${element}canv`} />
                   </div>
                   {this.renderComment(dataset[element].comments[0], titleConstants.commentSuggestedImprovment[choosenLanguage])}
@@ -871,7 +871,9 @@ export default class CCPM_ReportContents extends React.Component {
               } else {
                 return <>
                 <h1 className="title" style={{ marginLeft: '10px', paddingTop: '15px' }}> {ccpm_getName(dataset[element], choosenLanguage)}</h1>
-                  <canvas ref={`canvas${element}`} id={`${element}canv`} />
+                  <div style={{width: '95%'}}>
+                     <canvas ref={`canvas${element}`} id={`${element}canv`} />
+                  </div>
                 {this.renderComment(dataset[element].comments[0], titleConstants.commentSuggestedImprovment[choosenLanguage])}
                 {this.renderComment(dataset[element].comments[1], titleConstants.commentSuccessStories[choosenLanguage])}
                 </>

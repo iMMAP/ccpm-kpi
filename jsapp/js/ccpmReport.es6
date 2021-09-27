@@ -92,9 +92,13 @@ const ccpm_getNumberOfParnerResponseByType = (questionList, data, choices) => {
 }
 
 const ccpm_getResponseGrouped = (q) => {
-    const result = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 };
+    const result = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, yes: 0, no: 0 };
     Object.keys(result).forEach(key => {
-        const index = q.data.responses.findIndex(e => e.toString().replace(/\D/g, '') === key);
+        const index = q.data.responses.findIndex(e =>  {
+          let value  = e.toString().replace(/\D/g, '');
+          if(key === 'no' || key === 'yes') value = e;
+          return value === key;
+        });
         if (index >= 0)
             result[key] = q.data.frequencies[index];
     })
