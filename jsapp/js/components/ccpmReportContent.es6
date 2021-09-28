@@ -252,10 +252,10 @@ export default class CCPM_ReportContents extends React.Component {
     return ccpm_getAverageInQuestion(data);
   }
 
-  buildHorizontalStackedChart(data, currentLanguageIndex) {
+  buildHorizontalStackedChart(data, currentLanguageIndex, choosenLanguage = 'en') {
     const chartColors  =  ['#454545','#737373','#b0b0b0', '#dee1e3', '#5a9ad6', '#3388d6', '#8BBF7E', '#BFCB74'];
 
-    const labels = [ ['Not Applicable','Strongly Disagree', 'Disagree', 'Neither Agree or Disagree', 'Agree', 'Strongly Agree', 'Yes', 'No'], ['Non applicable','Pas du tout d\'accord', 'Pas d\'accord', 'Neutre', 'D\'accord', 'Tout à fait d\'accord', 'Oui', 'Non' ]]
+    const labels = {en:['Not Applicable','Strongly Disagree', 'Disagree', 'Neither Agree or Disagree', 'Agree', 'Strongly Agree', 'Yes', 'No'],fr: ['Non applicable','Pas du tout d\'accord', 'Pas d\'accord', 'Neutre', 'D\'accord', 'Tout à fait d\'accord', 'Oui', 'Non' ]}
 
     var chartType = 'horizontalBar';
 
@@ -279,7 +279,7 @@ export default class CCPM_ReportContents extends React.Component {
         newdata.push(Math.round((d * 100)/totals[r]));
       });
       set2.push({
-        label: labels[currentLanguageIndex][index],
+        label: labels[choosenLanguage][index],
         data: newdata,
         borderWidth: 1,
         backgroundColor: chartColors[index]
@@ -531,7 +531,7 @@ export default class CCPM_ReportContents extends React.Component {
     Object.keys(dataset).forEach(element => {
       if (element !== 'code' && this.props.parentState.questionResponseGroup[element]) {
         var canvas = ReactDOM.findDOMNode(this.refs[`canvas${element}`]);
-        var opts = this.buildHorizontalStackedChart(this.props.parentState.questionResponseGroup[element], currentLanguageIndex);
+        var opts = this.buildHorizontalStackedChart(this.props.parentState.questionResponseGroup[element], currentLanguageIndex, choosenLanguage);
 
         if (this[`itemChart-${element}`]) {
           this[`itemChart-${element}`].destroy();
