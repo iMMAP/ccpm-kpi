@@ -640,8 +640,8 @@ const getQuestionByQuestionResult = (parentState, choosenLanguage) => {
           children: [new ImageRun({
             data: Uint8Array.from(atob(image.replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
             transformation: {
-              width: canvRect.width * (700 /canvRect.width),
-              height: canvRect.height * (700 / canvRect.width)
+              width: canvRect.width * (600 /canvRect.width),
+              height: canvRect.height * (600 / canvRect.width)
             },
           })]
         }))

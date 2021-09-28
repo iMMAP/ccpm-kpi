@@ -862,7 +862,7 @@ export default class CCPM_ReportContents extends React.Component {
               if(element === 'supportServiceDelivery' || element === 'informingStrategicDecisions') {
                 return <>
                   <h1 className="title" style={{ marginLeft: '10px', paddingTop: '15px' }}> {ccpm_getName(dataset[element], choosenLanguage)}</h1>
-                  <div style={{height: '900px', width: '95%'}}>
+                  <div style={{height: '830px', width: '95%'}}>
                     <canvas ref={`canvas${element}`} height={280}  id={`${element}canv`} />
                   </div>
                   {this.renderComment(dataset[element].comments[0], titleConstants.commentSuggestedImprovment[choosenLanguage])}
