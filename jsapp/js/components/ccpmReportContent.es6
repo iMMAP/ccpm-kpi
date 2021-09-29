@@ -276,7 +276,7 @@ export default class CCPM_ReportContents extends React.Component {
         let d = data[r][n.toString()];
         if(!d) d = 0;
         d = Number.parseInt(d, 10);
-        newdata.push(Math.round((d * 100)/totals[r]));
+        newdata.push((d * 100)/totals[r]);
       });
       set2.push({
         label: labels[choosenLanguage][index],
@@ -299,7 +299,7 @@ export default class CCPM_ReportContents extends React.Component {
       data: {
         labels: Object.keys(data).map(e => {
           const q = this.props.parentState.reportData.find(qq => qq.name === e);
-          const title =  q.row.label[currentLanguageIndex];
+          const title =  q.row.label[currentLanguageIndex] || '';
           const titleArray = [];
           let textLength = 0;
           while((textLength < title.length)) {
@@ -351,7 +351,8 @@ export default class CCPM_ReportContents extends React.Component {
           callbacks: {
             label: (a,b)=>{
               const title  = b.datasets[a.datasetIndex];
-              return `${title.label} (%): ${Math.round(title.data[a.index])}`;
+              // return `${title.label} (%): ${Math.round(title.data[a.index])}`;
+              return ''
             }
           },
         },
@@ -859,10 +860,10 @@ export default class CCPM_ReportContents extends React.Component {
         {
           Object.keys(dataset).map(element => {
             if (element !== 'code' && element !== 'name') {
-              if(element === 'supportServiceDelivery' || element === 'informingStrategicDecisions') {
+              if(element === 'supportServiceDelivery' || element === 'informingStrategicDecisions' || element === 'planningStrategyDevelopment') {
                 return <>
                   <h1 className="title" style={{ marginLeft: '10px', paddingTop: '15px' }}> {ccpm_getName(dataset[element], choosenLanguage)}</h1>
-                  <div style={{height: '900px', width: '95%'}}>
+                  <div style={{height: '930px', width: '95%'}}>
                     <canvas ref={`canvas${element}`} height={280}  id={`${element}canv`} />
                   </div>
                   {this.renderComment(dataset[element].comments[0], titleConstants.commentSuggestedImprovment[choosenLanguage])}
