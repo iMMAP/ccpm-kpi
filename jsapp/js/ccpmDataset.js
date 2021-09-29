@@ -3,9 +3,15 @@ const dataset = {
         name: 'Support to Service Delivery',
         names: { en: 'Support to Service Delivery', fr: 'Appui à la Prestation de Services' },
         code: 'P_SS',
-        comments: ['P_SS05', 'P_SS06'],
+        comments: [],
         meeting: { code: '01a', starting: 1, end: 6, name: 'Meetings', names: { en: 'Meetings', fr: 'Réunions' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_SD01', name: 'Meeting Frequency' }, { code: 'C_SD02', name: 'Notes on Meetings' }] },
         clusterStrategicDecisions: { code: '02', starting: 1, end: 3, name: 'Cluster Strategic Decisions', names: { en: 'Cluster Strategic Decisions', fr: 'Décisions Stratégiques du Groupe' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_SD03', name: '' }] },
+    },
+    supportServiceDelivery2: {
+        name: 'Support to Service Delivery',
+        names: { en: '', fr: '' },
+        code: 'P_SS',
+        comments: ['P_SS05', 'P_SS06'],
         clusterMapping: { code: '03', starting: 1, end: 5, name: 'Cluster Mapping', names: { en: 'Cluster Mapping', fr: 'Cartographie des Clusters' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_SD04', name: '' }] },
         identificationNeeds: { code: '04', starting: 1, end: 3, name: 'Identification of Needs, Gaps and Response Priorities', names: { en: 'Identification of Needs, Gaps and Response Priorities', fr: 'Identification des Besoins, des Lacunes et des Priorités de Réponse' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_SD05', name: '' }] },
     },
@@ -13,10 +19,22 @@ const dataset = {
         name: 'Informing Strategic Decision-Making of the HC/HCT',
         names: { en: 'Informing Strategic Decision-Making of the HC/HCT', fr: 'Communication sur les Decisions Strategiques du HC/HCT' },
         code: 'P_IS',
-        comments: ['P_IS06', 'P_IS07'],
+        comments: [],
         assesments: { code: '01', starting: 1, end: 7, name: 'Assessments', names: { en: 'Assessments', fr: 'Évaluations' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_IS01', name: 'Have Assessments, Tools and Guidance been agreed?' }, { code: 'C_IS02', name: 'Have there been any coordinated assessments (that include a focus on health) over the last year?' }] },
         situationAnalyses: { code: '02', name: 'Situation Analyses', names: { en: 'Situation Analyses', fr: 'Analyses de la Situation' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_IS03', name: 'Has the cluster done any situation analysis over the last year?' }] },
+    },
+    informingStrategicDecisions2: {
+        name: 'Informing Strategic Decision-Making of the HC/HCT',
+        names: { en: '', fr: '' },
+        code: 'P_IS',
+        comments: [],
         analysisTopicCovered: { code: '03', starting: 1, end: 5, name: 'Analysis Topics Covered', names: { en: 'Analysis Topics Covered', fr: 'Thèmes d\'Analyse Couverts' }, },
+    },
+    informingStrategicDecisions3: {
+        name: 'Informing Strategic Decision-Making of the HC/HCT',
+        names: { en: '', fr: '' },
+        code: 'P_IS',
+        comments: ['P_IS06', 'P_IS07'],
         crossCuttingIssues: { code: '04', starting: 1, end: 10, name: 'Cross-Cutting Issues', names: { en: 'Cross-Cutting Issues', fr: 'Questions Transversales' } },
         supportDecisionMaking: { code: '05', starting: 1, end: 2, name: 'Support for Decision Making', names: { en: 'Support for Decision Making', fr: 'Aide à la Prise de Décision' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_IS04', name: '' }] },
     },
@@ -24,9 +42,15 @@ const dataset = {
         name: 'Planning and Strategy Development',
         names: { en: 'Planning and Strategy Development', fr: 'Planification et Développement des Stratégies' },
         code: 'P_PS',
-        comments: ['P_PS03', 'P_PS04'],
+        comments: [],
         strategicPlan: { code: '01b', starting: 1, end: 4, name: 'Strategic Plan', names: { en: 'Strategic Plan', fr: 'Plan Stratégique' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_PS01', name: 'Has the cluster developed a strategic plan?' }] },
         technicalStandard: { code: '02', starting: 1, end: 2, name: 'Technical Standards and Guidelines', names: { en: 'Technical Standards and Guidelines', fr: 'Normes Techniques et Directives' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_PS02', name: 'Have technical standards and guidelines been agreed?' }] },
+    },
+    planningStrategyDevelopment2: {
+        name: 'Planning and Strategy Development',
+        names: { en: '', fr: '' },
+        code: 'P_PS',
+        comments: ['P_PS03', 'P_PS04'],
         prioritizationProposal: { code: '02', starting: 3, end: 5, name: 'Prioritization of Proposals', names: { en: 'Prioritization of Proposals', fr: 'Hiérarchisation des Propositions' }, },
         updateFundingStatus: { code: '02', starting: 6, end: 6, name: 'Updates on Funding Status against Needs', names: { en: 'Updates on Funding Status against Needs', fr: 'Mises à Jour sur l\'État du Financement par rapport aux Besoins' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_PS04', name: 'How often does the cluster report on funding status against needs?' }, { code: 'C_PS05', name: 'Notes on Planning and Strategy Development' }] }
     },
@@ -144,8 +168,8 @@ export const ccpm_getQuestionInRange = (groupIdentifier, subgroupIdentifier, dat
     const subgroup = group[subgroupIdentifier]
 
     const questions = [];
-    const code = `${group.code}${subgroup.code}`;
     if(subgroup){
+        const code = `${group.code}${subgroup.code}`;
         if(subgroup.wholeCode){
              questions.push(subgroup.wholeCode);
         }
