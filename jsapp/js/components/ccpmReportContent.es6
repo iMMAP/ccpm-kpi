@@ -318,7 +318,6 @@ export default class CCPM_ReportContents extends React.Component {
           datalabels: {
             color: '#fff',
             formatter: function (value, context) {
-              
               const percent = Number.parseInt(value);
               return percent > 0 ? `${percent}%` : '';
             },
@@ -756,7 +755,7 @@ export default class CCPM_ReportContents extends React.Component {
         {Object.keys(dataset).map(group => {
           return (
             <>
-              <h1 className="title" style={{paddingTop: '15px'}}>{ccpm_getName(dataset[group], choosenLanguage)}</h1>
+              {ccpm_getName(dataset[group], choosenLanguage) && <h1 className="title" style={{paddingTop: '15px'}}>{ccpm_getName(dataset[group], choosenLanguage)}</h1>}
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <tbody>
                   {
@@ -778,7 +777,7 @@ export default class CCPM_ReportContents extends React.Component {
         {Object.keys(dataset).map(group => {
           return (
             <>
-              <h1 className="title" style={{paddingTop: '15px'}}>{ccpm_getName(dataset[group], choosenLanguage)}</h1>
+              {ccpm_getName(dataset[group], choosenLanguage) && <h1 className="title" style={{paddingTop: '15px'}}>{ccpm_getName(dataset[group], choosenLanguage)}</h1>}
               {Object.keys(dataset[group]).map(subGroup => {
                 if (!parentState.ccpmReport[subGroup].questions || subGroup === 'code' || subGroup === 'content' || subGroup === 'wholeCode' || subGroup === 'names' || subGroup === 'name' || subGroup === 'comments') return '';
                 return <>
@@ -862,9 +861,9 @@ export default class CCPM_ReportContents extends React.Component {
             if (element !== 'code' && element !== 'name') {
               if(element.includes('supportServiceDelivery') || element.includes('informingStrategicDecisions') || element.includes('planningStrategyDevelopment')) {
                 return <>
-                  <h1 className="title" style={{ marginLeft: '10px', paddingTop: '15px' }}> {ccpm_getName(dataset[element], choosenLanguage)}</h1>
-                  <div style={{height: '700px', width: '95%'}}>
-                    <canvas ref={`canvas${element}`} height={240}  id={`${element}canv`} />
+                 {ccpm_getName(dataset[element], choosenLanguage) && <h1 className="title" style={{ marginLeft: '10px', paddingTop: '15px' }}> {ccpm_getName(dataset[element], choosenLanguage)}</h1>}
+                  <div style={{height: element === "planningStrategyDevelopment" ? '900px' : '700px', width: '95%'}}>
+                    <canvas ref={`canvas${element}`} height={element === "planningStrategyDevelopment" ? 280 : 240}  id={`${element}canv`} />
                   </div>
                   {this.renderComment(dataset[element].comments[0], titleConstants.commentSuggestedImprovment[choosenLanguage])}
                   {this.renderComment(dataset[element].comments[1], titleConstants.commentSuccessStories[choosenLanguage])}

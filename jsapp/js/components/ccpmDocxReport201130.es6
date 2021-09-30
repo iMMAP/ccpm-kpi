@@ -318,9 +318,11 @@ const renderComment = (questionCode, questionName, parentState) => {
 const getOverallPerformance = (parentState, choosenLanguage, languageIndex) => {
   const dataToShow = [];
   Object.keys(dataset).forEach(group => {
-    dataToShow.push(new Paragraph(''));
-    dataToShow.push(getTitle(ccpm_getName(dataset[group], choosenLanguage)));
-    dataToShow.push(new Paragraph(''));
+    if(ccpm_getName(dataset[group], choosenLanguage)) {
+      dataToShow.push(new Paragraph(''));
+      dataToShow.push(getTitle(ccpm_getName(dataset[group], choosenLanguage)));
+      dataToShow.push(new Paragraph(''));
+    }
     const tableData = Object.keys(dataset[group]).filter(sg => sg !== 'code' && sg !== 'names' && sg !== 'name' && sg !== 'comments').map(subGroup => {
       return [
         getTableContent(ccpm_getName(dataset[group][subGroup], choosenLanguage)),
