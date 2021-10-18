@@ -3,9 +3,15 @@ const dataset = {
         name: 'Support to Service Delivery',
         names: { en: 'Support to Service Delivery', fr: 'Appui à la Prestation de Services' },
         code: 'P_SS',
-        comments: ['P_SS05', 'P_SS06'],
+        comments: [],
         meeting: { code: '01a', starting: 1, end: 6, name: 'Meetings', names: { en: 'Meetings', fr: 'Réunions' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_SD01', name: 'Meeting Frequency' }, { code: 'C_SD02', name: 'Notes on Meetings' }] },
         clusterStrategicDecisions: { code: '02', starting: 1, end: 3, name: 'Cluster Strategic Decisions', names: { en: 'Cluster Strategic Decisions', fr: 'Décisions Stratégiques du Groupe' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_SD03', name: '' }] },
+    },
+    supportServiceDelivery2: {
+        name: 'Support to Service Delivery',
+        names: { en: '', fr: '' },
+        code: 'P_SS',
+        comments: ['P_SS05', 'P_SS06'],
         clusterMapping: { code: '03', starting: 1, end: 5, name: 'Cluster Mapping', names: { en: 'Cluster Mapping', fr: 'Cartographie des Clusters' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_SD04', name: '' }] },
         identificationNeeds: { code: '04', starting: 1, end: 3, name: 'Identification of Needs, Gaps and Response Priorities', names: { en: 'Identification of Needs, Gaps and Response Priorities', fr: 'Identification des Besoins, des Lacunes et des Priorités de Réponse' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_SD05', name: '' }] },
     },
@@ -13,10 +19,22 @@ const dataset = {
         name: 'Informing Strategic Decision-Making of the HC/HCT',
         names: { en: 'Informing Strategic Decision-Making of the HC/HCT', fr: 'Communication sur les Decisions Strategiques du HC/HCT' },
         code: 'P_IS',
-        comments: ['P_IS06', 'P_IS07'],
+        comments: [],
         assesments: { code: '01', starting: 1, end: 7, name: 'Assessments', names: { en: 'Assessments', fr: 'Évaluations' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_IS01', name: 'Have Assessments, Tools and Guidance been agreed?' }, { code: 'C_IS02', name: 'Have there been any coordinated assessments (that include a focus on health) over the last year?' }] },
         situationAnalyses: { code: '02', name: 'Situation Analyses', names: { en: 'Situation Analyses', fr: 'Analyses de la Situation' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_IS03', name: 'Has the cluster done any situation analysis over the last year?' }] },
+    },
+    informingStrategicDecisions2: {
+        name: 'Informing Strategic Decision-Making of the HC/HCT',
+        names: { en: '', fr: '' },
+        code: 'P_IS',
+        comments: [],
         analysisTopicCovered: { code: '03', starting: 1, end: 5, name: 'Analysis Topics Covered', names: { en: 'Analysis Topics Covered', fr: 'Thèmes d\'Analyse Couverts' }, },
+    },
+    informingStrategicDecisions3: {
+        name: 'Informing Strategic Decision-Making of the HC/HCT',
+        names: { en: '', fr: '' },
+        code: 'P_IS',
+        comments: ['P_IS06', 'P_IS07'],
         crossCuttingIssues: { code: '04', starting: 1, end: 10, name: 'Cross-Cutting Issues', names: { en: 'Cross-Cutting Issues', fr: 'Questions Transversales' } },
         supportDecisionMaking: { code: '05', starting: 1, end: 2, name: 'Support for Decision Making', names: { en: 'Support for Decision Making', fr: 'Aide à la Prise de Décision' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_IS04', name: '' }] },
     },
@@ -24,11 +42,12 @@ const dataset = {
         name: 'Planning and Strategy Development',
         names: { en: 'Planning and Strategy Development', fr: 'Planification et Développement des Stratégies' },
         code: 'P_PS',
-        comments: ['P_PS03', 'P_PS04'],
         strategicPlan: { code: '01b', starting: 1, end: 4, name: 'Strategic Plan', names: { en: 'Strategic Plan', fr: 'Plan Stratégique' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_PS01', name: 'Has the cluster developed a strategic plan?' }] },
         technicalStandard: { code: '02', starting: 1, end: 2, name: 'Technical Standards and Guidelines', names: { en: 'Technical Standards and Guidelines', fr: 'Normes Techniques et Directives' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_PS02', name: 'Have technical standards and guidelines been agreed?' }] },
+        comments: ['P_PS03', 'P_PS04'],
         prioritizationProposal: { code: '02', starting: 3, end: 5, name: 'Prioritization of Proposals', names: { en: 'Prioritization of Proposals', fr: 'Hiérarchisation des Propositions' }, },
         updateFundingStatus: { code: '02', starting: 6, end: 6, name: 'Updates on Funding Status against Needs', names: { en: 'Updates on Funding Status against Needs', fr: 'Mises à Jour sur l\'État du Financement par rapport aux Besoins' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_PS04', name: 'How often does the cluster report on funding status against needs?' }, { code: 'C_PS05', name: 'Notes on Planning and Strategy Development' }] }
+    
     },
     advocacy: {
         code: 'P_AD',
@@ -63,19 +82,19 @@ const dataset = {
         mechanismToReceive: { code: '01', starting: 3, end: 4, name: 'Mechanisms to Receive, Investigate and Act on Complaints by Affected People', names: { en: 'Mechanisms to Receive, Investigate and Act on Complaints by Affected People', fr: 'Mécanismes pour Recevoir, Enquêter et Donner Suite aux Plaintes des Personnes Touchées' }, noteName: { en: 'Notes from the Coordinator', fr: 'Notes du Coordinateur' }, notes: [{ code: 'C_AA02', name: 'Has the cluster agreed on mechanisms for receiving, investigating and acting on complaints from affected people?' }, { code: 'C_AA03', name: 'Notes on Accountability to Affected Populations' }] }
     }
 }
-
+  
 export const datasetGroup = {
     supportServiceDelivery: {
         name: 'Support to Service Delivery',
         names: { en: 'Support to Service Delivery', fr: 'Appui à la Prestation de Services' },
         code: 'P_SS',
-        partnerSatisfaction : {names: {en: 'Partner satisfaction with meeting frequency', fr: 'Satisfaction des partenaires quant à la fréquence des réunions'}, code: '01a_01' },
-        organizationAbility: {names: {en: 'Organizations ability to participate fully in cluster meetings (access language)', fr: 'Capacité des organisations à participer pleinement aux réunions du cluster (langue d\'accès)'}, code: '01a', starting: 2, end: 4},
-        clusterMeetingAbility: {names: {en: 'Cluster meeting ability to identify and discuss needs, gaps and response priorities', fr: 'Capacité de réunion du cluster à identifier et à discuter des besoins, des lacunes et des priorités de la réponse'}, code: '04', starting: 1, end: 3},
-        clusterAbilityStrategic: {names: {en: 'Cluster ability to take strategic decisions about the direction of the response', fr: 'Capacité du cluster à prendre des décisions stratégiques sur la direction de la réponse'}, code: '02', starting: 1, end: 3},
-        frequencyPartnerContribution: {names: {en: 'Frequency of partner contribution to 3W mapping', fr: 'Fréquence de contribution des partenaires à la cartographie 3W'}, code: '03', starting: 1, end: 2},
-        partnerContribution: {names: {en: 'Partner contribution to analysis of gaps and overlaps in 3W data', fr: 'Contribution des partenaires à l\'analyse des lacunes et des redondance dans les données 3W'}, code: '03_03'},
-        useOfClusterAnalysis: {names: {en : 'Use of cluster analysis of gaps and overlaps in partner decision making', fr: 'Utilisation de l\'analyse groupée des lacunes et des redondance dans la prise de décision des partenaires'}, code: '03', starting: 4, end: 5}
+        partnerSatisfaction : {names: {en: 'Partner satisfaction with meeting frequency', fr: 'Satisfaction des partenaires quant à la fréquence des réunions'}, code: '01a_01', stackedLabels: [['Strongly Disagree', 'Pas du tout d\'accord'], ['Disagree','Pas d\'accord',], ['Neither Agree or Disagree','Neutre'], ['Agree', 'D\'accord'], ['Strongly Agree', 'Tout à fait d\'accord']] },
+        organizationAbility: {names: {en: 'Organizations ability to participate fully in cluster meetings (access language)', fr: 'Capacité des organisations à participer pleinement aux réunions du cluster (langue d\'accès)'}, code: '01a', starting: 2, end: 4, stackedLabels: [['Strongly Disagree', 'Pas du tout d\'accord'], ['Disagree','Pas d\'accord',], ['Neither Agree or Disagree','Neutre'], ['Agree', 'D\'accord'], ['Strongly Agree', 'Tout à fait d\'accord']] },
+        clusterMeetingAbility: {names: {en: 'Cluster meeting ability to identify and discuss needs, gaps and response priorities', fr: 'Capacité de réunion du cluster à identifier et à discuter des besoins, des lacunes et des priorités de la réponse'}, code: '04', starting: 1, end: 3, stackedLabels: [['Strongly Disagree', 'Pas du tout d\'accord'], ['Disagree','Pas d\'accord',], ['Neither Agree or Disagree','Neutre'], ['Agree', 'D\'accord'], ['Strongly Agree', 'Tout à fait d\'accord']]},
+        clusterAbilityStrategic: {names: {en: 'Cluster ability to take strategic decisions about the direction of the response', fr: 'Capacité du cluster à prendre des décisions stratégiques sur la direction de la réponse'}, code: '02', starting: 1, end: 3, stackedLabels: [['Strongly Disagree', 'Pas du tout d\'accord'], ['Disagree','Pas d\'accord',], ['Neither Agree or Disagree','Neutre'], ['Agree', 'D\'accord'], ['Strongly Agree', 'Tout à fait d\'accord']]},
+        frequencyPartnerContribution: {names: {en: 'Frequency of partner contribution to 3W mapping', fr: 'Fréquence de contribution des partenaires à la cartographie 3W'}, code: '03', starting: 1, end: 2, stackedLabels: [['Strongly Disagree', 'Pas du tout d\'accord'], ['Disagree','Pas d\'accord',], ['Neither Agree or Disagree','Neutre'], ['Agree', 'D\'accord'], ['Strongly Agree', 'Tout à fait d\'accord']]},
+        partnerContribution: {names: {en: 'Partner contribution to analysis of gaps and overlaps in 3W data', fr: 'Contribution des partenaires à l\'analyse des lacunes et des redondance dans les données 3W'}, code: '03_03', stackedLabels: [['Strongly Disagree', 'Pas du tout d\'accord'], ['Disagree','Pas d\'accord',], ['Neither Agree or Disagree','Neutre'], ['Agree', 'D\'accord'], ['Strongly Agree', 'Tout à fait d\'accord']]},
+        useOfClusterAnalysis: {names: {en : 'Use of cluster analysis of gaps and overlaps in partner decision making', fr: 'Utilisation de l\'analyse groupée des lacunes et des redondance dans la prise de décision des partenaires'}, code: '03', starting: 4, end: 5, stackedLabels: [['Strongly Disagree', 'Pas du tout d\'accord'], ['Disagree','Pas d\'accord',], ['Neither Agree or Disagree','Neutre'], ['Agree', 'D\'accord'], ['Strongly Agree', 'Tout à fait d\'accord']]}
     },
     informingStrategicDecisions: {
         name: 'Informing Strategic Decision-Making of the HC / Humanitarian Country Team',
@@ -84,46 +103,46 @@ export const datasetGroup = {
         code: 'P_IS',
         organizationThatUsed: {names: {en: 'Organizations that used sectoral needs assessment tools and guidance agreed by cluster partners',
                                        fr: 'Organisation qui a utilisé des outils d\'évaluation des besoins sectoriels et des orientations convenues par les partenaires du cluster'},
-                                       code: '01', starting: 1, end: 2},
+                                       code: '01', starting: 1, end: 2, stackedLabels: [['Strongly Disagree', 'Pas du tout d\'accord'], ['Disagree','Pas d\'accord',], ['Neither Agree or Disagree','Neutre'], ['Agree', 'D\'accord'], ['Strongly Agree', 'Tout à fait d\'accord']]},
         organisationInvolved:  {names: {en: 'Organization involved in coordinated sectoral needs assessment and surveys',
                                        fr: 'Organisation impliquée dans les évaluations et enquêtes coordonnées des besoins sectoriels'},
-                                       code: '01', starting: 3, end: 5},
+                                       code: '01', starting: 3, end: 5, stackedLabels: [['Strongly Disagree', 'Pas du tout d\'accord'], ['Disagree','Pas d\'accord',], ['Neither Agree or Disagree','Neutre'], ['Agree', 'D\'accord'], ['Strongly Agree', 'Tout à fait d\'accord']]},
         organisationParticipating: {names: {en: 'Organizations participation in joint situation analyses', fr: 'Organisations participant à des analyses de situation conjointes'}, 
-                                       code: '02'},
+                                       code: '02', stackedLabels: [['Participated', 'A participé'], ['Did not Participate', 'N\'a pas participé']]},
         organisationShared: {names: {en: 'Organizations that shared reports of its surveys and assessments with the cluster', fr : 'Organisation qui a partagé les rapports de ces enquêtes et évaluations avec le cluster'},
-                                       code: '01', starting: 6, end: 7 }
+                                       code: '01', starting: 6, end: 7, stackedLabels: [['Strongly Disagree', 'Pas du tout d\'accord'], ['Disagree','Pas d\'accord',], ['Neither Agree or Disagree','Neutre'], ['Agree', 'D\'accord'], ['Strongly Agree', 'Tout à fait d\'accord']] }
     },
     planningStrategyDevelopment: {
         name: 'Planning and Strategy Development',
         names: { en: 'Planning and Strategy Development', fr: 'Planification et Développement des Stratégies' },
         code: 'P_PS',
         organizationHelped2: {names: {en: 'Organizations have helped to develop cluster strategic plans', fr: 'Organisation ont aidé à développer des plans stratégiques de cluster'}, code: '01b', starting: 2, end: 3, stackedChart: true, stackTitle: ['Regional breakdown of responses to "Organizations have helped to develop cluster strategic plans"', 'Répartition régionale des réponses à "Les organisations ont aidé à élaborer des plans stratégiques de cluster"'],stackedLabels: [['No strategic plan developed', 'Aucun plan stratégique élaboré'], ['Not asked to participate', 'Pas demandé de participer'], ['Chose not to contribute', 'A choisi de ne pas contribuer'], ['Not considered','N\'a pas considéré'], ['Somewhat considered', 'Un peu considéré'], ['Fully considered', 'totalement considéré']]},
-        clusterPartnersAgreedTechnical: {names: {en: 'Cluster partners agreed technical standards and guidance and have applied them', fr: 'Les partenaires CLuster ont convenu de normes et d\'orientations techniques et les ont appliquées'}, wholeCode: 'C_PS02'},
-        clusterPartnerParticipatedIn: {names: {en: 'Cluster partners participated in prioritizing proposals under strategic plan with a transparent process', fr: 'Partenaires du cluster participant à la hiérarchisation des propositions dans le cadre du plan stratégique avec un processus transparent'}, code: '02', starting: 3, end: 4},
-        proposalsPrioritized: {names: {en: 'Proposals were prioritised against the strategic plan in a manner that was fair to all partners', fr: 'Les propositions ont été classées par ordre de priorité par rapport au plan stratégique d\'une manière équitable pour tous les partenaires'}, code: '02_05'},
-        clusterCoordinatorReported: {names: {en: 'The cluster coordinator reported on the cluster funding status against needs in appropriate time frames', fr: 'Le coordinateur du cluster a rendu compte de l\'état du financement du cluster par rapport aux besoins dans des délais appropriés'}, code: '02_06'}
+        clusterPartnersAgreedTechnical: {names: {en: 'Cluster partners agreed technical standards and guidance and have applied them', fr: 'Les partenaires du cluster ont convenu de normes et d\'orientations techniques et les ont appliquées'}, wholeCode: 'C_PS02', stackedLabels: [['Agreed', 'D\'accord'], ['Disagreed','Pas d\'accord']]},
+        clusterPartnerParticipatedIn: {names: {en: 'Cluster partners participated in prioritizing proposals under strategic plan with a transparent process', fr: 'Partenaires du cluster participant à la hiérarchisation des propositions dans le cadre du plan stratégique avec un processus transparent'}, code: '02', starting: 3, end: 4, stackedLabels: [['Not applicable', 'Non applicable'],['Strongly Disagree', 'Pas du tout d\'accord'], ['Disagree','Pas d\'accord',], ['Neither Agree or Disagree','Neutre'], ['Agree', 'D\'accord'], ['Strongly Agree', 'Tout à fait d\'accord']]},
+        proposalsPrioritized: {names: {en: 'Proposals were prioritised against the strategic plan in a manner that was fair to all partners', fr: 'Les propositions ont été classées par ordre de priorité par rapport au plan stratégique d\'une manière équitable pour tous les partenaires'}, code: '02_05', stackedLabels: [['Not applicable', 'Non applicable'],['Strongly Disagree', 'Pas du tout d\'accord'], ['Disagree','Pas d\'accord',], ['Neither Agree or Disagree','Neutre'], ['Agree', 'D\'accord'], ['Strongly Agree', 'Tout à fait d\'accord']]},
+        clusterCoordinatorReported: {names: {en: 'The cluster coordinator reported on the cluster funding status against needs in appropriate time frames', fr: 'Le coordinateur du cluster a rendu compte de l\'état du financement du cluster par rapport aux besoins dans des délais appropriés'}, code: '02_06', stackedLabels: [['Not applicable', 'Non applicable'],['Strongly Disagree', 'Pas du tout d\'accord'], ['Disagree','Pas d\'accord',], ['Neither Agree or Disagree','Neutre'], ['Agree', 'D\'accord'], ['Strongly Agree', 'Tout à fait d\'accord']]}
     },
     advocacy: {
         code: 'P_AD',
         name: 'Advocacy',
         names: { en: 'Advocacy', fr: 'Plaidoyer' },
-        issuesRequiringAdvocacy: {names: {en: 'Issues requiring advocacy have been identified and discussed together', fr: 'Les problèmes nécessitant un plaidoyer ont été identifiés et discutés ensemble'}, code: '01', starting: 1, end: 1},
+        issuesRequiringAdvocacy: {names: {en: 'Issues requiring advocacy have been identified and discussed together', fr: 'Les problèmes nécessitant un plaidoyer ont été identifiés et discutés ensemble'}, code: '01', starting: 1, end: 1, stackedLabels: [['No advocacy activities', 'Aucune activité de plaidoyer'], ['Not invited to participate', 'Non invité à participer'], ['None', 'Aucun'], ['Some', 'Certain'], ['Most', 'La majorité']]},
         organizationParticipating: {names: {en: 'Organizations have participated in cluster advocacy activities', fr: 'Les problèmes nécessitant un plaidoyer ont été identifiés et discutés L\'organisation a participé ensemble aux activités de plaidoyer du cluster'}, code: '01', starting: 3, end: 5, stackTitle: ['Regional breakdown of responses to "Organizations have participated in cluster advocacy activities"', 'Répartition régionale des réponses à "Les organisations ont participé aux activités de plaidoyer du cluster"'], stackedChart: true, stackedLabels: [['No advocacy activities', 'Aucune activité de plaidoyer'], ['Not invited to participate', 'Non invité à participer'], ['None', 'Aucun'], ['Some', 'Certain'], ['Most', 'La majorité']]}
     },
     monitoringReporting: {
         code: 'P_MR',
         name: 'Monitoring and Reporting on Implementation of Cluster Strategy and Results',
         names: { en: 'Monitoring and Reporting on Implementation of Cluster Strategy and Results', fr: 'Suivi et rapports sur la mise en œuvre de la stratégie et des résultats du cluster' },
-        clusterBulletins: {names: {en: 'Cluster bulletins or updates highlight risks, gaps and changing needs', fr: 'Les bulletins ou mises à jour des clusters mettent en évidence les risques, les lacunes et les besoins changeants'}, code: '01_01'},
-        programMonitoring: {names: {en: 'Program monitoring and reporting formats are agreed by the cluster', fr: 'Les formats de suivi du programme et de rapport sont convenus par le cluster'}, code: '01_03'},
-        hasTheclusterTaken: {names: {en: 'Has the cluster taken into account the distinct needs, contributions and capacities of women, girls, men and boys in its response and monitoring', fr:'Le cluster a-t-il pris en compte les besoins, les contributions et les capacités distincts des femmes, des filles, des hommes et des garçons dans sa réponse et son suivi'}, code: '01_05'}
+        clusterBulletins: {names: {en: 'Cluster bulletins or updates highlight risks, gaps and changing needs', fr: 'Les bulletins ou mises à jour des clusters mettent en évidence les risques, les lacunes et les besoins changeants'}, code: '01_01', stackedLabels: [['Strongly Disagree', 'Pas du tout d\'accord'], ['Disagree','Pas d\'accord',], ['Neither Agree or Disagree','Neutre'], ['Agree', 'D\'accord'], ['Strongly Agree', 'Tout à fait d\'accord']]},
+        programMonitoring: {names: {en: 'Program monitoring and reporting formats are agreed by the cluster', fr: 'Les formats de suivi du programme et de rapport sont convenus par le cluster'}, code: '01_03', stackedLabels: [['Strongly Disagree', 'Pas du tout d\'accord'], ['Disagree','Pas d\'accord',], ['Neither Agree or Disagree','Neutre'], ['Agree', 'D\'accord'], ['Strongly Agree', 'Tout à fait d\'accord']]},
+        hasTheclusterTaken: {names: {en: 'Has the cluster taken into account the distinct needs, contributions and capacities of women, girls, men and boys in its response and monitoring', fr:'Le cluster a-t-il pris en compte les besoins, les contributions et les capacités distincts des femmes, des filles, des hommes et des garçons dans sa réponse et son suivi'}, code: '01_05', stackedLabels: [['Strongly Disagree', 'Pas du tout d\'accord'], ['Disagree','Pas d\'accord',], ['Neither Agree or Disagree','Neutre'], ['Agree', 'D\'accord'], ['Strongly Agree', 'Tout à fait d\'accord']]}
     },
     preparednessPlan: {
         code: 'P_PR',
         name: 'Preparedness for Recurrent Disasters',
         names: { en: 'Preparedness for Recurrent Disasters', fr: 'Préparation aux Catastrophes Récurrentes' },
         organizationHelped: {names: {en: 'Organizations helped to develop or update preparedness plans (including multisectoral ones) that address hazards and risks', fr: 'L\'organisation a aidé à élaborer ou à mettre à jour des plans de préparation (y compris multisectoriels) qui traitent des dangers et des risques'}, code: '01', starting: 1, end: 3, stackTitle: [['Regional breakdown of responses to "Has your organization helped to develop or', 'update preparedness plans (including multisectoral ones) that address hazards and risks?". Shown in terms of','how adequately partners felt their contributions were reflected.'], ['« Répartition régionale des réponses à la question « Votre organisation a-t-elle aidé à élaborer ou », « mettre à jour des plans de préparation (y compris des plans multisectoriels) qui traitent des dangers et des risques ?". Montré en termes de ',' dans quelle mesure les partenaires ont estimé que leurs contributions ont été reflétées.']], stackedChart: true, stackedLabels: [['No plan developed / updated', 'Aucun plan développé / mis à jour'], ['Not invited to participate', 'Non invité à participe'], ['Did not contribute', 'N\'a pas contribué'], ['Inadequately reflected', 'Insuffisamment reflété'], ['Adequately reflected', 'Correctement reflété']]},
-        organizationCommittedStaff: {names: {en: 'Organizations committed staff or resources that can be mobilized when preparedness plans are activated', fr: 'Personnel ou ressources engagés par l\'organisation qui peuvent être mobilisés lorsque les plans de préparation sont activés'}, code: '01', starting: 4, end: 5}
+        organizationCommittedStaff: {names: {en: 'Organizations committed staff or resources that can be mobilized when preparedness plans are activated', fr: 'Personnel ou ressources engagés par l\'organisation qui peuvent être mobilisés lorsque les plans de préparation sont activés'}, code: '01', starting: 4, end: 5, stackedLabels: [['No plan developed / updated', 'Aucun plan développé / mis à jour'], ['Not invited to participate', 'Non invité à participe'], ['Did not contribute', 'N\'a pas contribué'], ['Inadequately reflected', 'Insuffisamment reflété'], ['Adequately reflected', 'Correctement reflété']]}
     },
     accoutabilityAffected: {
         code: 'P_AA',
@@ -144,8 +163,8 @@ export const ccpm_getQuestionInRange = (groupIdentifier, subgroupIdentifier, dat
     const subgroup = group[subgroupIdentifier]
 
     const questions = [];
-    const code = `${group.code}${subgroup.code}`;
     if(subgroup){
+        const code = `${group.code}${subgroup.code}`;
         if(subgroup.wholeCode){
              questions.push(subgroup.wholeCode);
         }

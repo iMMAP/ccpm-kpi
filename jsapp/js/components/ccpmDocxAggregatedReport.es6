@@ -1,4 +1,4 @@
-import { AlignmentType, BorderStyle, Document, ShadingType } from "docx";
+import { AlignmentType, BorderStyle, Document, PageBreak, ShadingType } from "docx";
 import { titleConstants, datasetGroup} from '../ccpmDataset';
 import { getGroupTableByCluster, getGroupTableByRegion } from '../ccpmReport';
 
@@ -253,7 +253,8 @@ const getGlobalSum = (data, column) => {
 
 const getSecondSection = (lCode, completionRateRegions, colorPallete, globalColor) => {
   const result = [];
-  Object.keys(datasetGroup).filter(d => d !== 'code' && d !=='content' && d!== 'wholeCode' && d !== 'name' && d !== 'names').forEach((subGroup, index) => {
+  const subGroups = Object.keys(datasetGroup).filter(d => d !== 'code' && d !=='content' && d!== 'wholeCode' && d !== 'name' && d !== 'names');
+    subGroups.forEach((subGroup, index) => {
     const data = [];
 
     if(index === 0) {
@@ -269,31 +270,81 @@ const getSecondSection = (lCode, completionRateRegions, colorPallete, globalColo
     data.push(getTable(getGroupTable(subGroupData, subGroup, lCode, colorPallete, globalColor), 5, true, undefined, undefined, undefined,false));
     data.push(new Paragraph(''));
     data.push(getTable(getGroupByClusterTable({...subGroupDataByCountry, columns: subGroupData.columns}, subGroup, lCode, colorPallete, globalColor), 5, true,null, null, null, true))
-    data.push(new Paragraph(''));
+    data.push(new Paragraph({children: [new PageBreak()]}));
 
-      const charts = Object.keys(datasetGroup[subGroup]).filter(o => datasetGroup[subGroup][o].stackedChart);
-      charts.forEach(chart => {
-        const chartRect = document.getElementById(`chart-${chart}`).getBoundingClientRect()
+      const charts = Object.keys(datasetGroup[subGroup]).filter(k => k !== 'code' && k!== 'name' && k !== 'names');
+      let negativeChartShown = false;
+      charts.forEach((chart, index2) => {
+        data.push(new Paragraph(''));
+        const chartRect = document.getElementById(`chart-${chart}`).getBoundingClientRect();
+        const children = [new ImageRun({
+          data: Uint8Array.from(atob((document.getElementById(`chart-${chart}`).toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
+          transformation: {
+            width: chartRect.width * (600 /chartRect.width),
+            height: chartRect.height * (600 / chartRect.width)
+          },
+        })];
+        if(index2 % 2 !== 0 && !(index2 === charts.length -1 && index === subGroups.length - 1)) children.push(new PageBreak());
         data.push(new Paragraph({
           spacing: {
             before: 100,
             after: 200,
           },
-          children: [new ImageRun({
-            data: Uint8Array.from(atob((document.getElementById(`chart-${chart}`).toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
-            transformation: {
-              width: chartRect.width * (600 /chartRect.width),
-              height: chartRect.height * (600 / chartRect.width)
+          border: {
+            top: {
+              color: '#000000',
+              size: 2,
+              value: BorderStyle.THICK,
+              space: 1
             },
-          })]
+            bottom: {
+              color: '#000000',
+              size: 2,
+              value: BorderStyle.THICK,
+              space: 1
+            },
+            left: {
+              color: '#000000',
+              size: 1,
+              value: 'single'
+            },
+            right: {
+              color: '#000000',
+              size: 1,
+              value: 'single'
+            }
+          },
+          children
         }))
-        data.push(new Paragraph(''));
-        if(subGroup === 'planningStrategyDevelopment'){
+
+        if(subGroup === 'planningStrategyDevelopment' && index === charts.length - 1){
           const chartNegativeRect = document.getElementById(`negativeAnswerChart`).getBoundingClientRect();
           data.push(new Paragraph({
             spacing: {
               before: 100,
               after: 200,
+            },
+            border: {
+              top: {
+                color: '#000000',
+                size: 1,
+                value: 'single'
+              },
+              bottom: {
+                color: '#000000',
+                size: 1,
+                value: 'single'
+              },
+              left: {
+                color: '#000000',
+                size: 1,
+                value: 'single'
+              },
+              right: {
+                color: '#000000',
+                size: 1,
+                value: 'single'
+              }
             },
             children: [new ImageRun({
               data: Uint8Array.from(atob((document.getElementById(`negativeAnswerChart`).toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
@@ -304,6 +355,7 @@ const getSecondSection = (lCode, completionRateRegions, colorPallete, globalColo
             })]
           }))
           data.push(new Paragraph(''));
+          negativeChartShown = true;
         }
     })
 
@@ -356,6 +408,28 @@ export default class CCPM_ReportContents {
                 before: 100,
                 after: 200,
               },
+              border: {
+                top: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                },
+                bottom: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                },
+                left: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                },
+                right: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                }
+              },
               children: [new ImageRun({
                 data: Uint8Array.from(atob((document.getElementById('chartbyType').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
                 transformation: {
@@ -379,6 +453,28 @@ export default class CCPM_ReportContents {
                 before: 100,
                 after: 200,
               },
+              border: {
+                top: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                },
+                bottom: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                },
+                left: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                },
+                right: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                }
+              },
               children: [new ImageRun({
                 data: Uint8Array.from(atob((document.getElementById('chartbyTypeAndRegion').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),
                 transformation: {
@@ -394,6 +490,28 @@ export default class CCPM_ReportContents {
               spacing: {
                 before: 100,
                 after: 200,
+              },
+              border: {
+                top: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                },
+                bottom: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                },
+                left: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                },
+                right: {
+                  color: '#000000',
+                  size: 1,
+                  value: 'single'
+                }
               },
               children: [new ImageRun({
                 data: Uint8Array.from(atob((document.getElementById('chartbyCluster').toDataURL()).replace('data:image/png;base64,', '')), c => c.charCodeAt(0)),

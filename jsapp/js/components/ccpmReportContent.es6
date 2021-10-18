@@ -252,6 +252,115 @@ export default class CCPM_ReportContents extends React.Component {
     return ccpm_getAverageInQuestion(data);
   }
 
+  buildHorizontalStackedChart(data, currentLanguageIndex, choosenLanguage = 'en') {
+    const chartColors  =  ['#454545','#737373','#b0b0b0', '#dee1e3', '#5a9ad6', '#3388d6', '#8BBF7E', '#BFCB74'];
+
+    const labels = {en:['Not Applicable','Strongly Disagree', 'Disagree', 'Neither Agree or Disagree', 'Agree', 'Strongly Agree', 'Yes', 'No'],fr: ['Non applicable','Pas du tout d\'accord', 'Pas d\'accord', 'Neutre', 'D\'accord', 'Tout à fait d\'accord', 'Oui', 'Non' ]}
+
+    var chartType = 'horizontalBar';
+
+    const set2 = [];
+    const totals = {};
+    Object.keys(data).forEach(r => {
+      let total = 0;
+      Object.keys(data[r]).forEach(element => {
+        total +=data[r][element.toString()];
+      });
+      if(total === 0) total = 1;
+      totals[r] = total;
+    });
+    const valueArray = [0,1,2,3,4,5, 'yes', 'no']
+    valueArray.forEach((n, index) => {
+      const newdata = [];
+      Object.keys(data).forEach(r => {
+        let d = data[r][n.toString()];
+        if(!d) d = 0;
+        d = Number.parseInt(d, 10);
+        newdata.push((d * 100)/totals[r]);
+      });
+      set2.push({
+        label: labels[choosenLanguage][index],
+        data: newdata,
+        borderWidth: 1,
+        backgroundColor: chartColors[index]
+      });
+    })
+
+    // TODO: set as default globally in a higher level (PM)
+
+    var baseColor = '#1f5782';
+    Chart.defaults.global.elements.rectangle.backgroundColor = baseColor;
+
+    var opts = {
+      type: chartType,
+      responsive: true,
+      maintainAspectRation: false,
+     // plugins: [ChartDataLabels],
+      data: {
+        labels: Object.keys(data).map(e => {
+          const q = this.props.parentState.reportData.find(qq => qq.name === e);
+          const title =  q.row.label[currentLanguageIndex] || '';
+          const titleArray = [];
+          let textLength = 0;
+          while((textLength < title.length)) {
+            const lastSpace = title.substr(textLength, 50).lastIndexOf(' ');
+            const t = (title.length - textLength) < 50 ? title.substr(textLength) : title.substr(textLength, lastSpace);
+            titleArray.push(t);
+            textLength = textLength + t.length;
+          }
+          return titleArray;
+        }),
+        datasets: set2
+      },
+      options: {
+        maintainAspectRation: false,
+        plugins: {
+          datalabels: {
+            color: '#fff',
+            formatter: function (value, context) {
+              const percent = Number.parseInt(value);
+              return percent > 0 ? `${percent}%` : '';
+            },
+            clamp: true,  
+            align: 'center'
+          },
+        },
+        scales: {
+            xAxes: [{
+              stacked: true,
+              ticks: {
+                display: false
+              },
+              gridLines: {
+                display:false
+              },
+          }],
+            yAxes: [{
+              stacked: true,
+              gridLines: {
+                display:false
+              },
+          }], 
+        },
+        animation: {
+          duration: 500
+        },
+        
+        tooltips: {
+          callbacks: {
+            label: (a,b)=>{
+              const title  = b.datasets[a.datasetIndex];
+              // return `${title.label} (%): ${Math.round(title.data[a.index])}`;
+              return ''
+            }
+          },
+        },
+        }
+    };
+
+    return opts;
+  }
+
   buildQByQBreakdownChartOptions(data, choosenLanguage = 'en') {
     var chartType = 'horizontalBar';
 
@@ -417,21 +526,21 @@ export default class CCPM_ReportContents extends React.Component {
     if(!translations[currentLanguageIndex]) currentLanguageIndex = translations.findIndex(lan => lan && lan.includes('en'));
     const choosenLanguage = translations ? ((translations[currentLanguageIndex]).match(/\(.*?\)/))[0].replace('(', '').replace(')', '') : 'en';
 
-    // Build question by question breakdown charts 
+    //Build question by question breakdown charts 
 
-    // Object.keys(dataset).forEach(element => {
-    //   if (element !== 'code') {
-    //     var canvas = ReactDOM.findDOMNode(this.refs[`canvas${element}`]);
-    //     var opts = this.buildQByQBreakdownChartOptions(this.props.parentState.questionResponseGroup[element], choosenLanguage);
+    Object.keys(dataset).forEach(element => {
+      if (element !== 'code' && this.props.parentState.questionResponseGroup[element]) {
+        var canvas = ReactDOM.findDOMNode(this.refs[`canvas${element}`]);
+        var opts = this.buildHorizontalStackedChart(this.props.parentState.questionResponseGroup[element], currentLanguageIndex, choosenLanguage);
 
-    //     if (this[`itemChart-${element}`]) {
-    //       this[`itemChart-${element}`].destroy();
-    //       this[`itemChart-${element}`] = new Chart(canvas, opts);
-    //     } else {
-    //       this[`itemChart-${element}`] = new Chart(canvas, opts);
-    //     }
-    //   }
-    // })
+        if (this[`itemChart-${element}`]) {
+          this[`itemChart-${element}`].destroy();
+          this[`itemChart-${element}`] = new Chart(canvas, opts);
+        } else {
+          this[`itemChart-${element}`] = new Chart(canvas, opts);
+        }
+      }
+    })
 
     // Build response by type charts
 
@@ -633,7 +742,7 @@ export default class CCPM_ReportContents extends React.Component {
               {
               <div ref={`chart2-${i}`} id={`chart2-${i}`} style={{ height: "80%", width: "95%" }}>
                 <div style={{ width: '270px',  margin: '0px auto'}}>
-                <canvas ref={`chart2-${i}-canvas`} id={`chart2-${i}-canvas`} />
+                <canvas ref={`chart2-${i}-canvas`}  id={`chart2-${i}-canvas`} />
                 </div>
               </div>
               }
@@ -646,7 +755,7 @@ export default class CCPM_ReportContents extends React.Component {
         {Object.keys(dataset).map(group => {
           return (
             <>
-              <h1 className="title" style={{paddingTop: '15px'}}>{ccpm_getName(dataset[group], choosenLanguage)}</h1>
+              {ccpm_getName(dataset[group], choosenLanguage) && <h1 className="title" style={{paddingTop: '15px'}}>{ccpm_getName(dataset[group], choosenLanguage)}</h1>}
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <tbody>
                   {
@@ -668,7 +777,7 @@ export default class CCPM_ReportContents extends React.Component {
         {Object.keys(dataset).map(group => {
           return (
             <>
-              <h1 className="title" style={{paddingTop: '15px'}}>{ccpm_getName(dataset[group], choosenLanguage)}</h1>
+              {ccpm_getName(dataset[group], choosenLanguage) && <h1 className="title" style={{paddingTop: '15px'}}>{ccpm_getName(dataset[group], choosenLanguage)}</h1>}
               {Object.keys(dataset[group]).map(subGroup => {
                 if (!parentState.ccpmReport[subGroup].questions || subGroup === 'code' || subGroup === 'content' || subGroup === 'wholeCode' || subGroup === 'names' || subGroup === 'name' || subGroup === 'comments') return '';
                 return <>
@@ -746,19 +855,32 @@ export default class CCPM_ReportContents extends React.Component {
               })}
             </>)
         })}
-       {/* <h1 className="bigTitle" style={{ pageBreakBefore: 'always' }}>{titleConstants.qustionByquestionBreakdown[choosenLanguage]}</h1>
+        <h1 className="bigTitle" style={{ pageBreakBefore: 'always' }}>{titleConstants.qustionByquestionBreakdown[choosenLanguage]}</h1>
         {
           Object.keys(dataset).map(element => {
             if (element !== 'code' && element !== 'name') {
-              return <>
+              if(element.includes('supportServiceDelivery') || element.includes('informingStrategicDecisions') || element.includes('planningStrategyDevelopment')) {
+                return <>
+                 {ccpm_getName(dataset[element], choosenLanguage) && <h1 className="title" style={{ marginLeft: '10px', paddingTop: '15px' }}> {ccpm_getName(dataset[element], choosenLanguage)}</h1>}
+                  <div style={{height: element === "planningStrategyDevelopment" ? '750px' : '700px', width: '95%'}}>
+                    <canvas ref={`canvas${element}`} height={element === "planningStrategyDevelopment" ? 260 : 240}  id={`${element}canv`} />
+                  </div>
+                  {this.renderComment(dataset[element].comments[0], titleConstants.commentSuggestedImprovment[choosenLanguage])}
+                  {this.renderComment(dataset[element].comments[1], titleConstants.commentSuccessStories[choosenLanguage])}
+                </>
+              } else {
+                return <>
                 <h1 className="title" style={{ marginLeft: '10px', paddingTop: '15px' }}> {ccpm_getName(dataset[element], choosenLanguage)}</h1>
-                <canvas ref={`canvas${element}`} id={`${element}canv`} />
+                  <div style={{width: '95%'}}>
+                     <canvas ref={`canvas${element}`} id={`${element}canv`} />
+                  </div>
                 {this.renderComment(dataset[element].comments[0], titleConstants.commentSuggestedImprovment[choosenLanguage])}
                 {this.renderComment(dataset[element].comments[1], titleConstants.commentSuccessStories[choosenLanguage])}
-              </>
+                </>
+              }
             }
           })
-        }*/}
+        }
         <h1 className="bigTitle" style={{ pageBreakBefore: 'always', paddingBottom: '0px' }}>{titleConstants.finalComments[choosenLanguage]}</h1>
         {this.renderComment('P_OI01', titleConstants.partner[choosenLanguage])}
         

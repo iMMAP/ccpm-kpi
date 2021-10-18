@@ -31,7 +31,7 @@ export const ccpm_getLabel = (index, label) => {
 export const ccpm_getName = (o, choosenLanguage) => {
     if (!o) return '';
     if (o.names && o.names[choosenLanguage]) return o.names[choosenLanguage];
-    return o.name;
+    return '';
 }
 
 const ccpm_getAverageInquestion = (data) => {
@@ -92,9 +92,13 @@ const ccpm_getNumberOfParnerResponseByType = (questionList, data, choices) => {
 }
 
 const ccpm_getResponseGrouped = (q) => {
-    const result = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 };
+    const result = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0, yes: 0, no: 0 };
     Object.keys(result).forEach(key => {
-        const index = q.data.responses.findIndex(e => e.toString().replace(/\D/g, '') === key);
+        const index = q.data.responses.findIndex(e =>  {
+          let value  = e.toString().replace(/\D/g, '');
+          if(key === 'no' || key === 'yes') value = e;
+          return value === key;
+        });
         if (index >= 0)
             result[key] = q.data.frequencies[index];
     })
@@ -152,9 +156,11 @@ const ccpm_getData = (data, choices, dataSetGroup) => {
                         q.averageLabel = ccpm_getStatusLabel(q.average);
 
                     const questionGroupedByLabel = ccpm_getResponseGrouped(q);
-                    Object.keys(questionGroupedByLabel).forEach(v => {
-                        groupedByLabel[v] = groupedByLabel[v] + questionGroupedByLabel[v];
-                    })
+                    if(!questionResponseGroup[group]) questionResponseGroup[group] = {};
+                    questionResponseGroup[group][q.name] = questionGroupedByLabel;
+                    // Object.keys(questionGroupedByLabel).forEach(v => {
+                    //     groupedByLabel[v] = groupedByLabel[v] + questionGroupedByLabel[v];
+                    // })
 
                     if (!chartData[group]) chartData[group] = {};
                     if (chartData[group][q.averageLabel]) chartData[group][q.averageLabel] = chartData[group][q.averageLabel] + 1;
@@ -165,7 +171,7 @@ const ccpm_getData = (data, choices, dataSetGroup) => {
                 newReport[subGroup].group = group;
             }
         })
-        questionResponseGroup[group] = groupedByLabel;
+        //questionResponseGroup[group] = groupedByLabel;
     })
 
     const totalResponseQuestions = []
