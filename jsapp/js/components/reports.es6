@@ -998,7 +998,7 @@ class Reports extends React.Component {
 
         const fields = [
           pathP_IS02,
-          ...ccpm_getQuestionInRange('informingStrategicDecisions','analysisTopicCovered').map(s => `${pathP_IS03}${s}`)
+          ...ccpm_getQuestionInRange('informingStrategicDecisions2','analysisTopicCovered').map(s => `${pathP_IS03}${s}`)
         ];
         
         dataInterface.getSubmissions(uid, 1000,0, [],fields).done((data2) => {

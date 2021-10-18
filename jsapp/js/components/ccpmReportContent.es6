@@ -184,7 +184,7 @@ export default class CCPM_ReportContents extends React.Component {
     const yes = P_IS02Result.filter(res => res[pathP_IS02] === 'yes');
     const yesAverage = [];
     const noAverage = [];
-    const keys = ccpm_getQuestionInRange('informingStrategicDecisions', 'analysisTopicCovered').map(s => `${pathP_IS03}${s}`)
+    const keys = ccpm_getQuestionInRange('informingStrategicDecisions2', 'analysisTopicCovered').map(s => `${pathP_IS03}${s}`)
 
     if (yes.length > 0) {
       keys.forEach(key => {
